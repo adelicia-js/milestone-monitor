@@ -5,7 +5,7 @@ const headerFont = Urbanist({ weight: "400", subsets: ["latin"] });
 
 export default function NoData(props: any) {
   return (
-    <div className="">
+    <div className=" ">
       <table
         className={`${headerFont.className} w-full text-sm text-center text-black border border-teal-500/30 rounded`}
       >
