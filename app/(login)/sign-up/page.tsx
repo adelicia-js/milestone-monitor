@@ -54,7 +54,7 @@ export default function SignUp() {
           />
           {isLoading ? (
             <div className="flex flex-col items-center justify-center gap-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-700">🚀</div>
+              <div className="animate-spin rounded-full h-12 w-12 border-r-2 border-b-2 border-teal-700">🚀</div>
               <p className="text-teal-700 text-lg">Signing you up . . .</p>
             </div>
           ) : (
