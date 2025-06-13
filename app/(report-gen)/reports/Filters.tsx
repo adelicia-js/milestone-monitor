@@ -5,11 +5,11 @@ import { useState, useEffect } from "react";
 const Filters = ({ staffDetails, onFiltersChange }: any) => {
   console.log("loggin from filters ", staffDetails);
   const [searchQuery, setSearchQuery] = useState("");
-  const [startDate, setStartDate] = useState<string | undefined>(undefined);
-  const [endDate, setEndDate] = useState<string | undefined>(undefined);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
   const [selectedStaff, setSelectedStaff] = useState("");
-  const [selectedType, setSelectedType] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("PENDING");
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   useEffect(() => {
     onFiltersChange({
@@ -46,7 +46,7 @@ const Filters = ({ staffDetails, onFiltersChange }: any) => {
         <div className="mb-4 relative flex flex-row items-center">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="Search title . . ."
             className="bg-[#cbfef8]/70 text-gray-500 w-full py-2 px-4 border-2 border-teal-500/30 rounded-lg focus:outline-none focus:border-teal-400 hover:border-teal-400"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -117,11 +117,11 @@ const Filters = ({ staffDetails, onFiltersChange }: any) => {
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
           >
+            <option value="">All</option>
             <option value="Conferences">Conferences</option>
             <option value="Patents">Patents</option>
             <option value="Workshops">Workshops</option>
             <option value="Journals">Journals</option>
-            <option value="all" selected>All</option>
             {/* Populate entry type options dynamically */}
           </select>
         </div>
@@ -134,10 +134,10 @@ const Filters = ({ staffDetails, onFiltersChange }: any) => {
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
           >
+            <option value="">All</option>
             <option value="PENDING">Pending</option>
             <option value="APPROVED">Verified</option>
             <option value="REJECTED">Unverified</option>
-            <option value="" selected>All</option>
             {/* Populate entry type options dynamically */}
           </select>
         </div>

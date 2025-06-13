@@ -48,11 +48,35 @@ const examples = [
   { type: "Protected Routes", src: "app/_examples/protected/page.tsx" },
 ];
 
+// Function to find the first available profile image with supported extensions
+async function findProfileImage(supabase: any, facultyId: string) {
+  const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'];
+  
+  for (const ext of extensions) {
+    try {
+      const { data: imgData } = supabase.storage
+        .from('staff-media')
+        .getPublicUrl(`profilePictures/${facultyId}.${ext}`);
+      
+      // Check if the image actually exists by making a HEAD request
+      const response = await fetch(imgData.publicUrl, { method: 'HEAD' });
+      if (response.ok) {
+        return imgData.publicUrl;
+      }
+    } catch (error) {
+      // Continue to next extension if this one fails
+      continue;
+    }
+  }
+  
+  return null; // No image found
+}
+
 export default async function Index() {
   const supabase = createServerComponentClient({ cookies });
   let hodBool =true
   let editorBool = true;
-  let userData, imageJpg, imagePng;
+  let userData, profileImageUrl;
 
   const {
     data: { user },
@@ -72,10 +96,7 @@ export default async function Index() {
       editorBool = false;
     }
 
-    const {data:imgJpg} = supabase.storage.from('staff-media').getPublicUrl(`profilePictures/${userData.faculty_id}.jpg`);
-    const {data:imgPng} = supabase.storage.from('staff-media').getPublicUrl(`profilePictures/${userData.faculty_id}.png`);
-    imageJpg = imgJpg.publicUrl;
-    imagePng = imgPng.publicUrl;
+    profileImageUrl = await findProfileImage(supabase, userData.faculty_id);
   }
 
   return (
@@ -83,7 +104,7 @@ export default async function Index() {
       id="dashboard"
       className={`invisible lg:visible ${bodyText.className} grid grid-cols-2 grid-rows-2 gap-8 md:h-[85vh] lg:h-[90vh] bg-teal-500/40 lg:p-8`}
     >
-      <Account userData={userData} imageJpg={imageJpg} imagePng={imagePng}/>
+      <Account userData={userData} profileImageUrl={profileImageUrl}/>
       <Stats/>
      
  <Events is_hod={hodBool} is_editor={editorBool}/>
