@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
-import Link from "next/link";
 import logo from "../../../public/logo.webp";
 import { Urbanist } from "next/font/google";
+import Link from "next/link";
 import "../../globals.css";
 
 const generalText = Urbanist({
@@ -14,7 +14,7 @@ const generalText = Urbanist({
   subsets: ["latin"],
 });
 
-export default function Login() {
+export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,22 +22,22 @@ export default function Login() {
   const router = useRouter();
   const supabase = createClientComponentClient();
 
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
     if (error) {
-      alert("Invalid email or password, please try again!");
+      alert("Error signing up, please try again!");
       setIsLoading(false);
       return;
     }
     router.push("/");
     router.refresh();
     setIsLoading(false);
-  };
+};
 
   return (
     <div
@@ -52,16 +52,15 @@ export default function Login() {
             alt={"logo"}
             className="self-center"
           />
-
           {isLoading ? (
             <div className="flex flex-col items-center justify-center gap-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-r-2 border-b-2 border-teal-900">🚀</div>
-              <p className="text-teal-700 text-lg">Signing in . . .</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-700">🚀</div>
+              <p className="text-teal-700 text-lg">Signing you up . . .</p>
             </div>
           ) : (
             <form
               className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
-              onSubmit={handleSignIn}
+              onSubmit={handleSignUp}
             >
               <label
                 className="text-md text-emerald-800 uppercase"
@@ -87,12 +86,12 @@ export default function Login() {
                 <input
                   className="caret-emerald-700 rounded-md px-4 py-2 bg-inherit mb-6 border-2 border-teal-400/20 focus:border-emerald-500 w-full"
                   style={{ color: "#237A70" }}
-                  type={showPassword ? "text" : "password"}
                   name="password"
+                  type={showPassword ? "text" : "password"}
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
                 />
-                {password.length > 0 && (
+                {password && (
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -143,21 +142,15 @@ export default function Login() {
                   className="bg-teal-700 text-center w-[10vw] rounded-full px-4 py-2 text-emerald-200 hover:bg-teal-500 uppercase tracking-wide hover:shadow-md hover:shadow-teal-300/50 hover:text-cyan-100"
                   disabled={isLoading}
                 >
-                  Sign In
+                  Sign Up
                 </button>
                 {!isLoading && (
-                  <>
-                    <Link
-                      href="/sign-up"
-                      className="text-center py-2 text-teal-700 hover:shadow-cyan-100/50 hover:text-teal-500 hover:underline hover:underline-offset-2 hover:cursor-pointer"
-                    >
-                      Not Registered? Sign Up!
-                    </Link>
-                    {/* <text className="text-center text-teal-700">or</text>
-                    <a className="text-center py-2 text-teal-700 mb-6 hover:shadow-cyan-100/50 hover:text-teal-500 hover:underline hover:underline-offset-2 hover:cursor-pointer">
-                      Forgot Password?
-                    </a> */}
-                  </>
+                  <Link
+                    href="/login"
+                    className="text-center py-2 text-teal-700 hover:shadow-cyan-100/50 hover:text-teal-500 hover:underline hover:underline-offset-2 hover:cursor-pointer"
+                  >
+                    Already Registered? Sign In!
+                  </Link>
                 )}
               </div>
             </form>
