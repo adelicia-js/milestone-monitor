@@ -316,13 +316,18 @@ export const updateUserPhone = async (
 
 export const getDataForReport = async (
   start_date: string = "2001-01-01",
-  end_date: string = new Date().toJSON().slice(0, 10),
+  end_date: string = new Date().toISOString().split("T")[0],
   filterType: string = "all",
   title: string = "",
   status: string = "PENDING",
-  faculty_id: string | null = "",
-  faculty_name: string | null = ""
+  faculty_id: string | null = ""
 ) => {
+  if (start_date === "") {
+    start_date = "2001-01-01"; // use default value if start_date is empty
+  }
+  if (end_date === "") {
+    end_date = new Date().toISOString().split("T")[0]; // use default value if end_date is empty
+  }
   interface TableName {
     [key: string]: string;
     Conferences: string;

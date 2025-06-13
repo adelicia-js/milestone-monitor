@@ -16,25 +16,16 @@ const bodyText = Urbanist({
 });
 
 export default function Account(props: any) {
-  const [jpgFlag, setJpgFlag] = useState(false);
-  const [pngFlag, setPngFlag] = useState(false);
-  const [imgFlag, setImgFlag] = useState(true);
+  const [hasProfileImage, setHasProfileImage] = useState(false);
 
   useEffect(() => {
-    fetch(props.imageJpg).then((res) => {
-      if (res.status == 200) {
-        setJpgFlag(true);
-        setImgFlag(false);
-      }
-    });
+    // If a profile image URL was found, use it
+    if (props.profileImageUrl) {
+      setHasProfileImage(true);
+    }
+  }, [props.profileImageUrl]);
 
-    fetch(props.imagePng).then((res) => {
-      if (res.status == 200) {
-        setPngFlag(true);
-        setImgFlag(false);
-      }
-    });
-  }, []);
+  console.log(props.userData.faculty_name);
 
   return (
     <div
@@ -51,25 +42,15 @@ export default function Account(props: any) {
         className="flex flex-row items-center h-[40vh] lg:p-8 p-12 -mt-[2%]"
       >
         <div className="container lg:w-full lg:h-full bg-teal-700/20 overflow-hidden border border-transparent rounded-l px-4 py-8">
-          {/* checks if image is there. if yes then checks if it's jpg or png and loads accordingly
-          if not loads a placeholder image */}
-          {jpgFlag && (
+          {/* Display profile image if available, otherwise show placeholder */}
+          {hasProfileImage ? (
             <img
               id="pfp-placeholder"  
-              src={props.imageJpg}
+              src={props.profileImageUrl}
               className="w-full h-full min-h-[25vh] aspect-auto object-contain object-center overflow-hidden shadow-md shadow-teal-700/20 border border-teal-700/20 rounded-md"
               alt="[user's profile picture]"
             />
-          )}
-          {pngFlag && (
-            <img
-              id="pfp-placeholder"
-              src={props.imagePng}
-              className="w-full h-full min-h-[25vh] aspect-auto object-contain object-center overflow-hidden shadow-md shadow-teal-700/20 border border-teal-700/20 rounded-md"
-              alt="[user's profile picture]"
-            />
-          )}
-          {imgFlag && (
+          ) : (
             <Image
               id="pfp-placeholder"
               src={profileImg}

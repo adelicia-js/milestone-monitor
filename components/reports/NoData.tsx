@@ -11,7 +11,7 @@ export default function NoData(props:any){
                   <tr>
                   {props.columns.map((items:any, index:any)=>{
                     return(
-                      <th scope="col" className="whitespace-nowrap p-4 border border-teal-500/30">
+                      <th scope="col" className="whitespace-nowrap p-4 border border-teal-500/30" key={`${index}-${items}`}>
                             {items  }
                         </th>
                     );

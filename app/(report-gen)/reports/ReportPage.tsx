@@ -4,7 +4,6 @@ import Filters from "./Filters";
 import GeneralTable from "./GeneralTable";
 import { useState } from "react";
 import { getDataForReport } from "@/app/api/dbfunctions";
-import { CSVLink } from "react-csv";
 import { saveAs } from "file-saver";
 import { smolDataHeadersCSV } from "./CSVHeaders";
 import { Urbanist } from "next/font/google";
@@ -20,8 +19,8 @@ const ReportPage = ({ staff_details }: any) => {
     startDate: undefined,
     endDate: new Date().toJSON().slice(0, 10),
     selectedStaff: "",
-    selectedType: "all",
-    selectedStatus: "PENDING",
+    selectedType: "",
+    selectedStatus: "",
   });
   const [data, setData] = useState<any[]>([]);
   // console.log("logging from reportpage ", staff_details);
@@ -48,6 +47,32 @@ const ReportPage = ({ staff_details }: any) => {
     const csvData = convertToCSV(data);
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, filename);
+  };
+
+  const handleLightReportDownload = () => {
+    if (data.length <= 0) {
+      alert("No data to download");
+      return;
+    }
+    
+    // Convert data to CSV format with the specified headers
+    const csvRows = [];
+    const headers = smolDataHeadersCSV.map(h => h.label);
+    csvRows.push(headers.join(","));
+
+    for (const row of data) {
+      const values = smolDataHeadersCSV.map((header) => {
+        const fieldValue = row[header.key];
+        const csvValue =
+          typeof fieldValue === "string" ? `"${fieldValue}"` : fieldValue;
+        return csvValue;
+      });
+      csvRows.push(values.join(","));
+    }
+
+    const csvData = csvRows.join("\n");
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, "light-report.csv");
   };
 
   const handleFirstLinkClick = () => {
@@ -104,14 +129,12 @@ const ReportPage = ({ staff_details }: any) => {
             Download Full Report
           </button>
 
-          <CSVLink
-            data={data}
-            headers={smolDataHeadersCSV}
-            filename="light-report.csv"
+          <button
+            onClick={handleLightReportDownload}
             className="tracking-wide text-white px-4 py-2 rounded bg-teal-700 hover:bg-teal-500 hover:font-bold shadow-md shadow-teal-500/50 hover:shadow-lg hover:shadow-teal-500/70"
           >
             Download Light Report
-          </CSVLink>
+          </button>
         </div>
       </div>
       <Filters
