@@ -1,48 +1,106 @@
-# Supabase Starter
+# Milestone Monitor
 
-This starter configures Supabase Auth to use cookies, making the user's session available throughout the entire Next.js app - Client Components, Server Components, Route Handlers, Server Actions and Middleware.
+A web application for faculty members to track and manage their academic achievements including conferences, journals, patents, and workshops.
 
-## Deploy your own
+## 🌐 Accessing the Application
 
-The Vercel deployment will guide you through creating a Supabase account and project. After installation of the Supabase integration, all relevant environment variables will be set up so that the project is usable immediately after deployment 🚀
+*Live at: [milestone-monitor.vercel.app](https://milestone-monitor.vercel.app)*
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&integration-ids=oac_jUduyjQgOyzev1fjrW83NYOv)
+1. *Login* - Use your institutional email and password
+2. *First-time users* - Contact your HOD to get your account created
+3. *Forgot password?* - Use the password reset option on the login page
 
-## How to use
+> *Note*: This is a private organizational application. Only authorized faculty and staff have access.
 
-1. Create a [new Supabase project](https://database.new)
-1. Run `npx create-next-app -e with-supabase` to create a Next.js app using the Supabase Starter template
-1. Use `cd` to change into the app's directory
-1. Run `npm install` to install dependencies
-1. Rename `.env.local.example` to `.env.local` and update the values for `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
-1. Run `npm run dev` to start the local development server
+## 📋 Features
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+### For Faculty Members
+- *Dashboard* - View your profile and track your achievements at a glance
+- *Manage Publications* - Add and edit your conferences, journals, patents, and workshops
+- *Document Upload* - Attach supporting documents for each achievement
+- *Track Status* - See which submissions are pending, approved, or rejected
 
-### Create a Supabase client
+### For Editors
+- *Generate Reports* - Export data as CSV files for analysis
+- *View All Records* - Access all faculty submissions across departments
+- *Advanced Filtering* - Search by date, type, status, or faculty member
 
-Check out the [`/app/_examples`](./app/_examples/) folder for an example of creating a Supabase client in:
+### For HODs (Heads of Department)
+- *Approval System* - Review and approve/reject faculty submissions
+- *Staff Management* - Add new faculty members to the system
+- *Full Admin Access* - Complete control over all features
 
-- [Client Components](./app/_examples/client-component/page.tsx)
-- [Server Components](./app/_examples/server-component/page.tsx)
-- [Route Handlers](./app/_examples/route-handler/route.ts)
-- [Server Actions](./app/_examples/server-action/page.tsx)
+## 🔑 User Roles
 
-### Create `todo` table and seed with data (optional)
+1. *Faculty* - Regular users who submit their achievements
+2. *Editor* - Can generate reports and view all data
+3. *HOD* - Full admin access including approvals and staff management
 
-Navigate to [your project's SQL Editor](https://app.supabase.com/project/_/sql), click `New query`, paste the contents of the [init.sql](./supabase/migrations/20230618024722_init.sql) file and click `RUN`.
+## 📁 Project Structure
+```
+milestone-monitor/
+├── app/                   # Next.js app directory
+│   ├── (categories)/      # Pages for conferences, journals, etc.
+│   ├── (generic)/         # Dashboard page
+│   ├── (login)/          # Authentication
+│   ├── (modify)/         # Admin features
+│   ├── (report-gen)/     # Report generation
+│   └── api/              # Server functions
+├── components/           # Reusable UI components
+├── public/              # Static files (images, etc.)
+└── supabase/           # Database migrations
+```
 
-This will create a basic `todos` table, enable Row Level Security (RLS), and write RLS policies enabling `select` and `insert` actions for `authenticated` users.
+## 🛠 Common Tasks
 
-To seed your `todos` table with some dummy data, run the contents of the [seed.sql](./supabase/seed.sql) file.
+### Adding a New Achievement
+1. Navigate to the relevant section (Conferences, Journals, Patents, or Workshops)
+2. Click "Add New"
+3. Fill in the required information
+4. Upload supporting documents if needed
+5. Submit for approval
 
-## Feedback and issues
+### Generating Reports
+1. Go to the Reports section (Editor/HOD only)
+2. Apply filters as needed
+3. Click "Download Light Report" for summary data
+4. Click "Download Full Report" for complete data
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+### Approving Submissions (HOD only)
+1. Navigate to Approvals section
+2. Review pending submissions
+3. Click Approve or Reject for each item
 
-## More Supabase examples
+## 🐛 Troubleshooting
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
-- [Next.js Auth Helpers Docs](https://supabase.com/docs/guides/auth/auth-helpers/nextjs)
+### "Permission denied" errors
+- Verify your user role has the necessary permissions
+- Contact your HOD if you need elevated access
+
+### Profile picture not showing
+- Supported formats: JPG, JPEG, PNG, WEBP, GIF, BMP, SVG
+- Maximum file size: 5MB
+- Try re-uploading in a different format
+
+### Login issues
+- Ensure you're using your institutional email
+- Check with your HOD that your account has been created
+- Try the password reset option if you've forgotten your password
+
+## 📞 Support
+
+- *Users*: Contact your department's HOD or administrator
+- *Technical Issues*: Email IT support with screenshot of the error
+- *Feature Requests*: Submit through your HOD
+
+## 💻 Tech Stack
+
+- *Frontend*: Next.js, React, TypeScript
+- *Database*: Supabase (PostgreSQL)
+- *Styling*: Tailwind CSS
+- *Authentication*: Supabase Auth
+- *Hosting*: Vercel
+
+---
+
+Built with ❤ by Supastrssd 2023
