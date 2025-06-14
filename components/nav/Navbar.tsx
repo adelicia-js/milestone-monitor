@@ -1,7 +1,17 @@
+import React from "react";
 import NavOne from "./NavOne"
 import NavTwo from "./NavTwo"
 
-export default function Navbar(props:any) {
+interface NavbarProps {
+  userData: {
+    faculty_name: string;
+    faculty_department: string;
+    faculty_id: string;
+  };
+  is_hod: boolean;
+  is_editor: boolean;
+}
+export default function Navbar(props: NavbarProps) {
     return (
         <header>
             <NavOne userData={props.userData}/>

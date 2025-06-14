@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import Image from "next/image";
 import logoImg from "../../public/logo.webp";
 import { Montserrat } from "next/font/google";
@@ -9,7 +10,12 @@ const bodyText = Montserrat({
   subsets: ["latin"],
 });
 
-export default function NavTwo(props: any) {
+interface NavTwoProps {
+  is_hod: boolean;
+  is_editor: boolean;
+}
+
+export default function NavTwo(props: NavTwoProps) {
   return (
     <section
       id="navbar-2"

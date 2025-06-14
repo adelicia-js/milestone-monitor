@@ -1,9 +1,8 @@
 "use client";
+import React from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Urbanist } from "next/font/google";
 import { useRouter } from "next/navigation";
-
-const tableFont = Urbanist({ weight: "500", subsets: ["latin"] });
 
 const bodyText = Urbanist({
   weight: "400",
@@ -15,7 +14,11 @@ const headerText = Urbanist({
   subsets: ["latin"],
 });
 
-export default function CategoryHeader(props: any) {
+interface CategoryHeaderProps {
+  name: string;
+}
+
+export default function CategoryHeader(props: CategoryHeaderProps) {
   const router = useRouter();
 
   // Create a Supabase client configured to use cookies

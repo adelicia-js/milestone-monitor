@@ -11,13 +11,7 @@ const headerText = Urbanist({
   subsets: ["latin"],
 });
 
-const bodyText = Urbanist({
-  weight: "400",
-  subsets: ["latin"],
-});
-
 export default function Stats() {
-  // getMilestoneNumbers();
   return (
     <div className="w-[40vw] h-[45vh] p-4 -mt-[1%] text-teal-950 bg-teal-500/20 justify-self-end flex items-center justify-around row-start-1 col-start-2 border border-transparent rounded">
       <h2

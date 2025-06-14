@@ -1,3 +1,4 @@
+import React from "react";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { Montserrat } from "next/font/google";
@@ -6,7 +7,6 @@ import Events from "@/components/dashboard/Events";
 import { redirect } from "next/navigation";
 import { fetchRole } from "../api/dbfunctions";
 import Stats  from "@/components/dashboard/Stats";
-
 
 const bodyText = Montserrat({
   weight: "400",

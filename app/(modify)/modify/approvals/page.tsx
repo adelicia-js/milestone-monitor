@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Approval from "./Approval";
 import {
-  PendingData,
   PendingConference,
   PendingJournal,
   PendingWorkshop,

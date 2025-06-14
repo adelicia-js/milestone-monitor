@@ -1,13 +1,14 @@
-import { Montserrat, Urbanist } from "next/font/google";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import React from "react";
+import { Urbanist } from "next/font/google";
 
 const tableFont = Urbanist({ weight: "400", subsets: ["latin"] });
 
-export default function AddNewSec(props: any) {
+interface AddNewSecProps {
+  name: string;
+  children: React.ReactNode;
+}
+
+export default function AddNewSec(props: AddNewSecProps) {
   return (
       <section
         id="add-new-section"

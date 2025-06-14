@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import logoImg from "../../public/logo.webp";
 import { Montserrat, Urbanist, Courgette } from "next/font/google";
@@ -21,7 +22,14 @@ const fancyText = Courgette({
   subsets: ["latin"],
 });
 
-export default function NavOne(props: any) {
+interface NavOneProps {
+  userData: {
+    faculty_name: string;
+    faculty_department: string;
+    faculty_id: string;
+  };
+}
+export default function NavOne(props: NavOneProps) {
   const router = useRouter();
   const pathName = usePathname();
 

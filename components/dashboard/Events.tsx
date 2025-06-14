@@ -1,4 +1,5 @@
-import { Montserrat, Urbanist } from "next/font/google";
+import React from "react";
+import { Urbanist } from "next/font/google";
 
 const headerText = Urbanist({
   weight: "500",
@@ -10,7 +11,12 @@ const bodyText = Urbanist({
   subsets: ["latin"],
 });
 
-export default function Events(props:any) {
+interface EventsProps {
+  is_hod: boolean;
+  is_editor: boolean;
+}
+
+export default function Events(props:EventsProps) {
   return (
     <div className="h-fit bg-teal-500/20 lg:p-8 lg:mt-10 col-span-2 row-start-2 border border-transparent rounded">
       <h2 className={`${headerText.className} tracking-wide text-center font-bold uppercase lg:text-2xl text-teal-950 pb-6`}>

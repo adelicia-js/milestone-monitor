@@ -44,7 +44,7 @@ export const MyPatents = (props: any) => {
         </section>
 
         {/* Button to add a new patent */}
-        <AddNewSec name="Patent" data={props.data}>
+        <AddNewSec name="Patent">
           <AddPatentModal facultyData={props.facultyData} />
         </AddNewSec>
       </section>

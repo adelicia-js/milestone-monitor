@@ -12,16 +12,19 @@ import {
 import React, { useEffect, useState } from "react";
 import {
   Modal,
-  FileInput,
   TextInput,
-  Checkbox,
   Label,
   Button,
 } from "flowbite-react";
 
-type Settings = {
+interface Settings {
   [key: string]: string;
 };
+
+interface SettingsProps {
+  openModal: string | undefined;
+  setOpenModal: (openModal: string | undefined) => void;
+}
 
 function formatFieldName(fieldName: string): string {
   return fieldName
@@ -30,13 +33,11 @@ function formatFieldName(fieldName: string): string {
     .join(" "); // Join the parts with spaces
 }
 
-export default function Settings() {
+export default function Settings(props: SettingsProps) {
   const [facultyId, setFacultyId] = useState("");
   const [pw1, setPw1] = useState("");
   const [pw2, setPw2] = useState("");
   const [user, setUser] = useState(null);
-  const [openModal, setOpenModal] = useState<string | undefined>();
-  const props = { openModal, setOpenModal };
   const [uploadVisible, setUploadVisible] = useState(true);
   const [settings, setSettings] = useState<Settings>({
     // Add more fields/values here in the same format (formatter will change appearance in UI)

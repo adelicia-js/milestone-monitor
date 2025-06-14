@@ -3,13 +3,17 @@ import { Urbanist } from "next/font/google";
 
 const headerFont = Urbanist({weight: "400", subsets: ['latin'], });
 
-export default function NoData(props:any){
+interface NoDataProps {
+  columns: string[];
+}
+
+export default function NoData(props: NoDataProps) {
     return(
       <div className="">
         <table className={`${headerFont.className} m-4 p-5 w-full text-sm text-center text-black border border-teal-500/30 rounded`}>
                 <thead className="text-lg text-teal-800 uppercase bg-teal-400/50">
                   <tr>
-                  {props.columns.map((items:any, index:any)=>{
+                  {props.columns.map((items:string, index:number)=>{
                     return(
                       <th scope="col" className="whitespace-nowrap p-4 border border-teal-500/30" key={`${index}-${items}`}>
                             {items  }

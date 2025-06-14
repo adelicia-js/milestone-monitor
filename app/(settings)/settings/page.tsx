@@ -1,5 +1,4 @@
 import React from "react";
-import { unauthenticatedRedirector } from "@/lib/unauthRedirect";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -11,11 +10,6 @@ const bodyText = Urbanist({
   weight: "400",
   subsets: ["latin"],
 });
-
-const headerText = Urbanist({
-  weight: "600",
-  subsets: ["latin"],
-})
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +40,7 @@ const page = async () => {
         id="settings-wrapper"
         className={`invisible lg:visible lg:p-4 ${bodyText.className} grid grid-cols-4 justify-center items-center lg:h-[90vh] bg-teal-500/40`}
       >
-        <Settings />
+        <Settings openModal={undefined} setOpenModal={() => {}} />
       </section>
     </section>
   );

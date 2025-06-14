@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import profileImg from "../../public/pfp-placeholder.webp";
 import { Urbanist } from "next/font/google";
@@ -15,7 +16,15 @@ const bodyText = Urbanist({
   subsets: ["latin"],
 });
 
-export default function Account(props: any) {
+interface AccountProps {
+  profileImageUrl: string;
+  userData: {
+    faculty_name: string;
+    faculty_department: string;
+    faculty_id: string;
+  };
+}
+export default function Account(props: AccountProps) {
   const [hasProfileImage, setHasProfileImage] = useState(false);
 
   useEffect(() => {

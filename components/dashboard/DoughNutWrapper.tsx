@@ -3,7 +3,7 @@ import { getMilestoneNumbers } from "@/app/api/dbfunctions";
 import { Doughnut } from "react-chartjs-2";
 
 const DoughNutWrapper = () => {
-  const [statArr, setStatArr] = useState<any[]>([0, 0, 0, 0]);
+  const [statArr, setStatArr] = useState<(number | null)[]>([0, 0, 0, 0]);
   useEffect(() => {
     getMilestoneNumbers().then((data) => {
       setStatArr(data);
