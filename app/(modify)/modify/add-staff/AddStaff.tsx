@@ -1,4 +1,6 @@
 "use client";
+
+import React from "react";
 import { addStaff } from "@/app/api/dbfunctions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

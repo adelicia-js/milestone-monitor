@@ -8,14 +8,7 @@ import {
   PendingJournal,
   PendingWorkshop,
 } from "./types";
-import {
-  Button,
-  Checkbox,
-  Label,
-  Modal,
-  Table,
-  TextInput,
-} from "flowbite-react";
+import { Modal, Table } from "flowbite-react";
 import { approveEntry, rejectEntry } from "@/app/api/dbfunctions";
 import { Urbanist } from "next/font/google";
 
@@ -320,6 +313,7 @@ const JournalModal = (data: any) => {
             <td className="py-2 px-4">
               <a
                 target="_blank"
+                rel="noreferrer"
                 href={`https://ifoagbunmhwxznfzppzc.supabase.co/storage/v1/object/public/staff-media/journalMedia/${data.faculty_id}/${data.faculty_id}_${data.month_and_year_of_publication}.pdf`}
               >
                 Click to view
@@ -382,6 +376,7 @@ const PatentModal = (data: any) => {
             <td className="py-2 px-4">
               <a
                 target="_blank"
+                rel="noreferrer"
                 href={`https://ifoagbunmhwxznfzppzc.supabase.co/storage/v1/object/public/staff-media/patentMedia/${data.faculty_id}/${data.faculty_id}_${data.patent_date}.pdf`}
               >
                 Click to view

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import logoImg from "../../../public/logo.webp";
 import { Urbanist } from "next/font/google";

@@ -1,3 +1,4 @@
+import React from "react";
 import "../globals.css";
 import Image from "next/image";
 import logoImg from "../../public/logo.webp";

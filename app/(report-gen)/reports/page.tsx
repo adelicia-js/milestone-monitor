@@ -1,5 +1,4 @@
 import React from "react";
-import { unauthenticatedRedirector } from "@/lib/unauthRedirect";
 import ReportPage from "./ReportPage";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";

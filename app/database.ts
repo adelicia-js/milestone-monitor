@@ -1,7 +1,7 @@
 'use server'
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useEffect, useState } from 'react'
+
 //fetch items
 export async function getAllStaff(){
     const supabase = createClientComponentClient()
@@ -11,6 +11,7 @@ export async function getAllStaff(){
     }
     return data
 }
+
 export async function getStaff(department: string) {
     const supabase = createClientComponentClient()
     const {data, error} = await supabase.from('faculty').select('*').eq('staff_department', department)
