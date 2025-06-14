@@ -8,6 +8,7 @@ import Link from "next/link";
 import logo from "../../../public/logo.webp";
 import { Urbanist } from "next/font/google";
 import "../../globals.css";
+import { FacultyApi } from '@/lib/api/faculty/facultyApi';
 
 const generalText = Urbanist({
   weight: "500",
@@ -21,22 +22,52 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const supabase = createClientComponentClient();
+  const facultyApi = new FacultyApi();
+
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) {
-      alert("Invalid email or password, please try again!");
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        alert("Invalid email or password, please try again!");
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if user has faculty data
+      const { data: facultyData, error: facultyError } = await facultyApi.getFacultyByEmail(email);
+
+      if (facultyError) {
+        console.error("Error checking faculty data:", facultyError);
+        alert("Error accessing faculty data. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+
+      // If no faculty data exists, create it
+      if (!facultyData) {
+        const { error: createError } = await facultyApi.createDefaultFacultyData(email);
+        if (createError) {
+          console.error("Error creating faculty data:", createError);
+          alert("Error creating faculty profile. Please try again.");
+          return;
+        }
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An unexpected error occurred. Please try again.");
       setIsLoading(false);
-      return;
     }
-    router.push("/");
-    router.refresh();
-    setIsLoading(false);
   };
 
   return (
