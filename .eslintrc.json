@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "next/core-web-vitals"
+  ],
+  "rules": {
+    // These rules will be enforced in development but not in production
+    "no-unused-vars": process.env.NODE_ENV === "development" ? "warn" : "off",
+    "no-console": process.env.NODE_ENV === "development" ? "warn" : "off"
+  }
+} 
