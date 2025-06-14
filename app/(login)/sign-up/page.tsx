@@ -34,9 +34,9 @@ export default function SignUp() {
       setIsLoading(false);
       return;
     }
+    alert("Sign up successful! Please check your email for verification.");
     router.push("/");
     router.refresh();
-    setIsLoading(false);
 };
 
   return (
