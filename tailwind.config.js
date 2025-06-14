@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import tailwindcssAnimate from "tailwindcss-animate";
+import flowbitePlugin from "flowbite/plugin";
+
+export default {
   darkMode: ["class"],
   content: [
     "./node_modules/flowbite-react/**/*.js",
@@ -7,7 +10,7 @@ module.exports = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   theme: {
     container: {
       center: true,
@@ -17,7 +20,7 @@ module.exports = {
       },
     },
     backgroundSize: {
-      '150%' : '150%'
+      '150%': '150%'
     },
     extend: {
       keyframes: {
@@ -36,5 +39,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("flowbite/plugin")],
-}
+  plugins: [tailwindcssAnimate, flowbitePlugin],
+};
