@@ -49,8 +49,7 @@ export class FacultyApi extends ApiClient {
 
   async createDefaultFacultyData(email: string): Promise<ApiResponse<Faculty>> {
     const defaultFaculty: Omit<Faculty, 'id'> = {
-      // Generate a unique ID with timestamp and random string (e.g. FAC1709123456789-a1b2c3)
-      faculty_id: `FAC${Date.now()}-${Math.random().toString(36).substring(2, 8)}`, 
+      faculty_id: `FAC${Date.now().toString().slice(-4)}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`, 
       faculty_name: 'New Faculty',
       faculty_department: 'General',
       faculty_role: 'faculty',
