@@ -1,18 +1,18 @@
 "use client";
+
 import React, { useEffect } from "react";
 import { useGetFacultyList } from "@/lib/hooks/useGetFacultyList";
 import ReportPage from "./ReportPage";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 export default function ReportPageWrapper() {
-  const router = useRouter();
   const {
     loading: facultyDataLoading,
-    user,
     userError,
-    userRole,
-    userRoleError,
+    userDetails,
+    userDetailsError,
     facultyList,
+    facultyDept,
     facultyError,
     fetchStaffDetails,
   } = useGetFacultyList();
@@ -21,20 +21,22 @@ export default function ReportPageWrapper() {
     fetchStaffDetails();
   }, []);
 
-  useEffect(() => {
-    if (!facultyDataLoading && !user) {
-      router.push("/login");
-    } else if (userError || userRoleError || facultyError) {
-      router.push("/404");
-    } else if (
-      !facultyDataLoading &&
-      userRole &&
-      userRole.faculty_role !== "hod" &&
-      userRole.faculty_role !== "editor"
-    ) {
-      router.push("/404");
-    }
-  }, [facultyDataLoading, user, userRole, userError, userRoleError, facultyError, router]);
+  if (
+    !facultyDataLoading &&
+    userDetails &&
+    userDetails.faculty_role !== "hod" &&
+    userDetails.faculty_role !== "editor"
+  ) {
+    alert("Unauthorized access");
+    redirect("/");
+  }
 
-  return <ReportPage facultyDataLoading={facultyDataLoading} facultyList={facultyList} />;
+  return (
+    <ReportPage
+      facultyDataLoading={facultyDataLoading}
+      facultyDataError={userError || userDetailsError || facultyError}
+      facultyList={facultyList}
+      facultyDept={facultyDept}
+    />
+  );
 }

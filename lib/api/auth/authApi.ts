@@ -1,19 +1,8 @@
 import { ApiClient } from "../client";
 import { Faculty, ApiResponse } from "../../types";
-import { createClient } from "@supabase/supabase-js";
 import { User } from "@supabase/supabase-js";
 
 export class AuthApi extends ApiClient {
-  private adminClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.SERVICE_ROLE as string,
-    {
-      auth: {
-        persistSession: false,
-      },
-    }
-  );
-
   async createStaff(
     name: string,
     staffId: string,
@@ -24,8 +13,7 @@ export class AuthApi extends ApiClient {
     password: string
   ): Promise<ApiResponse<Faculty>> {
     try {
-      // Create user in Supabase Auth
-      const { error: authError } = await this.adminClient.auth.admin.createUser(
+      const { error: authError } = await this.getSupabase().auth.admin.createUser(
         {
           email,
           password,

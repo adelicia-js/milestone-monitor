@@ -8,6 +8,7 @@ interface ReportFilters {
   selectedStaff: string;
   selectedType: string;
   selectedStatus: string;
+  department?: string;
 }
 
 interface DisplayData {
@@ -51,7 +52,8 @@ export const useReport = () => {
         filters.selectedType || 'all',
         filters.searchQuery,
         filters.selectedStatus || 'PENDING',
-        filters.selectedStaff || null
+        filters.selectedStaff || null,
+        filters.department || null
       );
 
       if (response.error) {

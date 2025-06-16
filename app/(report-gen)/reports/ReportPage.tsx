@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Filters from "./Filters";
 import GeneralTable from "./GeneralTable";
 import { useState } from "react";
@@ -15,7 +15,9 @@ const generalFont = Urbanist({
 
 interface ReportPageProps {
   facultyList: Faculty[] | null;
+  facultyDept: string | null;
   facultyDataLoading: boolean;
+  facultyDataError: string | null;
 }
 
 const ReportPage = (props: ReportPageProps) => {
@@ -26,9 +28,16 @@ const ReportPage = (props: ReportPageProps) => {
     selectedStaff: "",
     selectedType: "",
     selectedStatus: "",
+    department: props.facultyDept,
   });
 
   const { data, loading: reportDataLoading, error, fetchReportData } = useReport();
+
+  useEffect(() => {
+    if (props.facultyDept) {
+      fetchReportData({ ...filterState, department: props.facultyDept });
+    }
+  }, [props.facultyDept]);
 
   return (
     <div
@@ -54,8 +63,9 @@ const ReportPage = (props: ReportPageProps) => {
       <Filters
         staffDetails={props.facultyList}
         onFiltersChange={(filters: typeof filterState) => {
-          setFilterState(filters);
-          fetchReportData(filters);
+          const updatedFilters = { ...filters, department: props.facultyDept || "" };
+          setFilterState(updatedFilters);
+          fetchReportData(updatedFilters);
         }}
       />
     </div>

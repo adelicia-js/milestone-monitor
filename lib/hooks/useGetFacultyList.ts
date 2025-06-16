@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { AuthApi, FacultyApi } from "../api";
 import { User } from "@supabase/auth-helpers-nextjs";
 import { Faculty } from "../types";
@@ -8,14 +8,15 @@ export const useGetFacultyList = () => {
   const facultyApi = new FacultyApi();
 
   const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<Faculty | null>(null);
+  const [userDetails, setUserDetails] = useState<Faculty | null>(null);
   const [facultyList, setFacultyList] = useState<Faculty[] | null>([]);
+  const [facultyDept, setFacultyDept] = useState<string | null>(null);
   const [userError, setUserError] = useState<string | null>(null);
-  const [userRoleError, setUserRoleError] = useState<string | null>(null);
+  const [userDetailsError, setUserDetailsError] = useState<string | null>(null);
   const [facultyError, setFacultyError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const fetchStaffDetails = async () => {
+  const fetchStaffDetails = useCallback(async () => {
     setLoading(true);
     setUserError(null);
     setFacultyError(null);
@@ -31,39 +32,43 @@ export const useGetFacultyList = () => {
     setUser(userResponse);
 
     if (userResponse?.email) {
-      const { data: userRole, error: userRoleError } =
+      const { data: userDetails, error: userDetailsError } =
         await authApi.getUserDetails(userResponse.email);
 
-      if (userRoleError) {
-        setUserRoleError(userRoleError);
+      if (userDetailsError) {
+        setUserDetailsError(userDetailsError);
         setLoading(false);
-        console.error("Error fetching user role:", userRoleError);
-        return { data: null, error: userRoleError };
+        console.error("Error fetching user role:", userDetailsError);
+        return { data: null, error: userDetailsError };
       }
-      setUserRole(userRole);
+      setUserDetails(userDetails);
 
-      const { data: facultyResponse, error: facultyError } =
-        await facultyApi.getFacultyByDepartment(userResponse.email);
+      if (userDetails?.faculty_department) {
+        setFacultyDept(userDetails.faculty_department);
+        const { data: facultyResponse, error: facultyError } =
+          await facultyApi.getFacultyByDepartment(userDetails.faculty_department);
 
-      if (facultyError) {
-        setFacultyError(facultyError);
+        if (facultyError) {
+          setFacultyError(facultyError);
+          setLoading(false);
+          console.error("Error fetching faculty:", facultyError);
+          return { data: null, error: facultyError };
+        }
+        setFacultyList(facultyResponse);
         setLoading(false);
-        console.error("Error fetching faculty:", facultyError);
-        return { data: null, error: facultyError };
       }
-      setFacultyList(facultyResponse);
-      setLoading(false);
     }
-  };
+  }, []);
 
   return {
     loading,
     user,
     userError,
-    userRole,
-    userRoleError,
+    userDetails,
+    userDetailsError,
     facultyList,
     facultyError,
+    facultyDept,
     fetchStaffDetails,
   };
 };

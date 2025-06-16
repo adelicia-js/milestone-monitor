@@ -41,12 +41,21 @@ export class ReportApi extends ApiClient {
     filterType: string = 'all',
     title: string = '',
     status: string = 'PENDING',
-    facultyId: string | null = ''
+    facultyId: string | null = '',
+    department: string | null = '',
   ): Promise<ApiResponse<ReportData>> {
     const conferenceApi = new ConferenceApi();
     const journalApi = new JournalApi();
     const workshopApi = new WorkshopApi();
     const patentApi = new PatentApi();
+
+    let departmentFacultyIds: string[] = [];
+    if (department) {
+      const { data: facultyList } = await this.query<{ faculty_id: string }>('faculty', {
+        filters: { faculty_department: department },
+      });
+      departmentFacultyIds = (facultyList || []).map(f => f.faculty_id);
+    }
 
     const [conferences, journals, workshops, patents] = await Promise.all([
       conferenceApi.getConferencesByDateRange(startDate, endDate),
@@ -55,7 +64,7 @@ export class ReportApi extends ApiClient {
       patentApi.getPatentsByDateRange(startDate, endDate),
     ]);
 
-    // Filter by title and status
+    // Filter by title, status, faculty, and department
     const filterData = (data: EntryData[]) => {
       return data.filter((item) => {
         const titleMatch = !title || 
@@ -64,7 +73,8 @@ export class ReportApi extends ApiClient {
            item.patent_name?.toLowerCase().includes(title.toLowerCase()));
         const statusMatch = !status || item.is_verified === status;
         const facultyMatch = !facultyId || item.faculty_id === facultyId;
-        return titleMatch && statusMatch && facultyMatch;
+        const departmentMatch = !department || departmentFacultyIds.includes(item.faculty_id);
+        return titleMatch && statusMatch && facultyMatch && departmentMatch;
       });
     };
 

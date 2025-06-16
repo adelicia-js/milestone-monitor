@@ -34,8 +34,6 @@ export default function Account(props: AccountProps) {
     }
   }, [props.profileImageUrl]);
 
-  console.log(props.userData.faculty_name);
-
   return (
     <div
       id="profile-details"
