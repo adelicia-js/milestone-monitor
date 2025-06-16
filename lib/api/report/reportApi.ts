@@ -1,9 +1,5 @@
 import { ApiClient } from '../client';
 import { ApiResponse } from '../../types';
-import { ConferenceApi } from '../conference/conferenceApi';
-import { JournalApi } from '../journal/journalApi';
-import { WorkshopApi } from '../workshop/workshopApi';
-import { PatentApi } from '../patent/patentApi';
 
 interface BaseEntry {
   faculty_id: string;
@@ -34,6 +30,11 @@ interface ReportData {
   }[];
 }
 
+interface QueryResult {
+  data: unknown[] | null;
+  error: string | null;
+}
+
 export class ReportApi extends ApiClient {
   async getReportData(
     startDate: string = '2001-01-01',
@@ -44,27 +45,37 @@ export class ReportApi extends ApiClient {
     facultyId: string | null = '',
     department: string | null = '',
   ): Promise<ApiResponse<ReportData>> {
-    const conferenceApi = new ConferenceApi();
-    const journalApi = new JournalApi();
-    const workshopApi = new WorkshopApi();
-    const patentApi = new PatentApi();
-
-    let departmentFacultyIds: string[] = [];
-    if (department) {
-      const { data: facultyList } = await this.query<{ faculty_id: string }>('faculty', {
-        filters: { faculty_department: department },
-      });
-      departmentFacultyIds = (facultyList || []).map(f => f.faculty_id);
+    // Department is required for efficient filtering
+    if (!department) {
+      return {
+        data: { full_data: [], disp_data: [] },
+        error: 'Department is required for report generation',
+      };
     }
 
+    // First, get all faculty IDs from the department
+    const { data: facultyList } = await this.query<{ faculty_id: string }>('faculty', {
+      filters: { faculty_department: department },
+    });
+    
+    const departmentFacultyIds = (facultyList || []).map(f => f.faculty_id);
+    
+    if (departmentFacultyIds.length === 0) {
+      return {
+        data: { full_data: [], disp_data: [] },
+        error: null,
+      };
+    }
+
+    // Now fetch data only for faculty in this department
     const [conferences, journals, workshops, patents] = await Promise.all([
-      conferenceApi.getConferencesByDateRange(startDate, endDate),
-      journalApi.getJournalsByDateRange(startDate, endDate),
-      workshopApi.getWorkshopsByDateRange(startDate, endDate),
-      patentApi.getPatentsByDateRange(startDate, endDate),
+      this.getConferencesByDepartment(departmentFacultyIds, startDate, endDate),
+      this.getJournalsByDepartment(departmentFacultyIds, startDate, endDate),
+      this.getWorkshopsByDepartment(departmentFacultyIds, startDate, endDate),
+      this.getPatentsByDepartment(departmentFacultyIds, startDate, endDate),
     ]);
 
-    // Filter by title, status, faculty, and department
+    // Filter by title, status, and specific faculty (department already filtered at query level)
     const filterData = (data: EntryData[]) => {
       return data.filter((item) => {
         const titleMatch = !title || 
@@ -73,8 +84,7 @@ export class ReportApi extends ApiClient {
            item.patent_name?.toLowerCase().includes(title.toLowerCase()));
         const statusMatch = !status || item.is_verified === status;
         const facultyMatch = !facultyId || item.faculty_id === facultyId;
-        const departmentMatch = !department || departmentFacultyIds.includes(item.faculty_id);
-        return titleMatch && statusMatch && facultyMatch && departmentMatch;
+        return titleMatch && statusMatch && facultyMatch;
       });
     };
 
@@ -148,5 +158,70 @@ export class ReportApi extends ApiClient {
       },
       error: null,
     };
+  }
+
+  // Helper methods to fetch data filtered by faculty IDs
+  private async getConferencesByDepartment(
+    facultyIds: string[],
+    startDate: string,
+    endDate: string
+  ): Promise<QueryResult> {
+    const supabase = this.getSupabase();
+    const { data, error } = await supabase
+      .from('conferences')
+      .select('*')
+      .in('faculty_id', facultyIds)
+      .gte('conf_date', startDate)
+      .lte('conf_date', endDate);
+    
+    return { data, error: error?.message || null };
+  }
+
+  private async getJournalsByDepartment(
+    facultyIds: string[],
+    startDate: string,
+    endDate: string
+  ): Promise<QueryResult> {
+    const supabase = this.getSupabase();
+    const { data, error } = await supabase
+      .from('journal_publications')
+      .select('*')
+      .in('faculty_id', facultyIds)
+      .gte('month_and_year_of_publication', startDate)
+      .lte('month_and_year_of_publication', endDate);
+    
+    return { data, error: error?.message || null };
+  }
+
+  private async getWorkshopsByDepartment(
+    facultyIds: string[],
+    startDate: string,
+    endDate: string
+  ): Promise<QueryResult> {
+    const supabase = this.getSupabase();
+    const { data, error } = await supabase
+      .from('fdp_workshop_refresher_course')
+      .select('*')
+      .in('faculty_id', facultyIds)
+      .gte('date', startDate)
+      .lte('date', endDate);
+    
+    return { data, error: error?.message || null };
+  }
+
+  private async getPatentsByDepartment(
+    facultyIds: string[],
+    startDate: string,
+    endDate: string
+  ): Promise<QueryResult> {
+    const supabase = this.getSupabase();
+    const { data, error } = await supabase
+      .from('patents')
+      .select('*')
+      .in('faculty_id', facultyIds)
+      .gte('patent_date', startDate)
+      .lte('patent_date', endDate);
+    
+    return { data, error: error?.message || null };
   }
 } 
