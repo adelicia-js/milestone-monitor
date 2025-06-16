@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ReportApi } from '../api/report/reportApi';
+import { ReportApi } from '../api';
 
 interface ReportFilters {
   searchQuery: string;
