@@ -1,13 +1,8 @@
-import { ApiClient } from '../client';
-import { Faculty, ApiResponse } from '../../types';
-import { createClient } from '@supabase/supabase-js';
+import { ApiClient } from "../client";
+import { Faculty, ApiResponse } from "../../types";
+import { User } from "@supabase/supabase-js";
 
 export class AuthApi extends ApiClient {
-  private adminClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.SERVICE_ROLE as string
-  );
-
   async createStaff(
     name: string,
     staffId: string,
@@ -18,15 +13,16 @@ export class AuthApi extends ApiClient {
     password: string
   ): Promise<ApiResponse<Faculty>> {
     try {
-      // Create user in Supabase Auth
-      const { error: authError } = await this.adminClient.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-      });
+      const { error: authError } = await this.getSupabase().auth.admin.createUser(
+        {
+          email,
+          password,
+          email_confirm: true,
+        }
+      );
 
       if (authError) {
-        console.error('Error creating user:', authError);
+        console.error("Error creating user:", authError);
         return { data: null, error: authError.message };
       }
 
@@ -40,10 +36,10 @@ export class AuthApi extends ApiClient {
         faculty_email: email,
       };
 
-      return this.insert<Faculty>('faculty', facultyData);
+      return this.insert<Faculty>("faculty", facultyData);
     } catch (error) {
-      console.error('Error creating staff:', error);
-      return { data: null, error: 'An unexpected error occurred' };
+      console.error("Error creating staff:", error);
+      return { data: null, error: "An unexpected error occurred" };
     }
   }
 
@@ -54,34 +50,52 @@ export class AuthApi extends ApiClient {
       });
 
       if (error) {
-        console.error('Error updating password:', error);
+        console.error("Error updating password:", error);
         return { data: null, error: error.message };
       }
 
       return { data: undefined, error: null };
     } catch (error) {
-      console.error('Error updating password:', error);
-      return { data: null, error: 'An unexpected error occurred' };
+      console.error("Error updating password:", error);
+      return { data: null, error: "An unexpected error occurred" };
     }
   }
 
-  async getUserRole(email: string): Promise<ApiResponse<Faculty>> {
+  async getUserDetails(email: string): Promise<ApiResponse<Faculty>> {
     try {
       const { data: userData, error: userError } = await this.getSupabase()
-        .from('faculty')
+        .from("faculty")
         .select()
-        .eq('faculty_email', email)
+        .eq("faculty_email", email)
         .single();
 
       if (userError) {
-        console.error('Error fetching user role:', userError);
+        console.error("Error fetching user role:", userError);
         return { data: null, error: userError.message };
       }
 
       return { data: userData as Faculty, error: null };
     } catch (error) {
-      console.error('Error fetching user role:', error);
-      return { data: null, error: 'An unexpected error occurred' };
+      console.error("Error fetching user role:", error);
+      return { data: null, error: "An unexpected error occurred" };
     }
   }
-} 
+
+  async getUser (): Promise<ApiResponse<User>> {
+    try {
+      const { data: userData, error: userError } = await this.getSupabase()
+        .auth
+        .getUser();
+
+      if (userError) {
+        console.error("Error fetching user:", userError);
+        return { data: null, error: userError.message };
+      }
+
+      return { data: userData.user, error: null };
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      return { data: null, error: "An unexpected error occurred" };
+    }
+  }
+}

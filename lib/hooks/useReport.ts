@@ -1,16 +1,17 @@
 import { useState, useCallback } from 'react';
-import { ReportApi } from '../api/report/reportApi';
+import { ReportApi } from '../api';
 
-interface ReportFilters {
+export interface ReportFilters {
   searchQuery: string;
   startDate: string;
   endDate: string;
   selectedStaff: string;
   selectedType: string;
   selectedStatus: string;
+  department: string | null;
 }
 
-interface DisplayData {
+export interface DisplayData {
   title: string;
   faculty_id: string;
   faculty_name: string;
@@ -19,7 +20,7 @@ interface DisplayData {
   status: string;
 }
 
-interface EntryData {
+export interface EntryData {
   faculty_id: string;
   faculty_name: string;
   is_verified: string;
@@ -51,7 +52,8 @@ export const useReport = () => {
         filters.selectedType || 'all',
         filters.searchQuery,
         filters.selectedStatus || 'PENDING',
-        filters.selectedStaff || null
+        filters.selectedStaff || null,
+        filters.department || null
       );
 
       if (response.error) {

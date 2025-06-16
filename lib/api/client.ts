@@ -1,12 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { ApiResponse } from '../types';
 
 // Base API client class that handles database operations
 export class ApiClient {
-  private supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-  );
+  private supabase = createClientComponentClient();
 
   protected getSupabase() {
     return this.supabase;

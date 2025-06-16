@@ -17,7 +17,7 @@ const headerText = Urbanist({
   subsets: ["latin"],
 });
 
-export default function NavTest() {
+export default function NavOne() {
   const router = useRouter();
 
   // Create a Supabase client configured to use cookies
