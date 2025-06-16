@@ -1,9 +1,16 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
+import { Faculty } from "@/lib/types";
+import { ReportFilters } from "@/lib/hooks/useReport";
 
-const Filters = ({ staffDetails, onFiltersChange }: any) => {
-  console.log("loggin from filters ", staffDetails);
+interface FacultyProps {
+  staffDetails: Faculty[] | null;
+  staffDepartment: string | null;
+  onFiltersChange: (filters: ReportFilters) => void;
+}
+
+const Filters = (props: FacultyProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -12,21 +19,14 @@ const Filters = ({ staffDetails, onFiltersChange }: any) => {
   const [selectedStatus, setSelectedStatus] = useState("");
 
   useEffect(() => {
-    onFiltersChange({
+    props.onFiltersChange({
       searchQuery,
       startDate,
       endDate,
       selectedStaff,
       selectedType,
       selectedStatus,
-    });
-    console.log("onFiltersChange", {
-      searchQuery,
-      startDate,
-      endDate,
-      selectedStaff,
-      selectedType,
-      selectedStatus,
+      department: props.staffDepartment,
     });
   }, [
     searchQuery,
@@ -36,6 +36,8 @@ const Filters = ({ staffDetails, onFiltersChange }: any) => {
     selectedType,
     selectedStatus,
   ]);
+
+  if (!props.staffDetails) return null;
 
   return (
     <div className="col-start-5 col-end-7 flex items-center justify-center">
@@ -100,7 +102,7 @@ const Filters = ({ staffDetails, onFiltersChange }: any) => {
             onChange={(e) => setSelectedStaff(e.target.value)}
           >
             <option value="">All</option>
-            {staffDetails.map((f: any) => (
+            {props.staffDetails.map((f: Faculty) => (
               <option key={f.faculty_id} value={f.faculty_id}>
                 {f.faculty_name}
               </option>

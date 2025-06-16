@@ -42,7 +42,7 @@ const RootLayout= async({
     }
 
   }
-
+  
   return (
     <html lang="en">
       <body>

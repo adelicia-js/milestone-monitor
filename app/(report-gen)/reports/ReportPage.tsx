@@ -56,12 +56,13 @@ const ReportPage = (props: ReportPageProps) => {
           </div>
         ) : (
           <>
-            <GeneralTable data={data} staffDetails={props.facultyList} />
+            <GeneralTable tableData={data} staffDetails={props.facultyList} />
           </>
         )}
       </div>
       <Filters
         staffDetails={props.facultyList}
+        staffDepartment={props.facultyDept}
         onFiltersChange={(filters: typeof filterState) => {
           const updatedFilters = { ...filters, department: props.facultyDept || "" };
           setFilterState(updatedFilters);
