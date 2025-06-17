@@ -4,8 +4,7 @@ import React from "react";
 import Image from "next/image";
 import logoImg from "../../../../public/logo.webp";
 import { Urbanist } from "next/font/google";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 const bodyText = Urbanist({
   weight: "400",
@@ -18,15 +17,10 @@ const headerText = Urbanist({
 });
 
 export default function NavOne() {
-  const router = useRouter();
-
-  // Create a Supabase client configured to use cookies
-  const supabase = createClientComponentClient();
+  const { signOut } = useAuth();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    await signOut();
   };
   return (
     <section
