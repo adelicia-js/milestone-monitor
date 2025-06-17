@@ -48,7 +48,7 @@ export default async function RootLayout({
       <body>
         <StyledComponentsRegistry>
           <Navbar is_editor={editorBool} is_hod={hodBool} userData={userData} />
-          <main>{children}</main>
+          {children}
         </StyledComponentsRegistry>
       </body>
     </html>

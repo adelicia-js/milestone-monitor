@@ -26,22 +26,21 @@ export default function HeaderBar() {
     <HeaderContainer>
       {/* Large Screens Navigation */}
       <LargeScreenNav>
-          <ActionItem>
-            <IconLink href="/settings">
-              <StyledSettings />
-            </IconLink>
-          </ActionItem>
+        <ActionItem>
+          <IconLink href="/settings">
+            <StyledSettings />
+          </IconLink>
+        </ActionItem>
 
-          <ActionItem>
-            <IconButton onClick={handleSignOut}>
-              <StyledLogOut />
-            </IconButton>
-          </ActionItem>
+        <ActionItem>
+          <IconButton onClick={handleSignOut}>
+            <StyledLogOut />
+          </IconButton>
+        </ActionItem>
       </LargeScreenNav>
     </HeaderContainer>
   );
 }
-
 
 // Animations
 const rotate = keyframes`
@@ -55,6 +54,7 @@ const rotate = keyframes`
 
 // Styled Components
 const HeaderContainer = styled.section`
+  z-index: 10;
   width: 100%;
   margin: 0;
   position: fixed;
@@ -96,11 +96,11 @@ const IconLink = styled.a`
   padding: 0.5rem;
   border-radius: 0.5rem;
   transition: background-color 0.3s ease;
-  
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);
   }
-  
+
   &:active {
     background-color: rgba(0, 0, 0, 0.1);
   }
@@ -116,11 +116,11 @@ const IconButton = styled.button`
   cursor: pointer;
   border-radius: 0.5rem;
   transition: background-color 0.3s ease;
-  
+
   &:hover {
     background-color: rgba(239, 68, 68, 0.1);
   }
-  
+
   &:active {
     background-color: rgba(239, 68, 68, 0.2);
   }
@@ -132,10 +132,10 @@ const StyledSettings = styled(Settings)`
   height: 24px;
   transition: all 0.3s ease;
   color: #374151;
-  
+
   &:hover {
     animation: ${rotate} 0.8s ease-in-out;
-    color:rgb(142, 141, 141);
+    color: rgb(142, 141, 141);
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
   }
 `;
@@ -145,7 +145,7 @@ const StyledLogOut = styled(LogOut)`
   height: 24px;
   transition: all 0.3s ease;
   color: #374151;
-  
+
   &:hover {
     color: #ef4444;
     transform: translateX(2px);
