@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
+import Link from "next/link";
 import logo from "../../../public/logo.webp";
 import { Urbanist } from "next/font/google";
-import Link from "next/link";
 import "../../globals.css";
+import { useAuth } from '@/lib/hooks/useAuth';
 
 const generalText = Urbanist({
   weight: "500",
@@ -18,26 +17,16 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const supabase = createClientComponentClient();
+  const { signUp, isLoading } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) {
-      alert("Error signing up, please try again!");
-      setIsLoading(false);
-      return;
+    try {
+      await signUp(email, password);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "An unexpected error occurred");
     }
-    alert("Sign up successful! Please check your email for verification.");
-    router.push("/");
-    router.refresh();
-};
+  };
 
   return (
     <div

@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../public/logo.webp";
 import { Urbanist } from "next/font/google";
 import "../../globals.css";
-import { FacultyApi } from '@/lib/api/faculty/facultyApi';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 const generalText = Urbanist({
   weight: "500",
@@ -19,54 +17,14 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const supabase = createClientComponentClient();
-  const facultyApi = new FacultyApi();
-
+  const { signIn, isLoading } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        alert("Invalid email or password, please try again!");
-        setIsLoading(false);
-        return;
-      }
-
-      // Check if user has faculty data
-      const { data: facultyData, error: facultyError } = await facultyApi.getFacultyByEmail(email);
-
-      if (facultyError) {
-        console.error("Error checking faculty data:", facultyError);
-        alert("Error accessing faculty data. Please try again.");
-        setIsLoading(false);
-        return;
-      }
-
-      // If no faculty data exists, create it
-      if (!facultyData) {
-        const { error: createError } = await facultyApi.createDefaultFacultyData(email);
-        if (createError) {
-          console.error("Error creating faculty data:", createError);
-          alert("Error creating faculty profile. Please try again.");
-          return;
-        }
-      }
-
-      router.push("/");
-      router.refresh();
+      await signIn(email, password);
     } catch (error) {
-      console.error("Login error:", error);
-      alert("An unexpected error occurred. Please try again.");
-      setIsLoading(false);
+      alert(error instanceof Error ? error.message : "An unexpected error occurred");
     }
   };
 
@@ -186,10 +144,6 @@ export default function Login() {
                     >
                       Not Registered? Sign Up!
                     </Link>
-                    {/* <text className="text-center text-teal-700">or</text>
-                    <a className="text-center py-2 text-teal-700 mb-6 hover:shadow-cyan-100/50 hover:text-teal-500 hover:underline hover:underline-offset-2 hover:cursor-pointer">
-                      Forgot Password?
-                    </a> */}
                   </>
                 )}
               </div>

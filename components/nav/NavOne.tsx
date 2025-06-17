@@ -4,8 +4,8 @@ import React from "react";
 import Image from "next/image";
 import logoImg from "../../public/logo.webp";
 import { Montserrat, Urbanist, Courgette } from "next/font/google";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 const bodyText = Montserrat({
   weight: "400",
@@ -30,16 +30,12 @@ interface NavOneProps {
   };
 }
 export default function NavOne(props: NavOneProps) {
-  const router = useRouter();
   const pathName = usePathname();
 
-  // Create a Supabase client configured to use cookies
-  const supabase = createClientComponentClient();
+  const { signOut } = useAuth();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    await signOut();
   };
   return (
     <section
