@@ -1,9 +1,8 @@
 import React from "react";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createServerComponentClient, SupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { Montserrat } from "next/font/google";
 import Account from "@/components/dashboard/Account";
-import Events from "@/components/dashboard/Events";
 import { redirect } from "next/navigation";
 import { fetchRole } from "../api/dbfunctions";
 import Stats  from "@/components/dashboard/Stats";
@@ -16,7 +15,7 @@ const bodyText = Montserrat({
 export const dynamic = "force-dynamic";
 
 // Function to find the first available profile image with supported extensions
-async function findProfileImage(supabase: any, facultyId: string) {
+async function findProfileImage(supabase: SupabaseClient, facultyId: string) {
   const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'];
   
   for (const ext of extensions) {
@@ -31,6 +30,7 @@ async function findProfileImage(supabase: any, facultyId: string) {
         return imgData.publicUrl;
       }
     } catch (error) {
+      console.error(`Error fetching image with extension ${ext}:`, error);
       // Continue to next extension if this one fails
       continue;
     }
@@ -41,8 +41,6 @@ async function findProfileImage(supabase: any, facultyId: string) {
 
 export default async function Index() {
   const supabase = createServerComponentClient({ cookies });
-  let hodBool =true
-  let editorBool = true;
   let userData, profileImageUrl;
 
   const {
@@ -55,14 +53,6 @@ export default async function Index() {
     redirect("/login");
   }else{
     userData = await fetchRole(user.email as string);
-    if(userData.faculty_role!="hod"){
-      hodBool = false;
-      
-    }
-    if(userData.faculty_role!="editor"){
-      editorBool = false;
-    }
-
     profileImageUrl = await findProfileImage(supabase, userData.faculty_id);
   }
 
@@ -74,7 +64,6 @@ export default async function Index() {
       <Account userData={userData} profileImageUrl={profileImageUrl}/>
       <Stats/>
      
- <Events is_hod={hodBool} is_editor={editorBool}/>
     </section>
   );
 }

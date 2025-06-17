@@ -21,11 +21,6 @@ interface Settings {
   [key: string]: string;
 };
 
-interface SettingsProps {
-  openModal: string | undefined;
-  setOpenModal: (openModal: string | undefined) => void;
-}
-
 function formatFieldName(fieldName: string): string {
   return fieldName
     .split("_") // Split the field name by underscores
@@ -33,7 +28,8 @@ function formatFieldName(fieldName: string): string {
     .join(" "); // Join the parts with spaces
 }
 
-export default function Settings(props: SettingsProps) {
+export default function Settings() {
+  const [openModal, setOpenModal] = useState<string | undefined>(undefined);
   const [facultyId, setFacultyId] = useState("");
   const [pw1, setPw1] = useState("");
   const [pw2, setPw2] = useState("");
@@ -64,19 +60,27 @@ export default function Settings(props: SettingsProps) {
   // console.log(user,"user updated");
 
   useEffect(() => {
-    updateStaffName(settings.name);
+    if (settings.name && settings.name.trim() !== "") {
+      updateStaffName(settings.name);
+    }
   }, [settings.name]);
 
   useEffect(() => {
-    updateStaffPhoneNumber(settings.phone_number);
+    if (settings.phone_number && settings.phone_number.trim() !== "") {
+      updateStaffPhoneNumber(settings.phone_number);
+    }
   }, [settings.phone_number]);
 
   useEffect(() => {
-    updateStaffLinkedInURL(settings.linkedIn_url);
+    if (settings.linkedIn_url && settings.linkedIn_url.trim() !== "") {
+      updateStaffLinkedInURL(settings.linkedIn_url);
+    }
   }, [settings.linkedIn_url]);
 
   useEffect(() => {
-    updateStaffGoogleScholar(settings.google_scholar);
+    if (settings.google_scholar && settings.google_scholar.trim() !== "") {
+      updateStaffGoogleScholar(settings.google_scholar);
+    }
   }, [settings.google_scholar]);
 
   useEffect(() => {
@@ -108,7 +112,7 @@ export default function Settings(props: SettingsProps) {
   const handlePwChange = () => {
     if (pw1 === pw2) {
       updateStaffPW(pw1);
-      props.setOpenModal(undefined);
+      setOpenModal(undefined);
     } else {
       setPw1("");
       setPw2("");
@@ -142,7 +146,7 @@ export default function Settings(props: SettingsProps) {
   return (
     <div
       id="settings-wrapper"
-      className="text-teal-950 flex flex-col justify-center items-center px-4 bg-teal-500/20 col-start-2 col-span-2 border border-transparent rounded h-[85vh]"
+      className="text-gray-900 flex flex-col justify-center items-center px-4 bg-gray-500/20 col-start-2 col-span-2 border border-transparent rounded h-[85vh]"
     >
       <div
         id="settings-items-wrapper"
@@ -151,7 +155,7 @@ export default function Settings(props: SettingsProps) {
         {Object.keys(settings).map((field) => (
           <div
             key={field}
-            className="w-full py-3 px-4 border border-transparent rounded-full bg-teal-700/40 flex flex-row gap-2 items-center justify-between hover:shadow-lg hover:shadow-teal-600/80"
+            className="w-full py-3 px-4 border border-transparent rounded-full bg-gray-700/40 flex flex-row gap-2 items-center justify-between hover:shadow-lg hover:shadow-gray-600/80"
           >
             <span className="flex gap-2 items-center">
               <p className="font-bold tracking-wide">
@@ -160,22 +164,22 @@ export default function Settings(props: SettingsProps) {
               {isEditing[field] ? (
                 <input
                   name={field}
-                  className="caret-emerald-700 border-teal-800 font-bold text-teal-800/80 w-[15vw] h-fit border-2 rounded bg-teal-200 py-1 px-2"
+                  className="caret-gray-700 border-gray-800 font-bold text-gray-800/80 w-[15vw] h-fit border-2 rounded bg-gray-200 py-1 px-2"
                   value={settings[field]}
                   onChange={(e) => handleInputChange(e, field)}
                 />
               ) : (
-                <span className="font-bold text-teal-800/80 w-[15vw] h-fit border border-transparent rounded">
+                <span className="font-bold text-gray-800/80 w-[15vw] h-fit border border-transparent rounded">
                   {settings[field]}
                 </span>
               )}
             </span>
 
             <div
-              className={`setting-edit-btn p-2 border border-transparent rounded-full bg-teal-200 hover:cursor-pointer ${
-                isEditing[field] ? "hover:bg-teal-700" : "hover:bg-teal-700"
+              className={`setting-edit-btn p-2 border border-transparent rounded-full bg-gray-200 hover:cursor-pointer ${
+                isEditing[field] ? "hover:bg-gray-700" : "hover:bg-gray-700"
               } ${
-                isEditing[field] ? "hover:text-teal-200" : "hover:text-teal-200"
+                isEditing[field] ? "hover:text-gray-200" : "hover:text-gray-200"
               }`}
               onClick={() => {
                 if (isEditing[field]) {
@@ -222,11 +226,11 @@ export default function Settings(props: SettingsProps) {
           </div>
         ))}
 
-        <div className="w-full py-3 px-4 border border-transparent rounded-full bg-teal-700/40 flex flex-row gap-2 items-center justify-between hover:shadow-lg hover:shadow-teal-600/80">
+        <div className="w-full py-3 px-4 border border-transparent rounded-full bg-gray-700/40 flex flex-row gap-2 items-center justify-between hover:shadow-lg hover:shadow-gray-600/80">
           <Label
             htmlFor="file"
             value="Change Profile Picture:"
-            className="text-teal-950 font-bold text-md tracking-wide"
+            className="text-gray-900 font-bold text-md tracking-wide"
           />
 
           <input
@@ -234,7 +238,7 @@ export default function Settings(props: SettingsProps) {
             onChange={handleFileChange}
             id="file"
             name="file"
-            className={`font-bold text-teal-950 bg-teal-200 rounded-full ${
+            className={`font-bold text-gray-900 bg-gray-200 rounded-full ${
               uploadVisible ? "" : "hidden"
             }`}
           />
@@ -246,7 +250,7 @@ export default function Settings(props: SettingsProps) {
             <button onClick={() => setUploadVisible(true)}>Successful!</button>
             <div
               onClick={() => setUploadVisible(true)}
-              className="setting-edit-btn p-2 border border-transparent rounded-full bg-teal-200 hover:cursor-pointer"
+              className="setting-edit-btn p-2 border border-transparent rounded-full bg-gray-200 hover:cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -268,16 +272,16 @@ export default function Settings(props: SettingsProps) {
 
         <div className="w-full flex place-items-center place-content-center">
           <button
-            onClick={() => props.setOpenModal("form-elements")}
-            className="p-[0.8rem] bg-teal-200 text-teal-950 hover:bg-teal-700 hover:text-teal-200 border border-transparent rounded-full font-bold"
+            onClick={() => setOpenModal("form-elements")}
+            className="p-[0.8rem] bg-gray-200 text-gray-900 hover:bg-gray-700 hover:text-gray-200 border border-transparent rounded-full font-bold"
           >
             Reset Password
           </button>
           <Modal
-            show={props.openModal === "form-elements"}
+            show={openModal === "form-elements"}
             size="md"
             popup
-            onClose={() => props.setOpenModal(undefined)}
+            onClose={() => setOpenModal(undefined)}
           >
             <Modal.Header />
             <Modal.Body>

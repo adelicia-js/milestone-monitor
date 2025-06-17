@@ -1,63 +1,56 @@
 import React from "react";
-import "../globals.css";
-import Navbar from "@/components/nav/Navbar";
+import StyledComponentsRegistry from "@/lib/registry";
+import Navbar from "@/components/navigation/NavBar";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { fetchRole } from "../api/dbfunctions";
-
-export const dynamic = 'force-dynamic';
+import "../globals.css";
 
 export const metadata = {
-  title: "Milestone Monitor",
-  description: "A cataloguing app",
+  title: "New UI | Milestone Monitor",
+  description: "New UI for Milestone Monitor",
 };
 
-const RootLayout = async ({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) => {
-
+}) {
   const supabase = createServerComponentClient({ cookies });
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let hodBool =true
+  let hodBool = true;
   let editorBool = true;
   let userData;
-  
+
   if (!user) {
     // This route can only be accessed by authenticated users.
     // Unauthenticated users will be redirected to the `/login` route.
     redirect("/login");
-  }else{
+  } else {
     //only hods and editors can access reports
     userData = await fetchRole(user.email as string);
 
     //conditions to check if the user is an hod, editor or regular faculty
-    if(userData.faculty_role!="hod"){
+    if (userData.faculty_role != "hod") {
       hodBool = false;
-      
     }
-    if(userData.faculty_role!="editor"){
+    if (userData.faculty_role != "editor") {
       editorBool = false;
     }
-
   }
 
   return (
     <html lang="en">
       <body>
-        {/* Navigation Bars (horizontal and vertical) */}
-        <Navbar is_hod={hodBool} is_editor={editorBool} userData={userData}/>
-        <main className="absolute top-1/2 inset-x-[2%] sm:right-0 sm:top-[20%] sm:left-[10%] md:top-[15%] lg:top-[10%] ">
-          {children}
-        </main>
+        <StyledComponentsRegistry>
+          <Navbar is_editor={editorBool} is_hod={hodBool} userData={userData} />
+          <main>{children}</main>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );
 }
-
-export default RootLayout;
