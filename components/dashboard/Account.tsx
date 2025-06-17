@@ -17,7 +17,7 @@ const bodyText = Urbanist({
 });
 
 interface AccountProps {
-  profileImageUrl: string;
+  profileImageUrl: string | null;
   userData: {
     faculty_name: string;
     faculty_department: string;
@@ -50,7 +50,7 @@ export default function Account(props: AccountProps) {
       >
         <div className="container lg:w-full lg:h-full bg-teal-700/20 overflow-hidden border border-transparent rounded-l px-4 py-8">
           {/* Display profile image if available, otherwise show placeholder */}
-          {hasProfileImage ? (
+          {hasProfileImage && props.profileImageUrl ? (
             <img
               id="pfp-placeholder"  
               src={props.profileImageUrl}
