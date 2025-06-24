@@ -38,7 +38,7 @@ const DoughNutWrapper = () => {
         position: 'left' as const,
         labels: {
           usePointStyle: true,
-          color: 'rgba(56, 68, 68, 0.6)',
+          color: 'rgba(0, 0, 0, 0.8)',
           font: {
             size: 12
           },

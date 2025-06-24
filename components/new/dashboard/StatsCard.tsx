@@ -2,20 +2,13 @@
 
 import React from "react";
 import styled from "styled-components";
-import { Inconsolata } from "next/font/google";
 import DoughNutWrapper from "@/components/dashboard/DoughNutWrapper";
-
-const bodyText = Inconsolata({
-  weight: "400",
-  subsets: ["latin"],
-});
 
 export default function StatsCard() {
   return (
     <Card>
       <DoughNutWrapper />
       <CardHeadingContainer>
-        <CardHeading>Your Stats</CardHeading>
       </CardHeadingContainer>
     </Card>
   );
@@ -39,11 +32,4 @@ const CardHeadingContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-`
-
-const CardHeading = styled.p`
-font-size: 2rem;
-font-weight: 600;
-color: rgba(3, 78, 90, 0.95);
-font-family: ${bodyText.style.fontFamily};
 `
