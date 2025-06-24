@@ -182,9 +182,8 @@ const NavItem = styled.li`
 width: 100%;
 
 &:hover {
-    color: rgba(3, 78, 90, 0.53);
+    color: rgba(3, 78, 90, 0.95);
     animation: ${pulse} 0.5s ease-in-out;
-    shadow: 0 0 10px rgba(3, 78, 90, 0.53), 0 0 20px rgba(3, 78, 90, 0.53), 0 0 40px rgba(3, 78, 90, 0.53), 0 0 80px rgba(3, 78, 90, 0.53), 0 0 120px rgba(3, 78, 90, 0.53), 0 0 160px rgba(3, 78, 90, 0.53);
   }
 `;
 

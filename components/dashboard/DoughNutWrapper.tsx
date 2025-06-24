@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { getMilestoneNumbers } from "@/app/api/dbfunctions";
 import { Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const DoughNutWrapper = () => {
   const [statArr, setStatArr] = useState<(number | null)[]>([0, 0, 0, 0]);
@@ -22,7 +30,31 @@ const DoughNutWrapper = () => {
       },
     ],
   };
-  return <Doughnut data={statsData} />;
+
+  const options = {
+    plugins: {
+      legend: {
+        display: true,
+        position: 'left' as const,
+        labels: {
+          usePointStyle: true,
+          color: 'rgba(56, 68, 68, 0.6)',
+          font: {
+            size: 12
+          },
+          boxWidth: 4,
+          boxHeight: 6
+        },
+      },
+      animation: {
+        animateScale: false,
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: true,
+  };
+
+  return <Doughnut data={statsData} options={options} />;
 };
 
 export default DoughNutWrapper;
