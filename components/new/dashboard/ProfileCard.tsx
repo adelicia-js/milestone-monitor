@@ -10,11 +10,12 @@ import {
 } from "@/components/ui/GenericStyles";
 
 interface ProfileCardProps {
-  imageURL: string;
-  name: string;
-  department: string;
-  facultyRole: string;
-  facultyID: string;
+  // TODO: Remove once integration/api revamp is done
+  imageURL?: string;
+  name?: string;
+  department?: string;
+  facultyRole?: string;
+  facultyID?: string;
 }
 
 const bodyText = Inter({
