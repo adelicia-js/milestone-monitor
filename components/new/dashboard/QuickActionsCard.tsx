@@ -16,10 +16,16 @@ import {
   UserPlus,
   CheckCircle
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
+import { Inter } from "next/font/google";
+
+const bodyText = Inter({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export default function QuickActionsCard() {
-  const router = useRouter();
+  // const router = useRouter();
 
   const handleAddConference = () => {};
   const handleAddJournal = () => {};
@@ -115,7 +121,8 @@ const ActionButton = styled.button`
   gap: 0.5rem;
   padding: 1rem;
   background: rgba(244, 253, 252, 0.8);
-  border: 2px solid rgba(0, 131, 143, 0.2);
+  border: 0.1px solid rgba(0, 131, 143, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -127,7 +134,7 @@ const ActionButton = styled.button`
     background: rgba(0, 188, 212, 0.1);
     border-color: rgba(0, 188, 212, 0.4);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 188, 212, 0.2);
+    box-shadow: 0 0.2px 10px rgba(0, 188, 212, 0.2);
   }
 
   &:active {
@@ -152,7 +159,7 @@ const IconWrapper = styled.div`
 
   ${ActionButton}:hover & svg {
     transform: scale(1.1);
-    color: rgba(0, 188, 212, 1);
+    // color: rgba(0, 188, 212, 1);
   }
 `;
 
@@ -160,21 +167,21 @@ const PlusIcon = styled.div`
   position: absolute;
   bottom: -5px;
   right: -5px;
-  background: rgba(139, 195, 74, 0.9);
+  background: rgba(128, 210, 35, 0.6);
   border-radius: 50%;
   width: 20px;
   height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.1px 4px rgba(128, 210, 35, 0.2);
   
   svg {
     color: white;
   }
 
   ${ActionButton}:hover & {
-    background: rgba(139, 195, 74, 1);
+    background: rgba(128, 210, 35, 1);
     transform: scale(1.15);
   }
 `;
@@ -187,5 +194,6 @@ const ActionLabel = styled.span`
   text-align: center;
   line-height: 1.2;
   max-width: 80px;
+  font-family: ${bodyText.style.fontFamily};
 `;
 
