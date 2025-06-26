@@ -2,6 +2,7 @@
 
 import React from "react";
 import styled from "styled-components";
+import DashboardHeader from "./DashboardHeader";
 import ProfileCard from "./ProfileCard";
 import StatsCard from "./StatsCard";
 import QuickActionsCard from "./QuickActionsCard";
@@ -10,11 +11,12 @@ export default function DashboardPageWrapper() {
   return (
     <Layout>
       <CardContainer1>
+      <DashboardHeader />
         <CardContainer2>
           <ProfileCard />
-          <StatsCard/>
+          <StatsCard />
         </CardContainer2>
-        <QuickActionsCard/>
+        <QuickActionsCard />
       </CardContainer1>
     </Layout>
   );
@@ -45,4 +47,3 @@ const CardContainer2 = styled.section`
   align-items: center;
   gap: 1.5rem;
 `;
-

@@ -6,6 +6,7 @@ import Account from "@/components/dashboard/Account";
 import { redirect } from "next/navigation";
 import { fetchRole } from "../api/dbfunctions";
 import Stats  from "@/components/dashboard/Stats";
+import Events from "@/components/dashboard/Events";
 
 const bodyText = Montserrat({
   weight: "400",
@@ -63,7 +64,7 @@ export default async function Index() {
     >
       <Account userData={userData} profileImageUrl={profileImageUrl}/>
       <Stats/>
-     
+      <Events is_editor={false} is_hod={true}/>
     </section>
   );
 }

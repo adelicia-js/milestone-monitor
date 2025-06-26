@@ -2,7 +2,7 @@
 import React from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Urbanist } from "next/font/google";
-import DoughNutWrapper from "./DoughNutWrapper";
+import DoughNutWrapper from "./OldChart";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

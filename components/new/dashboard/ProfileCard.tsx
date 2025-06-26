@@ -3,6 +3,11 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
+import {
+  GenericCard,
+  GenericHeader,
+  GenericHeaderContainer,
+} from "@/components/ui/GenericStyles";
 
 interface ProfileCardProps {
   imageURL: string;
@@ -35,8 +40,11 @@ export default function ProfileCard(props: ProfileCardProps) {
 
   return (
     <Card>
+      <GenericHeaderContainer>
+        <GenericHeader>Your Profile</GenericHeader>
+      </GenericHeaderContainer>
       <ProfilePictureCard>
-        {hasProfileImage && props.imageURL ? (
+        {hasProfileImage ? (
           <ProfileImage src={props.imageURL} alt="Profile picture" />
         ) : (
           <PlaceholderContainer>
@@ -53,7 +61,7 @@ export default function ProfileCard(props: ProfileCardProps) {
       <ProfileDetailsCard>
         {profileDetails.map((detail, index) => (
           <ProfileDetailTextBox key={index}>
-            <ProfileDetailText>{detail.label}</ProfileDetailText>
+            <ProfileDetailText>{detail.label} </ProfileDetailText>
             <ProfileValueText>{detail.value}</ProfileValueText>
           </ProfileDetailTextBox>
         ))}
@@ -62,15 +70,7 @@ export default function ProfileCard(props: ProfileCardProps) {
   );
 }
 
-const Card = styled.div`
-  height: 100%;
-  width: 50%;
-  border: 0.1px solid rgba(56, 68, 68, 0.14);
-  border-radius: 1rem;
-  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
-  background-color: rgba(244, 253, 252, 0.79);
-  display: flex;
-  flex-direction: row;
+const Card = styled(GenericCard)`
   align-items: center;
   padding: 1.5rem;
   gap: 1rem;
@@ -90,13 +90,22 @@ const Card = styled.div`
 `;
 
 const ProfilePictureCard = styled.div`
+  margin-top: 1.5rem;
   width: 40%;
-  border: 0.1px solid rgba(56, 68, 68, 0.28);
-  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px 0 rgba(48, 55, 55, 0.1);
+
+  background: linear-gradient(
+    120deg,
+    rgba(213, 235, 238, 0.34),
+    rgba(179, 224, 228, 0.32)
+  );
+  border-radius: 1rem;
+  font-weight: 400;
+  box-shadow: 0 0.1px 15px rgba(0, 188, 212, 0.3),
+    0 0.1px 2px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 0.1px solid rgba(0, 131, 143, 0.27);
 
   /* Media Queries */
   @media (max-width: 600px) {
@@ -156,6 +165,7 @@ const PlaceholderContainer = styled.div`
 `;
 
 const ProfileDetailsCard = styled.div`
+  margin-top: 1.5rem;
   height: 100%;
   width: 60%;
   display: flex;
@@ -180,16 +190,24 @@ const ProfileDetailsCard = styled.div`
 const ProfileDetailTextBox = styled.div`
   height: 5vh;
   width: 100%;
-  border: 0.1px solid rgba(56, 68, 68, 0.14);
-  background-color: rgba(20, 154, 184, 0.1);
-  border-radius: 0.5rem;
   display: grid;
-  grid-template-columns: 0.65fr 1.2fr;
+  grid-template-columns: 0.6fr 1.2fr;
   grid-template-rows: 1fr;
   align-items: center;
-  padding: 0.5rem;
   justify-content: space-between;
-  box-shadow: 0 1px 4px 0 rgba(48, 55, 55, 0.1);
+  background: linear-gradient(
+    120deg,
+    rgba(213, 235, 238, 0.34),
+    rgba(0, 131, 143, 0.32)
+  );
+  border-radius: 1rem;
+  padding: 0.2rem 0.5rem;
+  color: rgba(0, 131, 143, 0.99);
+  font-weight: 400;
+  text-shadow: 0.1px 0.1px 2px rgba(193, 243, 243, 0.3);
+  box-shadow: 0 0.1px 10px rgba(0, 188, 212, 0.3), 0 2px 5px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 0.1px solid rgba(0, 131, 143, 0.27);
 
   /* Media Queries */
   @media (max-width: 600px) {
@@ -207,6 +225,7 @@ const ProfileDetailTextBox = styled.div`
 
 const ProfileDetailText = styled.span`
   font-family: ${bodyText.style.fontFamily};
+  color: rgba(0, 131, 143, 0.6);
 
   /* Media Queries */
   @media (max-width: 600px) {
@@ -223,6 +242,9 @@ const ProfileDetailText = styled.span`
 `;
 
 const ProfileValueText = styled(ProfileDetailText)`
+  font-weight: 600;
+  color: rgb(0, 131, 143);
+
   /* Media Queries */
   @media (max-width: 600px) {
     /* Mobile styles */
