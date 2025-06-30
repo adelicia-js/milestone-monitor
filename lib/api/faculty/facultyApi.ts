@@ -29,8 +29,8 @@ export class FacultyApi extends ApiClient {
     return this.updateByField<Faculty>('faculty', 'faculty_email', email, updates);
   }
 
-  async deleteFaculty(email:string):Promise<ApiResponse<Faculty>>{
-    return this.delete<Faculty>('faculty', email);
+  async deleteFaculty(email: string): Promise<ApiResponse<Faculty>> {
+    return this.deleteByEmail<Faculty>('faculty', email);
   }
 
   async updateGoogleScholar(
@@ -47,6 +47,29 @@ export class FacultyApi extends ApiClient {
     return this.updateFaculty(email, { faculty_phone: phone });
   }
 
+  async updateName(
+    email: string,
+    name: string
+  ): Promise<ApiResponse<Faculty>> {
+    return this.updateFaculty(email, { faculty_name: name });
+  }
+
+  async updateProfile(
+    email: string,
+    updates: {
+      name?: string;
+      phone?: string;
+      googleScholar?: string;
+    }
+  ): Promise<ApiResponse<Faculty>> {
+    const facultyUpdates: Partial<Faculty> = {};
+    if (updates.name) facultyUpdates.faculty_name = updates.name;
+    if (updates.phone) facultyUpdates.faculty_phone = updates.phone;
+    if (updates.googleScholar) facultyUpdates.faculty_google_scholar = updates.googleScholar;
+
+    return this.updateFaculty(email, facultyUpdates);
+  }
+
   async createDefaultFacultyData(email: string): Promise<ApiResponse<Faculty>> {
     const defaultFaculty: Omit<Faculty, 'id'> = {
       faculty_id: `FAC${Date.now().toString().slice(-4)}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`, 
@@ -60,5 +83,4 @@ export class FacultyApi extends ApiClient {
 
     return this.insert<Faculty>('faculty', defaultFaculty);
   }
-
 } 

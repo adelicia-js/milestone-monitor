@@ -3,62 +3,61 @@ import { ApiResponse } from '../types';
 
 // Base API client class that handles database operations
 export class ApiClient {
-  private supabase; // Supabase client instance
+  private supabase = createClientComponentClient();
 
-  constructor() {
-    // Initialize Supabase client
-    this.supabase = createClientComponentClient();
+  protected getSupabase() {
+    return this.supabase;
   }
 
   /**
    * Generic query method to fetch data from a table with optional filters, ordering and limits
    * @param table - Name of the table to query
-   * @param query - Query parameters including select (columns string), filters (to filter), order (to sort), and limit (max rows to be returned)
+   * @param options - Query parameters including filters (to filter), order (to sort), and limit (max rows to be returned)
    * @returns Promise with query results or error
    */
   protected async query<T>(
     table: string,
-    query: {
-      select?: string;
-      filters?: Record<string, any>;
+    options: {
+      filters?: Record<string, unknown>;
       order?: { column: string; ascending?: boolean };
       limit?: number;
-    }
+    } = {}
   ): Promise<ApiResponse<T[]>> {
     try {
-      // Initialize query builder with table and select statement
-      let queryBuilder = this.supabase.from(table).select(query.select || '*');
+      let query = this.supabase.from(table).select('*');
 
-      // Apply filters if provided
-      if (query.filters) {
-        Object.entries(query.filters).forEach(([key, value]) => {
-          queryBuilder = queryBuilder.eq(key, value);
+      if (options.filters) {
+        Object.entries(options.filters).forEach(([key, value]) => {
+          if (typeof value === 'object' && value !== null) {
+            if ('gte' in value) query = query.gte(key, value.gte);
+            if ('lte' in value) query = query.lte(key, value.lte);
+          } else {
+            query = query.eq(key, value);
+          }
         });
       }
 
-      // Apply ordering if provided
-      if (query.order) {
-        queryBuilder = queryBuilder.order(query.order.column, {
-          ascending: query.order.ascending ?? true,
+      if (options.order) {
+        query = query.order(options.order.column, {
+          ascending: options.order.ascending ?? true,
         });
       }
 
-      // Apply limit if provided
-      if (query.limit) {
-        queryBuilder = queryBuilder.limit(query.limit);
+      if (options.limit) {
+        query = query.limit(options.limit);
       }
 
-      // Execute query
-      const { data, error } = await queryBuilder;
+      const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error(`Error querying ${table}:`, error);
+        return { data: null, error: error.message };
+      }
 
       return { data: data as T[], error: null };
     } catch (error) {
-      return {
-        data: null,
-        error: error instanceof Error ? error.message : 'An unknown error occurred',
-      };
+      console.error(`Error querying ${table}:`, error);
+      return { data: null, error: 'An unexpected error occurred' };
     }
   }
 
@@ -68,25 +67,23 @@ export class ApiClient {
    * @param data - Data to insert
    * @returns Promise with inserted record or error
    */
-  protected async insert<T>(
-    table: string,
-    data: Partial<T>
-  ): Promise<ApiResponse<T>> {
+  protected async insert<T>(table: string, data: unknown): Promise<ApiResponse<T>> {
     try {
       const { data: result, error } = await this.supabase
         .from(table)
-        .insert(data)
+        .insert([data])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error(`Error inserting into ${table}:`, error);
+        return { data: null, error: error.message };
+      }
 
       return { data: result as T, error: null };
     } catch (error) {
-      return {
-        data: null,
-        error: error instanceof Error ? error.message : 'An unknown error occurred',
-      };
+      console.error(`Error inserting into ${table}:`, error);
+      return { data: null, error: 'An unexpected error occurred' };
     }
   }
 
@@ -94,30 +91,31 @@ export class ApiClient {
    * Update a record in a table by its ID
    * @param table - Name of the table
    * @param id - ID of the record to update
-   * @param data - New data to update
+   * @param updates - New data to update
    * @returns Promise with updated record or error
    */
   protected async update<T>(
     table: string,
-    id: string | number,
-    data: Partial<T>
+    id: number,
+    updates: Partial<T>
   ): Promise<ApiResponse<T>> {
     try {
-      const { data: result, error } = await this.supabase
+      const { data, error } = await this.supabase
         .from(table)
-        .update(data)
+        .update(updates)
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error(`Error updating ${table}:`, error);
+        return { data: null, error: error.message };
+      }
 
-      return { data: result as T, error: null };
+      return { data: data as T, error: null };
     } catch (error) {
-      return {
-        data: null,
-        error: error instanceof Error ? error.message : 'An unknown error occurred',
-      };
+      console.error(`Error updating ${table}:`, error);
+      return { data: null, error: 'An unexpected error occurred' };
     }
   }
 
@@ -127,26 +125,24 @@ export class ApiClient {
    * @param id - ID of the record to delete
    * @returns Promise with deleted record or error
    */
-  protected async delete<T>(
-    table: string,
-    id: string | number
-  ): Promise<ApiResponse<T>> {
+  protected async delete<T>(table: string, id: number): Promise<ApiResponse<T>> {
     try {
-      const { data: result, error } = await this.supabase
+      const { data, error } = await this.supabase
         .from(table)
         .delete()
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error(`Error deleting from ${table}:`, error);
+        return { data: null, error: error.message };
+      }
 
-      return { data: result as T, error: null };
+      return { data: data as T, error: null };
     } catch (error) {
-      return {
-        data: null,
-        error: error instanceof Error ? error.message : 'An unknown error occurred',
-      };
+      console.error(`Error deleting from ${table}:`, error);
+      return { data: null, error: 'An unexpected error occurred' };
     }
   }
 
@@ -155,31 +151,76 @@ export class ApiClient {
    * @param table - Name of the table
    * @param field - Field name to match
    * @param value - Value to match
-   * @param data - New data to update
+   * @param updates - New data to update
    * @returns Promise with updated record or error
    */
   protected async updateByField<T>(
     table: string,
     field: string,
-    value: string | number,
-    data: Partial<T>
+    value: unknown,
+    updates: Partial<T>
   ): Promise<ApiResponse<T>> {
     try {
-      const { data: result, error } = await this.supabase
+      const { data, error } = await this.supabase
         .from(table)
-        .update(data)
+        .update(updates)
         .eq(field, value)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error(`Error updating ${table}:`, error);
+        return { data: null, error: error.message };
+      }
 
-      return { data: result as T, error: null };
+      return { data: data as T, error: null };
     } catch (error) {
-      return {
-        data: null,
-        error: error instanceof Error ? error.message : 'An unknown error occurred',
-      };
+      console.error(`Error updating ${table}:`, error);
+      return { data: null, error: 'An unexpected error occurred' };
+    }
+  }
+
+  protected async uploadToStorage(
+    bucket: string,
+    path: string,
+    file: File,
+    options: { upsert?: boolean; cacheControl?: string } = {}
+  ): Promise<ApiResponse<string>> {
+    try {
+      const { error } = await this.supabase.storage
+        .from(bucket)
+        .upload(path, file, { upsert: true, cacheControl: '3600', ...options });
+
+      if (error) {
+        console.error('Error uploading file: ', error);
+        return { data: null, error: error.message };
+      }
+
+      return { data: path, error: null };
+    } catch (error) {
+      console.error('Error uploading file: ', error);
+      return { data: null, error: 'An unexpected error occurred' };
+    }
+  }
+
+  protected async deleteByEmail<T>(table: string, email: string): Promise<ApiResponse<T>> {
+    try {
+      const { data, error } = await this.supabase
+        .from(table)
+        .delete()
+        .eq('email', email)
+        .select()
+        .single();
+
+      if (error) {
+        console.error(`Error deleting from ${table}:`, error);
+        return { data: null, error: error.message };
+      }
+
+      return { data: data as T, error: null };
+    } catch (error) {
+      console.error(`Error deleting from ${table}:`, error);
+      return { data: null, error: 'An unexpected error occurred' };
     }
   }
 }

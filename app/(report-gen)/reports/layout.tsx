@@ -7,6 +7,8 @@ import { fetchRole } from "../../api/dbfunctions";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
+export const dynamic = 'force-dynamic';
+
 const RootLayout= async({
   children,
 }: {
@@ -40,7 +42,7 @@ const RootLayout= async({
     }
 
   }
-
+  
   return (
     <html lang="en">
       <body>

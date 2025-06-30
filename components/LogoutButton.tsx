@@ -1,19 +1,13 @@
 'use client'
 import React from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/hooks/useAuth'
 
 export default function LogoutButton() {
-  const router = useRouter()
 
-  // Create a Supabase client configured to use cookies
-  const supabase = createClientComponentClient()
+  const { signOut } = useAuth()
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
-    
+    await signOut()
   }
 
   return (

@@ -1,161 +1,72 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Filters from "./Filters";
 import GeneralTable from "./GeneralTable";
 import { useState } from "react";
-import { getDataForReport } from "@/app/api/dbfunctions";
-import { saveAs } from "file-saver";
-import { smolDataHeadersCSV } from "./CSVHeaders";
 import { Urbanist } from "next/font/google";
+import { useReport } from "@/lib/hooks/useReport";
+import Loader from "@/components/ui/Loader";
+import { Faculty } from "@/lib/types";
 
 const generalFont = Urbanist({
   weight: "400",
   subsets: ["latin"],
 });
 
-const ReportPage = ({ staff_details }: any) => {
+interface ReportPageProps {
+  facultyList: Faculty[] | null;
+  facultyDept: string | null;
+  facultyDataLoading: boolean;
+  facultyDataError: string | null;
+}
+
+const ReportPage = (props: ReportPageProps) => {
   const [filterState, setFilterState] = useState({
     searchQuery: "",
-    startDate: undefined,
+    startDate: "2001-01-01",
     endDate: new Date().toJSON().slice(0, 10),
     selectedStaff: "",
     selectedType: "",
     selectedStatus: "",
+    department: props.facultyDept,
   });
-  const [data, setData] = useState<any[]>([]);
-  // console.log("logging from reportpage ", staff_details);
-  const [fullData, setFullData] = useState<any[]>([]);
 
-  const convertToCSV = (data: any[]) => {
-    const csvRows = [];
-    const headers = Object.keys(data[0]);
-    csvRows.push(headers.join(","));
+  const { data, loading: reportDataLoading, error, fetchReportData } = useReport();
 
-    for (const row of data) {
-      const values = headers.map((header) => {
-        const fieldValue = row[header];
-        const csvValue =
-          typeof fieldValue === "string" ? `"${fieldValue}"` : fieldValue;
-        return csvValue;
-      });
-      csvRows.push(values.join(","));
+  useEffect(() => {
+    if (props.facultyDept) {
+      fetchReportData({ ...filterState, department: props.facultyDept });
     }
-
-    return csvRows.join("\n");
-  };
-  const downloadCSV = (data: any[], filename: string) => {
-    const csvData = convertToCSV(data);
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, filename);
-  };
-
-  const handleLightReportDownload = () => {
-    if (data.length <= 0) {
-      alert("No data to download");
-      return;
-    }
-    
-    // Convert data to CSV format with the specified headers
-    const csvRows = [];
-    const headers = smolDataHeadersCSV.map(h => h.label);
-    csvRows.push(headers.join(","));
-
-    for (const row of data) {
-      const values = smolDataHeadersCSV.map((header) => {
-        const fieldValue = row[header.key];
-        const csvValue =
-          typeof fieldValue === "string" ? `"${fieldValue}"` : fieldValue;
-        return csvValue;
-      });
-      csvRows.push(values.join(","));
-    }
-
-    const csvData = csvRows.join("\n");
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, "light-report.csv");
-  };
-
-  const handleFirstLinkClick = () => {
-    if (fullData.length <= 0) {
-      alert("No data to download");
-      return;
-    }
-    const conferenceData = fullData.filter(
-      (d: any) => d.entry_type === "conference"
-    );
-    const journalData = fullData.filter((d: any) => d.entry_type === "journal");
-    const workshopData = fullData.filter(
-      (d: any) => d.entry_type === "workshop"
-    );
-    const patentData = fullData.filter((d: any) => d.entry_type === "patent");
-
-    if (filterState.selectedType === "Conferences") {
-      downloadCSV(conferenceData, "confdata.csv");
-    } else if (filterState.selectedType === "Patents") {
-      downloadCSV(patentData, "patentdata.csv");
-    } else if (filterState.selectedType === "Workshops") {
-      downloadCSV(workshopData, "workshopdata.csv");
-    } else if (filterState.selectedType === "Journals") {
-      downloadCSV(journalData, "journaldata.csv");
-    } else {
-      if (conferenceData.length > 0) {
-        downloadCSV(conferenceData, "confdata.csv");
-      }
-      if (journalData.length > 0) {
-        downloadCSV(journalData, "journaldata.csv");
-      }
-
-      if (workshopData.length > 0) {
-        downloadCSV(workshopData, "workshopdata.csv");
-      }
-      if (patentData.length > 0) {
-        downloadCSV(patentData, "patentdata.csv");
-      }
-    }
-  };
+  }, [props.facultyDept]);
 
   return (
     <div
       className={`${generalFont.className} h-[90vh] grid grid-cols-6 bg-[#cbfef8]`}
     >
       <div className="col-start-1 col-end-5">
-        <GeneralTable data={data} staffDetails={staff_details} />
+        {error && (
+          <div className="p-4 mb-4 text-red-700 bg-red-100 rounded-lg">
+            {error}
+          </div>
+        )}
 
-        <div className={`${generalFont.className} flex place-content-evenly`}>
-          <button
-            onClick={handleFirstLinkClick}
-            className="tracking-wide text-white px-4 py-2 rounded bg-teal-700 hover:bg-teal-500 hover:font-bold shadow-md shadow-teal-500/50 hover:shadow-lg hover:shadow-teal-500/70"
-          >
-            Download Full Report
-          </button>
-
-          <button
-            onClick={handleLightReportDownload}
-            className="tracking-wide text-white px-4 py-2 rounded bg-teal-700 hover:bg-teal-500 hover:font-bold shadow-md shadow-teal-500/50 hover:shadow-lg hover:shadow-teal-500/70"
-          >
-            Download Light Report
-          </button>
-        </div>
+        {props.facultyDataLoading || reportDataLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <Loader />
+          </div>
+        ) : (
+          <>
+            <GeneralTable tableData={data} staffDetails={props.facultyList} />
+          </>
+        )}
       </div>
       <Filters
-        staffDetails={staff_details}
+        staffDetails={props.facultyList}
+        staffDepartment={props.facultyDept}
         onFiltersChange={(filters: typeof filterState) => {
-          // console.log("filters before state update", filters);
-          setFilterState(filters);
-          // console.log("data passed from filters to report page ", filters);
-
-          getDataForReport(
-            filters.startDate,
-            filters.endDate,
-            filters.selectedType,
-            filters.searchQuery,
-            filters.selectedStatus,
-            filters.selectedStaff
-          ).then((data) => {
-            setData(data.disp_data || []);
-            setFullData(data.full_data || []);
-            console.log("data being sent to table ie data in report ", data);
-          });
+          const updatedFilters = { ...filters, department: props.facultyDept || "" };
+          setFilterState(updatedFilters);
+          fetchReportData(updatedFilters);
         }}
       />
     </div>
