@@ -5,7 +5,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import styled, { keyframes } from "styled-components";
 import { Inconsolata } from "next/font/google";
-import { Settings, LogOut, MoonIcon, SunIcon } from "lucide-react";
+import { Settings, MoonIcon, SunIcon } from "lucide-react";
 
 const bodyText = Inconsolata({
   weight: "400",
@@ -51,7 +51,13 @@ export default function HeaderBar() {
 
         <ActionItem onClick={handleSignOut}>
           <LogOutButton>
-            <LogOut />
+            <LogOutIcon>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline className="arrow" points="16 17 21 12 16 7" />
+                <line className="arrow" x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </LogOutIcon>
           </LogOutButton>
         </ActionItem>
       </LargeScreenNav>
@@ -163,6 +169,16 @@ const SettingsLink = styled(IconLink)`
   }
 `;
 
+const LogOutIcon = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  svg .arrow {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+`;
+
 const LogOutButton = styled(IconButton)`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: rgba(0, 131, 143, 0.8);
@@ -175,8 +191,11 @@ const LogOutButton = styled(IconButton)`
   }
 
   &:hover svg {
-    transform: translateX(3px);
     filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+  }
+
+  &:hover ${LogOutIcon} svg .arrow {
+    transform: translateX(2px);
   }
 `;
 
@@ -202,7 +221,7 @@ const LightModeButton = styled(IconButton)`
 
   &:hover {
     color: rgb(206, 117, 34);
-    background-color: rgba(206, 117, 34, 0.1);
+    background-color: rgba(195, 125, 58, 0.2);
     border: 0.1px solid rgba(206, 117, 34, 0.1);
     box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
   }

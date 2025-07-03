@@ -35,7 +35,7 @@ export default function VerticalBar(props: VerticalBarProps) {
         </LogoItem>
 
         <NavItem>
-          <NavLink href="/">
+          <NavLink href="/dashboard-new">
             <IconWrapper>
               <Home size={30} />
             </IconWrapper>
@@ -44,7 +44,7 @@ export default function VerticalBar(props: VerticalBarProps) {
         </NavItem>
 
         <NavItem>
-          <NavLink href="/my-workshops">
+          <NavLink href="/workshops">
             <IconWrapper>
               <Briefcase size={30} />
             </IconWrapper>
@@ -53,7 +53,7 @@ export default function VerticalBar(props: VerticalBarProps) {
         </NavItem>
 
         <NavItem>
-          <NavLink href="/my-conferences">
+          <NavLink href="/conferences">
             <IconWrapper>
               <Users size={30} />
             </IconWrapper>
@@ -62,7 +62,7 @@ export default function VerticalBar(props: VerticalBarProps) {
         </NavItem>
 
         <NavItem>
-          <NavLink href="/my-journals">
+          <NavLink href="/journals">
             <IconWrapper>
               <BookOpen size={30} />
             </IconWrapper>
@@ -71,7 +71,7 @@ export default function VerticalBar(props: VerticalBarProps) {
         </NavItem>
 
         <NavItem>
-          <NavLink href="/my-patents">
+          <NavLink href="/patents">
             <IconWrapper>
               <Lightbulb size={30} />
             </IconWrapper>
@@ -88,7 +88,7 @@ export default function VerticalBar(props: VerticalBarProps) {
 const ReportSubComp = () => {
   return (
     <NavItem>
-      <NavLink href="/reports">
+      <NavLink href="/reports-new">
         <IconWrapper>
           <FileText size={30} />
         </IconWrapper>

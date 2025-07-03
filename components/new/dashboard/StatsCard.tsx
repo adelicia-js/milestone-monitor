@@ -1,8 +1,9 @@
 "use client";
 
-import React, {useState} from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import StatsDoughNutChart from "@/components/dashboard/StatsDoughNutChart";
+import RecentActivityCard from "./RecentActivityCard";
 import {
   GenericCard,
   GenericHeader,
@@ -32,6 +33,7 @@ export default function StatsCard() {
           <GenericHeaderContainer>
             <GenericHeader>Recent Activity</GenericHeader>
           </GenericHeaderContainer>
+          <RecentActivityCard/>
           <LeftButton onClick={() => setNextView(0)}>
             <ChevronLeft />
           </LeftButton>
@@ -96,8 +98,8 @@ const IconWrapper = styled.div`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   & svg {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   &:hover {
@@ -109,7 +111,20 @@ const IconWrapper = styled.div`
     );
   }
 
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
   &:hover svg {
+    animation: pulse 1.5s ease-in-out infinite;
   }
 `;
 
