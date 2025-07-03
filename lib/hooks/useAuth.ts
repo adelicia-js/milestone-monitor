@@ -42,13 +42,11 @@ export const useAuth = () => {
         }
       }
 
-      router.push("/");
+      router.push("/dashboard-new");
       router.refresh();
     } catch (error) {
       console.error("Login error:", error);
       alert("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -72,8 +70,6 @@ export const useAuth = () => {
     } catch (error) {
       console.error("Signup error:", error);
       alert("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 

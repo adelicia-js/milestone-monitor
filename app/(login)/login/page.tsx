@@ -54,11 +54,12 @@ export default function Login() {
             >
               <label
                 className="text-md text-emerald-800 uppercase"
-                htmlFor="email"
+                htmlFor="email-input-sign-in"
               >
                 Email
               </label>
               <input
+                id="email-input-sign-in"
                 className="caret-emerald-700 rounded-md px-4 py-2 bg-inherit mb-6 border-2 border-teal-400/20 focus:border-emerald-500"
                 style={{ color: "#237A70" }}
                 name="email"
@@ -68,12 +69,13 @@ export default function Login() {
               />
               <label
                 className="text-md text-emerald-800 uppercase"
-                htmlFor="password"
+                htmlFor="password-input-sign-in"
               >
                 Password
               </label>
               <div className="relative">
                 <input
+                  id="password-input-sign-in"
                   className="caret-emerald-700 rounded-md px-4 py-2 bg-inherit mb-6 border-2 border-teal-400/20 focus:border-emerald-500 w-full"
                   style={{ color: "#237A70" }}
                   type={showPassword ? "text" : "password"}

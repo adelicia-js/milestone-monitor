@@ -40,7 +40,7 @@ const page = async () => {
         id="settings-wrapper"
         className={`invisible lg:visible lg:p-4 ${bodyText.className} grid grid-cols-4 justify-center items-center lg:h-[90vh] bg-teal-500/40`}
       >
-        <Settings openModal={undefined} setOpenModal={() => {}} />
+        <Settings />
       </section>
     </section>
   );
