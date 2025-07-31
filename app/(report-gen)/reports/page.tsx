@@ -1,13 +1,13 @@
 import React from "react";
-import ReportPageWrapper from "./ReportPageWrapper";
 import { Metadata } from "next";
+import ReportsNewClient from "./ReportsNewClient";
 
 export const metadata: Metadata = {
   title: "Reports | Milestone Monitor",
 };
 
-const page = () => {
-  return <ReportPageWrapper />;
-};
+export const dynamic = "force-dynamic";
 
-export default page;
+export default function ReportsNewPage() {
+  return <ReportsNewClient />;
+}

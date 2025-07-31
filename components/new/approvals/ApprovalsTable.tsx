@@ -1,0 +1,303 @@
+"use client";
+
+import React from "react";
+import styled from "styled-components";
+import { Inter } from "next/font/google";
+import { Eye, Calendar, User } from "lucide-react";
+
+const bodyText = Inter({
+  weight: "400",
+  subsets: ["latin"],
+});
+
+interface ApprovalsTableProps {
+  data: any[];
+  category: string;
+  onViewDetails: (entry: any) => void;
+  emptyMessage: string;
+}
+
+export default function ApprovalsTable({
+  data,
+  category,
+  onViewDetails,
+  emptyMessage
+}: ApprovalsTableProps) {
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const getTableColumns = () => {
+    switch (category) {
+      case 'conferences':
+        return [
+          { key: 'faculty_id', label: 'Faculty ID' },
+          { key: 'paper_title', label: 'Paper Title' },
+          { key: 'conf_name', label: 'Conference Name' },
+          { key: 'conf_date', label: 'Date' },
+          { key: 'type', label: 'Type' }
+        ];
+      case 'journals':
+        return [
+          { key: 'faculty_id', label: 'Faculty ID' },
+          { key: 'paper_title', label: 'Paper Title' },
+          { key: 'journal_name', label: 'Journal Name' },
+          { key: 'month_and_year_of_publication', label: 'Publication Date' },
+          { key: 'indexed_in', label: 'Indexed In' }
+        ];
+      case 'patents':
+        return [
+          { key: 'faculty_id', label: 'Faculty ID' },
+          { key: 'patent_name', label: 'Patent Name' },
+          { key: 'patent_type', label: 'Type' },
+          { key: 'application_no', label: 'Application No' },
+          { key: 'status', label: 'Status' }
+        ];
+      case 'workshops':
+        return [
+          { key: 'faculty_id', label: 'Faculty ID' },
+          { key: 'title', label: 'Title' },
+          { key: 'organized_by', label: 'Organized By' },
+          { key: 'date', label: 'Date' },
+          { key: 'number_of_days', label: 'Duration (Days)' }
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const renderCellValue = (item: any, columnKey: string) => {
+    const value = item[columnKey];
+    
+    if (!value) return 'N/A';
+    
+    // Format dates
+    if (columnKey.includes('date') || columnKey === 'month_and_year_of_publication') {
+      return formatDate(value);
+    }
+    
+    // Format specific fields
+    if (columnKey === 'number_of_days') {
+      return `${value} days`;
+    }
+    
+    return value.toString();
+  };
+
+  if (!data || data.length === 0) {
+    return (
+      <TableCard>
+        <EmptyState>
+          <EmptyIcon>📋</EmptyIcon>
+          <EmptyMessage>{emptyMessage}</EmptyMessage>
+          <EmptySubtext>All entries in this category have been processed.</EmptySubtext>
+        </EmptyState>
+      </TableCard>
+    );
+  }
+
+  const columns = getTableColumns();
+
+  return (
+    <TableCard>
+      <TableWrapper>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableHeaderCell key={column.key}>
+                  {column.label}
+                </TableHeaderCell>
+              ))}
+              <TableHeaderCell>Submitted</TableHeaderCell>
+              <TableHeaderCell>Actions</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((item, index) => (
+              <TableRow key={item.id || index}>
+                {columns.map((column) => (
+                  <TableCell key={column.key}>
+                    {column.key === 'faculty_id' ? (
+                      <FacultyId>{renderCellValue(item, column.key)}</FacultyId>
+                    ) : column.key.includes('title') || column.key.includes('name') ? (
+                      <TitleCell>{renderCellValue(item, column.key)}</TitleCell>
+                    ) : column.key === 'type' || column.key === 'indexed_in' || column.key === 'status' ? (
+                      <Badge>{renderCellValue(item, column.key)}</Badge>
+                    ) : (
+                      renderCellValue(item, column.key)
+                    )}
+                  </TableCell>
+                ))}
+                <TableCell>
+                  <DateWrapper>
+                    <Calendar size={14} />
+                    {formatDate(item.created_at)}
+                  </DateWrapper>
+                </TableCell>
+                <TableCell>
+                  <ActionButton onClick={() => onViewDetails(item)}>
+                    <Eye size={16} />
+                    Review
+                  </ActionButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableWrapper>
+    </TableCard>
+  );
+}
+
+const TableCard = styled.div`
+  height: 100%;
+  border: 0.1px solid rgba(56, 68, 68, 0.28);
+  border-radius: 1rem;
+  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
+  background-color: rgba(244, 253, 252, 0.75);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+const TableWrapper = styled.div`
+  flex: 1;
+  overflow: auto;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+const TableHead = styled.thead`
+  position: sticky;
+  top: 0;
+  background: rgba(244, 253, 252, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1;
+`;
+
+const TableBody = styled.tbody``;
+
+const TableRow = styled.tr`
+  border-bottom: 1px solid rgba(56, 68, 68, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(140, 242, 233, 0.2);
+  }
+`;
+
+const TableHeaderCell = styled.th`
+  padding: 1rem;
+  text-align: left;
+  font-family: ${bodyText.style.fontFamily};
+  font-weight: 600;
+  color: rgba(4, 103, 112, 0.9);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-bottom: 2px solid rgba(4, 103, 112, 0.2);
+  white-space: nowrap;
+`;
+
+const TableCell = styled.td`
+  padding: 1rem;
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 0.9rem;
+  color: rgba(31, 41, 55, 0.9);
+  vertical-align: top;
+`;
+
+const FacultyId = styled.span`
+  font-weight: 600;
+  color: rgba(4, 103, 112, 0.8);
+  font-family: monospace;
+`;
+
+const TitleCell = styled.div`
+  max-width: 250px;
+  word-wrap: break-word;
+  line-height: 1.4;
+  font-weight: 500;
+`;
+
+const Badge = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, rgba(4, 103, 112, 0.1), rgba(6, 95, 70, 0.1));
+  color: rgba(4, 103, 112, 0.9);
+  border: 1px solid rgba(4, 103, 112, 0.2);
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+`;
+
+const DateWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(107, 114, 128, 0.8);
+  font-size: 0.85rem;
+`;
+
+const ActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(4, 103, 112, 0.9), rgba(6, 95, 70, 0.9));
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-family: ${bodyText.style.fontFamily};
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(4, 103, 112, 1), rgba(6, 95, 70, 1));
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  gap: 1rem;
+`;
+
+const EmptyIcon = styled.div`
+  font-size: 4rem;
+  opacity: 0.5;
+`;
+
+const EmptyMessage = styled.h3`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: rgba(4, 103, 112, 0.8);
+  margin: 0;
+`;
+
+const EmptySubtext = styled.p`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 0.9rem;
+  color: rgba(107, 114, 128, 0.8);
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.5;
+  margin: 0;
+`;

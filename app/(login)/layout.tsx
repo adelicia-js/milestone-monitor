@@ -6,18 +6,14 @@ export const metadata: Metadata = {
   title: 'Login | Milestone Monitor',
 }
 
-export default function RootLayout({
+export default function LoginLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
-        <main className="">
-          {children}
-        </main>
-      </body>
-    </html>
+    <main>
+      {children}
+    </main>
   )
 }

@@ -35,7 +35,7 @@ export default function VerticalBar(props: VerticalBarProps) {
         </LogoItem>
 
         <NavItem>
-          <NavLink href="/dashboard-new">
+          <NavLink href="/">
             <IconWrapper>
               <Home size={30} />
             </IconWrapper>
@@ -88,7 +88,7 @@ export default function VerticalBar(props: VerticalBarProps) {
 const ReportSubComp = () => {
   return (
     <NavItem>
-      <NavLink href="/reports-new">
+      <NavLink href="/reports">
         <IconWrapper>
           <FileText size={30} />
         </IconWrapper>

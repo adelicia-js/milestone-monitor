@@ -13,7 +13,7 @@ import {
   Lightbulb,
   Briefcase,
   Plus,
-  UserPlus,
+  UserCog,
   CheckCircle
 } from "lucide-react";
 // import { useRouter } from "next/navigation";
@@ -31,7 +31,7 @@ export default function QuickActionsCard() {
   const handleAddJournal = () => {};
   const handleAddPatent = () => {};
   const handleAddWorkshop = () => {};
-  const handleAddUser = () => {};
+  const handleModifyUser = () => {};
   const handleApprovals = () => {};
 
   return (
@@ -80,11 +80,11 @@ export default function QuickActionsCard() {
           <ActionLabel>Workshop</ActionLabel>
         </ActionButton>
         
-        <ActionButton onClick={handleAddUser} title="Add New User">
+        <ActionButton onClick={handleModifyUser} title="Edit Users">
           <IconWrapper>
-            <UserPlus />
+            <UserCog />
           </IconWrapper>
-          <ActionLabel>Add User</ActionLabel>
+          <ActionLabel>Edit Users</ActionLabel>
         </ActionButton>
         
         <ActionButton onClick={handleApprovals} title="View Approvals">
@@ -190,10 +190,10 @@ const ActionLabel = styled.span`
   font-size: 0.75rem;
   font-weight: 500;
   color: rgba(4, 103, 112, 0.99);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.02emI ;
   text-align: center;
   line-height: 1.2;
   max-width: 80px;
+  letter-spacing: 0.5px;
   font-family: ${bodyText.style.fontFamily};
 `;
-
