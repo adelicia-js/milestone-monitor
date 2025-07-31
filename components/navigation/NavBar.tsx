@@ -9,7 +9,7 @@ interface NavbarProps {
     faculty_name: string;
     faculty_department: string;
     faculty_id: string;
-  };
+  } | null;
   is_hod: boolean;
   is_editor: boolean;
 }

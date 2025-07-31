@@ -87,7 +87,7 @@ export class ConferenceApi extends ApiClient {
         if (certificateResult.error) {
           return { data: null, error: certificateResult.error };
         }
-        certificatePath = certificateResult.data;
+        certificatePath = certificateResult.data || undefined;
       }
 
       if (data.files?.proceedings) {
@@ -99,7 +99,7 @@ export class ConferenceApi extends ApiClient {
         if (proceedingResult.error) {
           return { data: null, error: proceedingResult.error };
         }
-        proceedingPath = proceedingResult.data;
+        proceedingPath = proceedingResult.data || undefined;
       }
 
       // Create conference record

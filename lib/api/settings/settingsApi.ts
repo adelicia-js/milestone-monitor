@@ -66,7 +66,7 @@ export class SettingsApi extends ApiClient {
       // Validate the updates
       const validatedUpdates = this.validateProfileUpdates(updates);
       if (!validatedUpdates.isValid) {
-        return { data: null, error: validatedUpdates.error };
+        return { data: null, error: validatedUpdates.error || null };
       }
 
       // Update faculty record using email
@@ -94,7 +94,7 @@ export class SettingsApi extends ApiClient {
       // Validate password data
       const validation = this.validatePasswordUpdate(passwordData);
       if (!validation.isValid) {
-        return { data: null, error: validation.error };
+        return { data: null, error: validation.error || null };
       }
 
       const supabase = createClientComponentClient();
@@ -131,7 +131,7 @@ export class SettingsApi extends ApiClient {
       // Validate file
       const fileValidation = this.validateProfilePicture(file);
       if (!fileValidation.isValid) {
-        return { data: null, error: fileValidation.error };
+        return { data: null, error: fileValidation.error || null };
       }
 
       // Get faculty ID for file naming

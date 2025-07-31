@@ -34,10 +34,10 @@ export default async function RootLayout({
     userData = await fetchFacultyRole(user.email as string);
 
     //conditions to check if the user is an hod, editor or regular faculty
-    if (userData.faculty_role != "hod") {
+    if (userData?.faculty_role !== "hod") {
       hodBool = false;
     }
-    if (userData.faculty_role != "editor") {
+    if (userData?.faculty_role !== "editor") {
       editorBool = false;
     }
   }

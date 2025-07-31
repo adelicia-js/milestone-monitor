@@ -32,7 +32,7 @@ export class FacultyApi extends ApiClient {
 
   async deleteFaculty(email: string): Promise<ApiResponse<Faculty>> {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await this.getSupabase()
         .from('faculty')
         .delete()
         .eq('faculty_email', email)

@@ -22,25 +22,25 @@ export default function ApprovalsClient({
 
   // Add entry_type and title to conferences
   for (const conf of processedData.pending_conferences) {
-    conf["entry_type"] = "Conference";
-    conf["title"] = conf["paper_title"];
+    (conf as any)["entry_type"] = "Conference";
+    (conf as any)["title"] = (conf as any)["paper_title"];
   }
 
   // Add entry_type and title to journals
   for (const jour of processedData.pending_journal) {
-    jour["entry_type"] = "Journal";
-    jour["title"] = jour["paper_title"];
+    (jour as any)["entry_type"] = "Journal";
+    (jour as any)["title"] = (jour as any)["paper_title"];
   }
 
   // Add entry_type to workshops (title already exists)
   for (const workshop of processedData.pending_workshop) {
-    workshop["entry_type"] = "Workshop";
+    (workshop as any)["entry_type"] = "Workshop";
   }
 
   // Add entry_type and title to patents
   for (const patent of processedData.pending_patent) {
-    patent["entry_type"] = "Patent";
-    patent["title"] = patent["patent_name"];
+    (patent as any)["entry_type"] = "Patent";
+    (patent as any)["title"] = (patent as any)["patent_name"];
   }
 
   const handleApprove = async (data: any) => {

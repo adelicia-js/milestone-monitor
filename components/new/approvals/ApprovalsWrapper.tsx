@@ -10,13 +10,8 @@ import {
 import { CheckCircle, Users, BookOpen, Lightbulb, Briefcase } from "lucide-react";
 import ApprovalsTable from "./ApprovalsTable";
 import ApprovalModal from "./ApprovalModal";
-import {
-  PendingConference,
-  PendingJournal,
-  PendingWorkshop,
-  PendingPatent,
-  PendingData,
-} from "@/app/(modify)/modify/approvals/types";
+import { Conference, Journal, Workshop, Patent } from "@/lib/types";
+import { PendingData } from "@/app/(modify)/modify/approvals/types";
 
 const bodyText = Inter({
   weight: "400",

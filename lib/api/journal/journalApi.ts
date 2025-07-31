@@ -85,7 +85,7 @@ export class JournalApi extends ApiClient {
         if (imageResult.error) {
           return { data: null, error: imageResult.error };
         }
-        imagePath = imageResult.data;
+        imagePath = imageResult.data || undefined;
       }
 
       // Create journal record

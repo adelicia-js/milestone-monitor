@@ -5,12 +5,7 @@ import { redirect } from "next/navigation";
 import { approvalApi, facultyApi } from "@/lib/api";
 import { Metadata } from "next";
 import ApprovalsClient from "./ApprovalsClient";
-import {
-  PendingConference,
-  PendingJournal,
-  PendingWorkshop,
-  PendingPatent,
-} from "@/app/(modify)/modify/approvals/types";
+import { Conference, Journal, Workshop, Patent } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: 'Approvals | Milestone Monitor',
@@ -45,10 +40,10 @@ const ApprovalsNewPage = async () => {
   }
 
   const pending_objects = pendingResult.data || {
-    pending_conferences: [] as PendingConference[],
-    pending_journal: [] as PendingJournal[],
-    pending_workshop: [] as PendingWorkshop[],
-    pending_patent: [] as PendingPatent[],
+    pending_conferences: [] as Conference[],
+    pending_journal: [] as Journal[],
+    pending_workshop: [] as Workshop[],
+    pending_patent: [] as Patent[],
   };
 
   return <ApprovalsClient pending_data={pending_objects} userData={userData} />;

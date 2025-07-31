@@ -9,7 +9,7 @@ import CategoryModal from "./CategoryModal";
 interface FormField {
   key: string;
   label: string;
-  type: "text" | "textarea" | "date" | "select" | "file";
+  type: "text" | "textarea" | "date" | "select" | "file" | "number";
   required?: boolean;
   options?: Array<{ value: string; label: string }>;
   placeholder?: string;

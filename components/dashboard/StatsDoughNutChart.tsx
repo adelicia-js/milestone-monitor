@@ -84,8 +84,6 @@ const StatsDoughNutChart = () => {
     },
   };
 
-  console.log(isLoading, statArr);
-
   if (isLoading) {
     return <Loader />;
   }

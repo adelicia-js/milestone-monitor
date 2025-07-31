@@ -42,7 +42,7 @@ export const useAuth = () => {
         }
       }
 
-      router.push("/dashboard-new");
+      router.push("/");
       router.refresh();
     } catch (error) {
       console.error("Login error:", error);

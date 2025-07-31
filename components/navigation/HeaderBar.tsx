@@ -31,7 +31,7 @@ export default function HeaderBar() {
     <HeaderContainer>
       {/* Large Screens Navigation */}
       <LargeScreenNav>
-        <ActionItem>
+        {/* <ActionItem>
           {lightMode ? (
             <DarkModeButton onClick={toggleDarkMode}>
               <MoonIcon />
@@ -41,7 +41,7 @@ export default function HeaderBar() {
               <SunIcon />
             </LightModeButton>
           )}
-        </ActionItem>
+        </ActionItem> */}
 
         <ActionItem>
           <SettingsLink href="/settings">

@@ -4,7 +4,7 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { fetchFacultyRole } from "@/lib/server-utils";
-import "../globals.css";
+import "../../globals.css";
 
 export const metadata = {
   title: "New UI | Milestone Monitor",
@@ -34,10 +34,10 @@ export default async function RootLayout({
     userData = await fetchFacultyRole(user.email as string);
 
     //conditions to check if the user is an hod, editor or regular faculty
-    if (userData.faculty_role != "hod") {
+    if (userData?.faculty_role !== "hod") {
       hodBool = false;
     }
-    if (userData.faculty_role != "editor") {
+    if (userData?.faculty_role !== "editor") {
       editorBool = false;
     }
   }
