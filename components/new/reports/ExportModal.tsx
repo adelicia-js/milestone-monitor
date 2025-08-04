@@ -6,6 +6,9 @@ import { Inter } from "next/font/google";
 import { X, Download, FileText, FileSpreadsheet, FileImage, Settings } from "lucide-react";
 import { DisplayData } from "@/lib/hooks/useReport";
 import { Faculty } from "@/lib/types";
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const bodyText = Inter({
   weight: "400",
@@ -133,17 +136,75 @@ export default function ExportModal({
   };
 
   const exportToExcel = (exportData: any[]) => {
-    // For now, export as CSV with .xlsx extension
-    // In a real implementation, you'd use a library like xlsx or exceljs
-    console.log('Excel export would be implemented with xlsx library', exportData);
-    exportToCSV(exportData);
+    if (exportData.length === 0) return;
+
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+    
+    // Convert data to worksheet
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    
+    // Auto-size columns
+    const columnWidths = Object.keys(exportData[0]).map(key => ({
+      wch: Math.max(key.length, ...exportData.map(row => String(row[key] || '').length))
+    }));
+    worksheet['!cols'] = columnWidths;
+    
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reports');
+    
+    // Generate filename with current date
+    const filename = `reports_${new Date().toISOString().split('T')[0]}.xlsx`;
+    
+    // Write file
+    XLSX.writeFile(workbook, filename);
   };
 
   const exportToPDF = (exportData: any[]) => {
-    // For now, show an alert
-    // In a real implementation, you'd use a library like jsPDF or Puppeteer
-    console.log('PDF export would be implemented with jsPDF library', exportData);
-    alert('PDF export feature coming soon!');
+    if (exportData.length === 0) return;
+
+    // Create new PDF document
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text('Record Summary Report', 20, 20);
+    
+    // Add generation date
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 30);
+    
+    // Prepare table data
+    const headers = Object.keys(exportData[0]);
+    const rows = exportData.map(row => headers.map(header => row[header] || ''));
+    
+    // Add table
+    autoTable(doc, {
+      head: [headers],
+      body: rows,
+      startY: 40,
+      styles: {
+        fontSize: 8,
+        cellPadding: 3,
+      },
+      headStyles: {
+        fillColor: [4, 103, 112],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245],
+      },
+      margin: { top: 40, right: 20, bottom: 20, left: 20 },
+    });
+    
+    // Generate filename with current date
+    const filename = `reports_${new Date().toISOString().split('T')[0]}.pdf`;
+    
+    // Save the PDF
+    doc.save(filename);
   };
 
   if (!isOpen) return null;

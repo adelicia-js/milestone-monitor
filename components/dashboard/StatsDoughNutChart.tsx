@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { LoadingContainer, LoadingText } from "../ui/GenericStyles";
 import { getMilestoneNumbers } from "@/app/api/dbfunctions";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Loader from "@/components/ui/Loader";
+import { Inter } from "next/font/google";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+
+const bodyText = Inter({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 const StatsDoughNutChart = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -85,7 +93,27 @@ const StatsDoughNutChart = () => {
   };
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <LoadingContainer>
+        <Loader customHeight="h-fit" />
+        <LoadingText>Loading your stats...</LoadingText>
+      </LoadingContainer>
+    );
+  }
+
+  // Check if all stats are zero or empty
+  const hasData = statArr.some((stat) => stat && stat > 0);
+
+  if (!hasData) {
+    return (
+      <EmptyDataContainer>
+        <EmptyDataIcon>📊</EmptyDataIcon>
+        <EmptyDataHeader>No Data Available</EmptyDataHeader>
+        <EmptyDataDesc>
+          Start adding your achievements to see statistics here
+        </EmptyDataDesc>
+      </EmptyDataContainer>
+    );
   }
 
   return (
@@ -102,3 +130,33 @@ const StatsDoughNutChart = () => {
 };
 
 export default StatsDoughNutChart;
+
+const EmptyDataContainer = styled.div`
+  font-family: ${bodyText.style.fontFamily};
+  width: 80%;
+  height: 80%;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const EmptyDataIcon = styled.div`
+  font-size: 3rem;
+  opacity: 0.5;
+`;
+
+const EmptyDataHeader = styled.div`
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(4, 103, 112, 0.8);
+  text-align: center;
+`;
+
+const EmptyDataDesc = styled.div`
+  font-size: 0.875rem;
+  color: rgba(107, 114, 128, 0.8);
+  text-align: center;
+  max-width: 50%
+`;

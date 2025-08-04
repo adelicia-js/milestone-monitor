@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { X, Save, Upload } from "lucide-react";
@@ -40,6 +40,11 @@ export default function CategoryModal({
 }: CategoryModalProps) {
   const [formData, setFormData] = useState(initialData);
   const [files, setFiles] = useState<{ [key: string]: File | null }>({});
+
+  // Update formData when initialData changes (for editing)
+  useEffect(() => {
+    setFormData(initialData);
+  }, [initialData]);
 
   const handleInputChange = (key: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [key]: value }));

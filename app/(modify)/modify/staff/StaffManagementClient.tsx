@@ -22,6 +22,17 @@ export default function StaffManagementClient({
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  const refreshStaffList = async () => {
+    try {
+      const result = await facultyApi.getStaffByDepartment(currentUserDept);
+      if (result.data) {
+        setStaffList(result.data);
+      }
+    } catch (err) {
+      console.error('Error refreshing staff list:', err);
+    }
+  };
+
   const handleAddStaff = async (staffData: any) => {
     setLoading(true);
     setError(null);
@@ -31,7 +42,7 @@ export default function StaffManagementClient({
         faculty_id: staffData.faculty_id,
         faculty_department: staffData.faculty_department,
         faculty_role: staffData.faculty_role,
-        faculty_phone: staffData.faculty_phone,
+        faculty_phone: staffData.faculty_phone || null,
         faculty_email: staffData.faculty_email,
         password: staffData.password
       });
@@ -40,8 +51,8 @@ export default function StaffManagementClient({
         throw new Error(result.error);
       }
       
-      // Refresh the page to get updated staff list
-      router.refresh();
+      // Refresh the staff list to show the new member
+      await refreshStaffList();
     } catch (err) {
       console.error('Error adding staff:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to add staff member. Please try again.';
@@ -60,8 +71,7 @@ export default function StaffManagementClient({
         faculty_id: staffData.faculty_id,
         faculty_department: staffData.faculty_department,
         faculty_role: staffData.faculty_role,
-        faculty_phone: staffData.faculty_phone,
-        faculty_google_scholar: staffData.faculty_google_scholar
+        faculty_phone: staffData.faculty_phone || null
       };
       
       const result = await facultyApi.updateStaff(staffData.faculty_email, updates);
@@ -70,7 +80,8 @@ export default function StaffManagementClient({
         throw new Error(result.error);
       }
       
-      router.refresh();
+      // Refresh the staff list to show the updated details
+      await refreshStaffList();
     } catch (err) {
       console.error('Error editing staff:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to edit staff member. Please try again.';
@@ -90,7 +101,8 @@ export default function StaffManagementClient({
         throw new Error(result.error);
       }
       
-      router.refresh();
+      // Refresh the staff list to remove the deleted member
+      await refreshStaffList();
     } catch (err) {
       console.error('Error deleting staff:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to delete staff member. Please try again.';

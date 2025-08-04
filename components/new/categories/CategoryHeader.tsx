@@ -2,10 +2,7 @@
 
 import React from "react";
 import styled from "styled-components";
-import {
-  GenericHeader,
-  GenericHeaderContainer,
-} from "@/components/ui/GenericStyles";
+import { GenericHeader } from "@/components/ui/GenericStyles";
 import { Plus } from "lucide-react";
 import { Inter } from "next/font/google";
 
@@ -19,12 +16,13 @@ interface CategoryHeaderProps {
   onAddNew: () => void;
 }
 
-export default function CategoryHeader({ title, onAddNew }: CategoryHeaderProps) {
+export default function CategoryHeader({
+  title,
+  onAddNew,
+}: CategoryHeaderProps) {
   return (
     <HeaderWrapper>
-      <GenericHeaderContainer>
-        <GenericHeader>{title}</GenericHeader>
-      </GenericHeaderContainer>
+      <HeaderText>{title}</HeaderText>
       <AddButton onClick={onAddNew}>
         <Plus size={20} />
         <ButtonText>Add New</ButtonText>
@@ -34,19 +32,36 @@ export default function CategoryHeader({ title, onAddNew }: CategoryHeaderProps)
 }
 
 const HeaderWrapper = styled.div`
+  z-index: 20;
+  top: 1.5rem;
+  position: absolute;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  margin-bottom: 1.5rem;
+  gap: 1.5rem;
+  width: fit-content;
+`;
+
+const HeaderText = styled(GenericHeader)`
+  z-index: 20;
+  font-size: 1.05rem;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
 `;
 
 const AddButton = styled.button`
+  z-index: 20;
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.9), rgba(6, 95, 70, 0.9));
+  background: linear-gradient(
+    120deg,
+    rgba(0, 131, 143, 0.65),
+    rgba(179, 217, 217, 0.7)
+  );
+  border: 0.1px solid rgba(0, 131, 143, 0.27);
   color: white;
   border: none;
   border-radius: 0.75rem;
@@ -59,7 +74,11 @@ const AddButton = styled.button`
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15);
-    background: linear-gradient(135deg, rgba(4, 103, 112, 1), rgba(6, 95, 70, 1));
+    background: linear-gradient(
+      135deg,
+      rgba(0, 131, 143, 0.2),
+      rgba(0, 131, 143, 1)
+    );
   }
 
   &:active {

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import ApprovalsWrapper from "@/components/new/approvals/ApprovalsWrapper";
 import { PendingData } from "@/app/(modify)/modify/approvals/types";
 import { approvalApi } from "@/lib/api";
@@ -16,6 +16,13 @@ export default function ApprovalsClient({
   userData
 }: ApprovalsClientProps) {
   const router = useRouter();
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const clearMessages = () => {
+    setSuccess(null);
+    setError(null);
+  };
 
   // Process the data to add entry_type and title fields (same as original logic)
   const processedData = { ...pending_data };
@@ -44,28 +51,42 @@ export default function ApprovalsClient({
   }
 
   const handleApprove = async (data: any) => {
+    clearMessages();
     try {
       const result = await approvalApi.approveEntry(data);
       if (result.error) {
         throw new Error(result.error);
       }
+      setSuccess(`${data.entry_type} entry approved successfully!`);
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(null), 3000);
       router.refresh(); // Refresh to get updated data
     } catch (error) {
       console.error('Error approving entry:', error);
-      alert('Failed to approve entry. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to approve entry. Please try again.';
+      setError(errorMessage);
+      // Clear error message after 5 seconds
+      setTimeout(() => setError(null), 5000);
     }
   };
 
-  const handleReject = async (data: any, reason: string) => {
+  const handleReject = async (data: any) => {
+    clearMessages();
     try {
-      const result = await approvalApi.rejectEntry(data, reason);
+      const result = await approvalApi.rejectEntry(data);
       if (result.error) {
         throw new Error(result.error);
       }
+      setSuccess(`${data.entry_type} entry rejected successfully.`);
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(null), 3000);
       router.refresh(); // Refresh to get updated data
     } catch (error) {
       console.error('Error rejecting entry:', error);
-      alert('Failed to reject entry. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to reject entry. Please try again.';
+      setError(errorMessage);
+      // Clear error message after 5 seconds
+      setTimeout(() => setError(null), 5000);
     }
   };
 
@@ -75,6 +96,9 @@ export default function ApprovalsClient({
       userData={userData}
       onApprove={handleApprove}
       onReject={handleReject}
+      success={success}
+      error={error}
+      onClearMessages={clearMessages}
     />
   );
 }

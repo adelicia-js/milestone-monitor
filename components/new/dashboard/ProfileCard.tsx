@@ -7,15 +7,15 @@ import {
   GenericCard,
   GenericHeader,
   GenericHeaderContainer,
+  LoadingContainer,
+  LoadingText
 } from "@/components/ui/GenericStyles";
+import Loader from "@/components/ui/Loader";
+import { useGetUser } from "@/lib/hooks/useGetUser";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface ProfileCardProps {
-  // TODO: Remove once integration/api revamp is done
   imageURL?: string;
-  name?: string;
-  department?: string;
-  facultyRole?: string;
-  facultyID?: string;
 }
 
 const bodyText = Inter({
@@ -25,18 +25,58 @@ const bodyText = Inter({
 
 export default function ProfileCard(props: ProfileCardProps) {
   const [hasProfileImage, setHasProfileImage] = useState(false);
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const { userDetails, fetchUserDetails, loading } = useGetUser();
 
   useEffect(() => {
+    fetchUserDetails();
+  }, [fetchUserDetails]);
+
+  // Generate profile image URL based on faculty_id
+  useEffect(() => {
+    if (!userDetails?.faculty_id) return;
+
+    const supabase = createClientComponentClient();
+    const facultyId = userDetails.faculty_id;
+    
+    // Try the most common extension first (jpg)
+    const { data } = supabase.storage
+      .from('staff-media')
+      .getPublicUrl(`profilePictures/${facultyId}.jpg`);
+      
+    if (data.publicUrl) {
+      setProfileImageUrl(data.publicUrl);
+      setHasProfileImage(true);
+    }
+  }, [userDetails?.faculty_id]);
+
+  // Also check for provided imageURL prop
+  useEffect(() => {
     if (props.imageURL) {
+      setProfileImageUrl(props.imageURL);
       setHasProfileImage(true);
     }
   }, [props.imageURL]);
 
+  if (loading) {
+    return (
+      <Card>
+        <GenericHeaderContainer>
+          <GenericHeader>Your Profile</GenericHeader>
+        </GenericHeaderContainer>
+        <LoadingContainer style={{width: "100%"}}>
+          <Loader customHeight="h-fit"/>
+          <LoadingText>Loading profile details...</LoadingText>
+        </LoadingContainer>
+      </Card>
+    );
+  }
+
   const profileDetails = [
-    { label: "Name", value: props.name ?? "New Faculty" },
-    { label: "Department", value: props.department ?? "General" },
-    { label: "Faculty Role", value: props.facultyRole ?? "Staff" },
-    { label: "Faculty ID", value: props.facultyID ?? "TBD" },
+    { label: "Name", value: userDetails?.faculty_name ?? "New Faculty" },
+    { label: "Department", value: userDetails?.faculty_department ?? "General" },
+    { label: "Faculty Role", value: userDetails?.faculty_role.toUpperCase() ?? "faculty" },
+    { label: "Faculty ID", value: userDetails?.faculty_id ?? "TBD" },
   ];
 
   return (
@@ -45,8 +85,15 @@ export default function ProfileCard(props: ProfileCardProps) {
         <GenericHeader>Your Profile</GenericHeader>
       </GenericHeaderContainer>
       <ProfilePictureCard>
-        {hasProfileImage ? (
-          <ProfileImage src={props.imageURL} alt="Profile picture" />
+        {hasProfileImage && profileImageUrl ? (
+          <ProfileImage 
+            src={profileImageUrl} 
+            alt="Profile picture"
+            onError={() => {
+              setHasProfileImage(false);
+              setProfileImageUrl(null);
+            }}
+          />
         ) : (
           <PlaceholderContainer>
             <svg width="120" height="120" viewBox="0 0 80 80" fill="none">

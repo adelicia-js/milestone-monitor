@@ -3,7 +3,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
-import { Eye, Calendar, User } from "lucide-react";
+import { Eye, Calendar } from "lucide-react";
 
 const bodyText = Inter({
   weight: "400",
@@ -21,46 +21,53 @@ export default function ApprovalsTable({
   data,
   category,
   onViewDetails,
-  emptyMessage
+  emptyMessage,
 }: ApprovalsTableProps) {
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString();
   };
 
   const getTableColumns = () => {
     switch (category) {
-      case 'conferences':
+      case "all":
         return [
-          { key: 'faculty_id', label: 'Faculty ID' },
-          { key: 'paper_title', label: 'Paper Title' },
-          { key: 'conf_name', label: 'Conference Name' },
-          { key: 'conf_date', label: 'Date' },
-          { key: 'type', label: 'Type' }
+          { key: "title", label: "Title" },
+          { key: "faculty_id", label: "Faculty ID" },
+          { key: "date", label: "Date" },
+          { key: "entry_type", label: "Type" },
         ];
-      case 'journals':
+      case "conferences":
         return [
-          { key: 'faculty_id', label: 'Faculty ID' },
-          { key: 'paper_title', label: 'Paper Title' },
-          { key: 'journal_name', label: 'Journal Name' },
-          { key: 'month_and_year_of_publication', label: 'Publication Date' },
-          { key: 'indexed_in', label: 'Indexed In' }
+          { key: "faculty_id", label: "Faculty ID" },
+          { key: "paper_title", label: "Paper Title" },
+          { key: "conf_name", label: "Conference Name" },
+          { key: "conf_date", label: "Date" },
+          { key: "type", label: "Type" },
         ];
-      case 'patents':
+      case "journals":
         return [
-          { key: 'faculty_id', label: 'Faculty ID' },
-          { key: 'patent_name', label: 'Patent Name' },
-          { key: 'patent_type', label: 'Type' },
-          { key: 'application_no', label: 'Application No' },
-          { key: 'status', label: 'Status' }
+          { key: "faculty_id", label: "Faculty ID" },
+          { key: "paper_title", label: "Paper Title" },
+          { key: "journal_name", label: "Journal Name" },
+          { key: "month_and_year_of_publication", label: "Publication Date" },
+          { key: "indexed_in", label: "Indexed In" },
         ];
-      case 'workshops':
+      case "patents":
         return [
-          { key: 'faculty_id', label: 'Faculty ID' },
-          { key: 'title', label: 'Title' },
-          { key: 'organized_by', label: 'Organized By' },
-          { key: 'date', label: 'Date' },
-          { key: 'number_of_days', label: 'Duration (Days)' }
+          { key: "faculty_id", label: "Faculty ID" },
+          { key: "patent_name", label: "Patent Name" },
+          { key: "patent_type", label: "Type" },
+          { key: "application_no", label: "Application No" },
+          { key: "status", label: "Status" },
+        ];
+      case "workshops":
+        return [
+          { key: "faculty_id", label: "Faculty ID" },
+          { key: "title", label: "Title" },
+          { key: "organized_by", label: "Organized By" },
+          { key: "date", label: "Date" },
+          { key: "number_of_days", label: "Duration (Days)" },
         ];
       default:
         return [];
@@ -68,20 +75,45 @@ export default function ApprovalsTable({
   };
 
   const renderCellValue = (item: any, columnKey: string) => {
+    // Handle unified fields for "all" category
+    if (category === "all") {
+      if (columnKey === "title") {
+        return item.title || "N/A";
+      }
+      if (columnKey === "date") {
+        // Map to the appropriate date field based on entry type
+        const dateField =
+          item.entry_type === "Conference"
+            ? "conf_date"
+            : item.entry_type === "Journal"
+            ? "month_and_year_of_publication"
+            : item.entry_type === "Patent"
+            ? "patent_date"
+            : "date"; // Workshop
+        return formatDate(item[dateField]);
+      }
+      if (columnKey === "entry_type") {
+        return item.entry_type || "N/A";
+      }
+    }
+
     const value = item[columnKey];
-    
-    if (!value) return 'N/A';
-    
+
+    if (!value) return "N/A";
+
     // Format dates
-    if (columnKey.includes('date') || columnKey === 'month_and_year_of_publication') {
+    if (
+      columnKey.includes("date") ||
+      columnKey === "month_and_year_of_publication"
+    ) {
       return formatDate(value);
     }
-    
+
     // Format specific fields
-    if (columnKey === 'number_of_days') {
+    if (columnKey === "number_of_days") {
       return `${value} days`;
     }
-    
+
     return value.toString();
   };
 
@@ -91,7 +123,9 @@ export default function ApprovalsTable({
         <EmptyState>
           <EmptyIcon>📋</EmptyIcon>
           <EmptyMessage>{emptyMessage}</EmptyMessage>
-          <EmptySubtext>All entries in this category have been processed.</EmptySubtext>
+          <EmptySubtext>
+            All entries in this category have been processed.
+          </EmptySubtext>
         </EmptyState>
       </TableCard>
     );
@@ -119,11 +153,14 @@ export default function ApprovalsTable({
               <TableRow key={item.id || index}>
                 {columns.map((column) => (
                   <TableCell key={column.key}>
-                    {column.key === 'faculty_id' ? (
+                    {column.key === "faculty_id" ? (
                       <FacultyId>{renderCellValue(item, column.key)}</FacultyId>
-                    ) : column.key.includes('title') || column.key.includes('name') ? (
+                    ) : column.key.includes("title") ||
+                      column.key.includes("name") ? (
                       <TitleCell>{renderCellValue(item, column.key)}</TitleCell>
-                    ) : column.key === 'type' || column.key === 'indexed_in' || column.key === 'status' ? (
+                    ) : column.key === "type" ||
+                      column.key === "indexed_in" ||
+                      column.key === "status" ? (
                       <Badge>{renderCellValue(item, column.key)}</Badge>
                     ) : (
                       renderCellValue(item, column.key)
@@ -203,6 +240,8 @@ const TableHeaderCell = styled.th`
   letter-spacing: 0.3px;
   border-bottom: 2px solid rgba(4, 103, 112, 0.2);
   white-space: nowrap;
+  vertical-align: middle;
+  height: 60px; /* Fixed header height */
 `;
 
 const TableCell = styled.td`
@@ -210,31 +249,47 @@ const TableCell = styled.td`
   font-family: ${bodyText.style.fontFamily};
   font-size: 0.9rem;
   color: rgba(31, 41, 55, 0.9);
-  vertical-align: top;
+  vertical-align: middle; /* Changed from top to middle for better alignment */
+  height: 70px; /* Fixed cell height for consistent alignment */
 `;
 
 const FacultyId = styled.span`
   font-weight: 600;
   color: rgba(4, 103, 112, 0.8);
   font-family: monospace;
+  white-space: nowrap;
 `;
 
 const TitleCell = styled.div`
   max-width: 250px;
   word-wrap: break-word;
-  line-height: 1.4;
+  line-height: 1.3;
   font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Badge = styled.span`
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.25rem 0.75rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.1), rgba(6, 95, 70, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(4, 103, 112, 0.1),
+    rgba(6, 95, 70, 0.1)
+  );
   color: rgba(4, 103, 112, 0.9);
   border: 1px solid rgba(4, 103, 112, 0.2);
   border-radius: 0.5rem;
   font-size: 0.8rem;
   font-weight: 500;
+  white-space: nowrap;
+  min-width: 70px;
+  text-align: center;
 `;
 
 const DateWrapper = styled.div`
@@ -243,14 +298,20 @@ const DateWrapper = styled.div`
   gap: 0.5rem;
   color: rgba(107, 114, 128, 0.8);
   font-size: 0.85rem;
+  white-space: nowrap;
 `;
 
 const ActionButton = styled.button`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.9), rgba(6, 95, 70, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 131, 143, 0.2),
+    rgba(0, 131, 143, 1)
+  );
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -259,9 +320,10 @@ const ActionButton = styled.button`
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  min-width: 100px;
 
   &:hover {
-    background: linear-gradient(135deg, rgba(4, 103, 112, 1), rgba(6, 95, 70, 1));
     transform: translateY(-1px);
   }
 
@@ -271,12 +333,13 @@ const ActionButton = styled.button`
 `;
 
 const EmptyState = styled.div`
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 4rem;
-  gap: 1rem;
+  gap: 0.5rem;
 `;
 
 const EmptyIcon = styled.div`

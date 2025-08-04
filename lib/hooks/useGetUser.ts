@@ -41,6 +41,7 @@ export const useGetUser = () => {
       }
 
       setUserDetails(userDetails);
+      setLoading(false);
 
       if (userDetails) {
         if (userDetails.faculty_role === "hod") {

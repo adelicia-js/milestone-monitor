@@ -12,6 +12,9 @@ import {
   BookOpen,
   Lightbulb,
   FileText,
+  Shield,
+  UserPlus,
+  CheckCircle,
 } from "lucide-react";
 
 const bodyText = Inconsolata({
@@ -79,11 +82,39 @@ export default function VerticalBar(props: VerticalBarProps) {
           </NavLink>
         </NavItem>
 
+        {props.is_hod && <ModifySubComp />}
         {(props.is_hod || props.is_editor) && <ReportSubComp />}
       </NavList>
     </NavContainer>
   );
 }
+
+const ModifySubComp = () => {
+  return (
+    <NavItem>
+      <NavLink style={{cursor: "default"}}>
+        <IconWrapper>
+          <Shield size={30} />
+        </IconWrapper>
+        <NavText>Modify</NavText>
+      </NavLink>
+      <SubMenu>
+        <SubMenuItem>
+          <SubNavLink href="/modify/staff">
+            <UserPlus size={18} />
+            <span>Staff</span>
+          </SubNavLink>
+        </SubMenuItem>
+        <SubMenuItem>
+          <SubNavLink href="/modify/approvals">
+            <CheckCircle size={18} />
+            <span>Approvals</span>
+          </SubNavLink>
+        </SubMenuItem>
+      </SubMenu>
+    </NavItem>
+  );
+};
 
 const ReportSubComp = () => {
   return (
@@ -179,9 +210,10 @@ const LogoImage = styled(Image)`
 `;
 
 const NavItem = styled.li`
-width: 100%;
+  width: 100%;
+  position: relative;
 
-&:hover {
+  &:hover {
     color: rgba(3, 78, 90, 0.95);
     animation: ${pulse} 0.5s ease-in-out;
   }
@@ -219,4 +251,70 @@ const IconWrapper = styled.div`
 
 const NavText = styled.p`
   margin: 0;
+`;
+
+const SubMenu = styled.div`
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(20, 154, 184, 0.77);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(216, 236, 236, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  min-height: 120px;
+  min-width: 140px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-evenly;
+
+  ${NavItem}:hover & {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0.5rem);
+  }
+`;
+
+const SubMenuItem = styled.div`
+  margin-bottom: 0.25rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const SubNavLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: rgba(216, 236, 236, 0.9);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(216, 236, 236, 0.15);
+    color: white;
+    transform: translateX(2px);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-weight: 500;
+  }
 `;

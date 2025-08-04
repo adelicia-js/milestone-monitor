@@ -61,3 +61,19 @@ export const GenericHeader = styled.p`
     font-size: 1rem;
   }
 `;
+
+export const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1rem;
+`;
+
+export const LoadingText = styled.p`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 0.875rem;
+  color: rgba(0, 131, 143, 0.7);
+  margin: 0;
+`;

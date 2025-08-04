@@ -1,3 +1,5 @@
+// TODO: Remove this comment if dark mode is implemented
+/* eslint-disable @typescript-eslint/no-unused-vars */ 
 "use client";
 
 import React, { useState } from "react";
@@ -78,7 +80,7 @@ const rotate = keyframes`
 // Styled Components
 const HeaderContainer = styled.section`
   z-index: 10;
-  width: 100%;
+  width: fit-content;
   margin: 0;
   position: fixed;
   top: 0;
@@ -93,7 +95,7 @@ const HeaderContainer = styled.section`
 
 const LargeScreenNav = styled.ul`
   visibility: hidden;
-  width: 100%;
+  width: fit-content;
   display: flex;
   flex-direction: row;
   align-items: center;

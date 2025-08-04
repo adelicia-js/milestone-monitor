@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { X, Save, User, Mail, Phone, Building, Shield, Key } from "lucide-react";
 import { Faculty } from "@/lib/types";
+import { DEPARTMENTS } from "@/lib/constants/departments";
 
 const bodyText = Inter({
   weight: "400",
@@ -159,12 +160,11 @@ export default function StaffModal({
                 onChange={(e) => handleInputChange('faculty_department', e.target.value)}
                 required
               >
-                <option value="Computer Science">Computer Science</option>
-                <option value="Information Technology">Information Technology</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Mechanical">Mechanical</option>
-                <option value="Civil">Civil</option>
-                <option value="Electrical">Electrical</option>
+                {DEPARTMENTS.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
               </Select>
             </FormGroup>
 

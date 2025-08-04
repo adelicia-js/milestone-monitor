@@ -132,7 +132,7 @@ export class ApprovalApi extends ApiClient {
   }
 
   // Reject an entry
-  async rejectEntry(data: ApprovalEntry, reason?: string): Promise<ApiResponse<CategoryData>> {
+  async rejectEntry(data: ApprovalEntry): Promise<ApiResponse<CategoryData>> {
     try {
       let tableName: string;
       
@@ -153,12 +153,7 @@ export class ApprovalApi extends ApiClient {
           return { data: null, error: `Unknown entry type: ${data.entry_type}` };
       }
 
-      const updates: any = { is_verified: 'REJECTED' };
-      if (reason) {
-        updates.rejection_reason = reason;
-      }
-
-      return this.update<CategoryData>(tableName, data.id, updates);
+      return this.update<CategoryData>(tableName, data.id, { is_verified: 'REJECTED' });
     } catch (error) {
       console.error('Error in rejectEntry:', error);
       return { data: null, error: 'Failed to reject entry' };
@@ -186,12 +181,12 @@ export class ApprovalApi extends ApiClient {
   }
 
   // Bulk reject multiple entries
-  async bulkReject(entries: ApprovalEntry[], reason?: string): Promise<ApiResponse<{ success: number; failed: number }>> {
+  async bulkReject(entries: ApprovalEntry[]): Promise<ApiResponse<{ success: number; failed: number }>> {
     let success = 0;
     let failed = 0;
 
     for (const entry of entries) {
-      const result = await this.rejectEntry(entry, reason);
+      const result = await this.rejectEntry(entry);
       if (result.error) {
         failed++;
       } else {

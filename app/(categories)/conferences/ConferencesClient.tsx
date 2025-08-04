@@ -109,6 +109,7 @@ export default function ConferencesClient({ data, facultyData }: ConferencesClie
         type: formData.type,
         proceedings: formData.proceedings === 'true',
         proceeding_fp: formData.proceeding_fp,
+        is_verified: 'PENDING',
       };
       
       const result = await conferenceApi.updateConference(formData.id, updates);
@@ -123,14 +124,29 @@ export default function ConferencesClient({ data, facultyData }: ConferencesClie
     }
   };
 
+  const handleDelete = async (item: any) => {
+    try {
+      const result = await conferenceApi.deleteConference(item.id);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting conference:', error);
+      alert('Failed to delete conference. Please try again.');
+    }
+  };
+
   return (
     <CategoryPageWrapper
-      title="Conferences"
+      title="Your Conferences"
       data={data}
       fields={displayFields}
       formFields={formFields}
       onAddNew={handleAddNew}
       onEdit={handleEdit}
+      onDelete={handleDelete}
       emptyMessage="No conferences found. Start by adding your first conference paper!"
     />
   );

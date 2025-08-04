@@ -4,11 +4,21 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { Faculty } from "@/lib/types";
-import { ReportFilters } from "@/lib/hooks/useReport";
-import { Search, Calendar, Users, FileType, CheckCircle, Filter } from "lucide-react";
+import { ReportFiltersI } from "@/lib/hooks/useReport";
+import {
+  Search,
+  Calendar,
+  Users,
+  FileType,
+  CheckCircle,
+  Filter,
+  RotateCcw,
+} from "lucide-react";
+import Loader from "@/components/ui/Loader";
 import {
   GenericHeader,
-  GenericHeaderContainer,
+  LoadingContainer,
+  LoadingText,
 } from "@/components/ui/GenericStyles";
 
 const bodyText = Inter({
@@ -16,21 +26,21 @@ const bodyText = Inter({
   subsets: ["latin"],
 });
 
-interface ModernFiltersProps {
+interface ReportFiltersProps {
   staffDetails: Faculty[] | null;
   staffDepartment: string | null;
-  onFiltersChange: (filters: ReportFilters) => void;
+  onFiltersChange: (filters: ReportFiltersI) => void;
   loading?: boolean;
   error?: string | null;
 }
 
-export default function ModernFilters({
+export default function ReportFilters({
   staffDetails,
   staffDepartment,
   onFiltersChange,
   loading,
-  error
-}: ModernFiltersProps) {
+  error,
+}: ReportFiltersProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState("2001-01-01");
   const [endDate, setEndDate] = useState(new Date().toJSON().slice(0, 10));
@@ -55,16 +65,25 @@ export default function ModernFilters({
     selectedStaff,
     selectedType,
     selectedStatus,
-    staffDepartment
+    staffDepartment,
   ]);
+
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setStartDate("2001-01-01");
+    setEndDate(new Date().toJSON().slice(0, 10));
+    setSelectedStaff("");
+    setSelectedType("");
+    setSelectedStatus("");
+  };
 
   if (loading) {
     return (
       <FilterCard>
-        <LoadingState>
-          <LoadingSpinner />
+        <LoadingContainer>
+          <Loader customHeight="h-fit"/>
           <LoadingText>Loading filters...</LoadingText>
-        </LoadingState>
+        </LoadingContainer>
       </FilterCard>
     );
   }
@@ -81,12 +100,16 @@ export default function ModernFilters({
 
   return (
     <FilterCard>
-      <GenericHeaderContainer>
-        <GenericHeader>
+      <FilterHeader>
+        <HeaderContent>
           <Filter size={18} />
-          Filters
-        </GenericHeader>
-      </GenericHeaderContainer>
+          <HeaderText>Filters</HeaderText>
+        </HeaderContent>
+        <ClearButton onClick={handleClearFilters} title="Clear all filters">
+          <RotateCcw size={16} />
+          Clear
+        </ClearButton>
+      </FilterHeader>
 
       <FiltersContent>
         <FilterGroup>
@@ -149,10 +172,10 @@ export default function ModernFilters({
             onChange={(e) => setSelectedType(e.target.value)}
           >
             <option value="">All Types</option>
-            <option value="conferences">Conferences</option>
-            <option value="journal_publications">Journals</option>
-            <option value="patents">Patents</option>
-            <option value="fdp_workshop_refresher_course">Workshops</option>
+            <option value="Conferences">Conferences</option>
+            <option value="Journals">Journals</option>
+            <option value="Patents">Patents</option>
+            <option value="Workshops">Workshops</option>
           </Select>
         </FilterGroup>
 
@@ -177,8 +200,8 @@ export default function ModernFilters({
 }
 
 const FilterCard = styled.div`
+  height: 100%;
   width: 100%;
-  height: fit-content;
   border: 0.1px solid rgba(56, 68, 68, 0.28);
   border-radius: 1rem;
   box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
@@ -207,7 +230,7 @@ const FilterLabel = styled.label`
   font-family: ${bodyText.style.fontFamily};
   font-weight: 500;
   color: rgba(4, 103, 112, 0.9);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 `;
@@ -283,35 +306,6 @@ const Select = styled.select`
   }
 `;
 
-const LoadingState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  gap: 1rem;
-`;
-
-const LoadingSpinner = styled.div`
-  width: 2rem;
-  height: 2rem;
-  border: 2px solid rgba(4, 103, 112, 0.2);
-  border-top: 2px solid rgba(4, 103, 112, 0.8);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;
-
-const LoadingText = styled.p`
-  font-family: ${bodyText.style.fontFamily};
-  color: rgba(107, 114, 128, 0.8);
-  font-size: 0.9rem;
-`;
-
 const ErrorState = styled.div`
   display: flex;
   align-items: center;
@@ -321,4 +315,62 @@ const ErrorState = styled.div`
   font-family: ${bodyText.style.fontFamily};
   font-size: 0.9rem;
   text-align: center;
+`;
+
+const FilterHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgba(4, 103, 112, 0.99);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(56, 68, 68, 0.1);
+`;
+
+const HeaderContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  svg {
+    color: rgba(4, 103, 112, 0.99);
+  }
+`;
+
+const HeaderText = styled(GenericHeader)`
+  margin: 0;
+`;
+
+const ClearButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(107, 114, 128, 0.8);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(107, 114, 128, 0.1);
+    border-color: rgba(107, 114, 128, 0.5);
+    color: rgba(107, 114, 128, 1);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover svg {
+    transform: rotate(-180deg);
+  }
 `;

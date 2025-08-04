@@ -3,15 +3,19 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
+import { GenericHeader } from "@/components/ui/GenericStyles";
 import {
-  GenericHeader,
-  GenericHeaderContainer,
-} from "@/components/ui/GenericStyles";
-import { CheckCircle, Users, BookOpen, Lightbulb, Briefcase } from "lucide-react";
+  Users,
+  BookOpen,
+  Lightbulb,
+  Briefcase,
+  LayoutGridIcon,
+} from "lucide-react";
 import ApprovalsTable from "./ApprovalsTable";
 import ApprovalModal from "./ApprovalModal";
-import { Conference, Journal, Workshop, Patent } from "@/lib/types";
+// import { Conference, Journal, Workshop, Patent } from "@/lib/types";
 import { PendingData } from "@/app/(modify)/modify/approvals/types";
+import { CheckCircle, AlertCircle, X } from "lucide-react";
 
 const bodyText = Inter({
   weight: "400",
@@ -22,10 +26,13 @@ interface ApprovalsWrapperProps {
   pendingData: PendingData;
   userData: any;
   onApprove: (data: any) => void;
-  onReject: (data: any, reason: string) => void;
+  onReject: (data: any) => void;
+  success?: string | null;
+  error?: string | null;
+  onClearMessages?: () => void;
 }
 
-type TabType = 'conferences' | 'journals' | 'patents' | 'workshops';
+type TabType = "all" | "conferences" | "journals" | "patents" | "workshops";
 
 interface TabConfig {
   key: TabType;
@@ -39,45 +46,65 @@ export default function ApprovalsWrapper({
   pendingData,
   userData,
   onApprove,
-  onReject
+  onReject,
+  success,
+  error,
+  onClearMessages,
 }: ApprovalsWrapperProps) {
-  const [activeTab, setActiveTab] = useState<TabType>('conferences');
+  const [activeTab, setActiveTab] = useState<TabType>("all");
   const [selectedEntry, setSelectedEntry] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const tabs: TabConfig[] = [
-    {
-      key: 'conferences',
-      label: 'Conferences',
-      icon: <Users size={16} />,
-      count: pendingData.pending_conferences?.length || 0,
-      data: pendingData.pending_conferences || []
-    },
-    {
-      key: 'journals',
-      label: 'Journals',
-      icon: <BookOpen size={16} />,
-      count: pendingData.pending_journal?.length || 0,
-      data: pendingData.pending_journal || []
-    },
-    {
-      key: 'patents',
-      label: 'Patents',
-      icon: <Lightbulb size={16} />,
-      count: pendingData.pending_patent?.length || 0,
-      data: pendingData.pending_patent || []
-    },
-    {
-      key: 'workshops',
-      label: 'Workshops',
-      icon: <Briefcase size={16} />,
-      count: pendingData.pending_workshop?.length || 0,
-      data: pendingData.pending_workshop || []
-    }
+  // Combine all data for the "All" tab
+  const allData = [
+    ...(pendingData.pending_conferences || []),
+    ...(pendingData.pending_journal || []),
+    ...(pendingData.pending_patent || []),
+    ...(pendingData.pending_workshop || []),
   ];
 
-  const activeTabData = tabs.find(tab => tab.key === activeTab);
-  const totalPending = tabs.reduce((sum, tab) => sum + tab.count, 0);
+  const tabs: TabConfig[] = [
+    {
+      key: "conferences",
+      label: "Conferences",
+      icon: <Users size={16} />,
+      count: pendingData.pending_conferences?.length || 0,
+      data: pendingData.pending_conferences || [],
+    },
+    {
+      key: "journals",
+      label: "Journals",
+      icon: <BookOpen size={16} />,
+      count: pendingData.pending_journal?.length || 0,
+      data: pendingData.pending_journal || [],
+    },
+    {
+      key: "patents",
+      label: "Patents",
+      icon: <Lightbulb size={16} />,
+      count: pendingData.pending_patent?.length || 0,
+      data: pendingData.pending_patent || [],
+    },
+    {
+      key: "workshops",
+      label: "Workshops",
+      icon: <Briefcase size={16} />,
+      count: pendingData.pending_workshop?.length || 0,
+      data: pendingData.pending_workshop || [],
+    },
+    {
+      key: "all",
+      label: "All",
+      icon: <LayoutGridIcon size={16} />,
+      count: allData.length,
+      data: allData,
+    },
+  ];
+
+  const activeTabData = tabs.find((tab) => tab.key === activeTab);
+  const totalPending = tabs
+    .filter((tab) => tab.label !== "All")
+    .reduce((sum, tab) => sum + tab.count, 0);
 
   const handleViewDetails = (entry: any) => {
     setSelectedEntry(entry);
@@ -90,8 +117,8 @@ export default function ApprovalsWrapper({
     setSelectedEntry(null);
   };
 
-  const handleReject = (entry: any, reason: string) => {
-    onReject(entry, reason);
+  const handleReject = (entry: any) => {
+    onReject(entry);
     setIsModalOpen(false);
     setSelectedEntry(null);
   };
@@ -99,19 +126,39 @@ export default function ApprovalsWrapper({
   return (
     <Layout>
       <Container>
-        <Header>
-          <HeaderContent>
-            <GenericHeaderContainer>
-              <GenericHeader>
-                <CheckCircle size={20} />
-                Approvals
-              </GenericHeader>
-            </GenericHeaderContainer>
-            <StatsBadge>
-              Total Pending: {totalPending}
-            </StatsBadge>
-          </HeaderContent>
-        </Header>
+        <HeaderWrapper>
+          <HeaderText>Record Approvals</HeaderText>
+          <StatsBadge>Total Pending: {totalPending}</StatsBadge>
+        </HeaderWrapper>
+
+        {/* Notification Messages */}
+        {error && (
+          <MessageCard variant="error">
+            <MessageIcon>
+              <AlertCircle size={18} />
+            </MessageIcon>
+            <MessageText>{error}</MessageText>
+            {onClearMessages && (
+              <CloseButton onClick={onClearMessages}>
+                <X size={16} />
+              </CloseButton>
+            )}
+          </MessageCard>
+        )}
+
+        {success && (
+          <MessageCard variant="success">
+            <MessageIcon>
+              <CheckCircle size={18} />
+            </MessageIcon>
+            <MessageText>{success}</MessageText>
+            {onClearMessages && (
+              <CloseButton onClick={onClearMessages}>
+                <X size={16} />
+              </CloseButton>
+            )}
+          </MessageCard>
+        )}
 
         <TabsContainer>
           {tabs.map((tab) => (
@@ -132,7 +179,11 @@ export default function ApprovalsWrapper({
             data={activeTabData?.data || []}
             category={activeTab}
             onViewDetails={handleViewDetails}
-            emptyMessage={`No pending ${activeTab} found`}
+            emptyMessage={
+              activeTab === "all"
+                ? "No pending entries found"
+                : `No pending ${activeTab} found`
+            }
           />
         </ContentWrapper>
       </Container>
@@ -169,21 +220,31 @@ const Container = styled.section`
   gap: 1.5rem;
 `;
 
-const Header = styled.div`
+const HeaderWrapper = styled.div`
+  z-index: 20;
+  top: 1.5rem;
+  position: absolute;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  gap: 1rem;
+  width: fit-content;
 `;
 
-const HeaderContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+const HeaderText = styled(GenericHeader)`
+  z-index: 20;
+  font-size: 1.05rem;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
 `;
 
 const StatsBadge = styled.div`
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.1), rgba(6, 95, 70, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(4, 103, 112, 0.1),
+    rgba(6, 95, 70, 0.1)
+  );
   color: rgba(4, 103, 112, 0.9);
   border: 1px solid rgba(4, 103, 112, 0.2);
   border-radius: 0.75rem;
@@ -194,6 +255,7 @@ const StatsBadge = styled.div`
 `;
 
 const TabsContainer = styled.div`
+  margin-top: 1.5rem;
   display: flex;
   gap: 0.5rem;
   border-bottom: 2px solid rgba(56, 68, 68, 0.1);
@@ -211,15 +273,18 @@ const Tab = styled.button<{ active: boolean }>`
   font-family: ${bodyText.style.fontFamily};
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.5s ease, color 0.5s ease;
   white-space: nowrap;
   position: relative;
 
-  ${props => props.active ? `
+  ${(props) =>
+    props.active
+      ? `
     background: linear-gradient(135deg, rgba(4, 103, 112, 0.1), rgba(6, 95, 70, 0.1));
     color: rgba(4, 103, 112, 0.9);
     border-bottom: 3px solid rgba(4, 103, 112, 0.8);
-  ` : `
+  `
+      : `
     background: rgba(255, 255, 255, 0.5);
     color: rgba(107, 114, 128, 0.8);
     
@@ -256,4 +321,81 @@ const TabBadge = styled.span`
 const ContentWrapper = styled.div`
   flex: 1;
   overflow: hidden;
+`;
+
+const MessageCard = styled.div<{ variant: "success" | "error" }>`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+
+  ${(props) =>
+    props.variant === "success" &&
+    `
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.2);
+    color: rgba(22, 163, 74, 0.9);
+  `}
+
+  ${(props) =>
+    props.variant === "error" &&
+    `
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: rgba(220, 38, 38, 0.9);
+  `}
+
+  animation: slideIn 0.3s ease-out;
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+const MessageIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+`;
+
+const MessageText = styled.span`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 0.9rem;
+  font-weight: 500;
+  flex: 1;
+  margin: 0;
+`;
+
+const CloseButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 `;

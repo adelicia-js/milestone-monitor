@@ -51,14 +51,25 @@ export default function CategoryCard({ data, fields, onEdit, onDelete }: Categor
   const formatValue = (value: any, type?: string) => {
     if (!value) return 'N/A';
     
+    let formattedValue: string;
     switch (type) {
       case 'date':
-        return new Date(value).toLocaleDateString();
+        formattedValue = new Date(value).toLocaleDateString();
+        break;
       case 'status':
-        return value;
+        formattedValue = value;
+        break;
       default:
-        return value.toString();
+        formattedValue = value.toString();
     }
+    
+    // Truncate text if it exceeds the specified length (only for strings, not dates/status)
+    const maxLength = "Getting employed in a soul".length; // 25 characters
+    if (type !== 'status' && type !== 'date' && typeof value === 'string' && formattedValue.length > maxLength) {
+      return formattedValue.substring(0, maxLength - 3) + "...";
+    }
+    
+    return formattedValue;
   };
 
   return (
@@ -106,18 +117,13 @@ const Card = styled.div`
   box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
   background-color: rgba(244, 253, 252, 0.75);
   padding: 1.5rem;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 4px 8px 12px -1px rgba(48, 55, 55, 0.4);
-  }
 `;
 
 const CardContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  padding-top: 1.25rem;
 `;
 
 const FieldRow = styled.div`
@@ -179,8 +185,8 @@ const Badge = styled.span`
 
 const ActionButtons = styled.div`
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.5rem;
+  right: 0.5rem;
   display: flex;
   gap: 0.5rem;
 `;
@@ -198,24 +204,26 @@ const ActionButton = styled.button<{ variant: 'edit' | 'delete' }>`
   opacity: 0.7;
   
   ${props => props.variant === 'edit' && `
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8));
+    background: linear-gradient(135deg, rgba(122, 194, 226, 0.8), rgba(37, 99, 235, 0.8));
     color: white;
     
     &:hover {
       opacity: 1;
       transform: scale(1.05);
-      background: linear-gradient(135deg, rgba(59, 130, 246, 1), rgba(37, 99, 235, 1));
+      background: linear-gradient(135deg, rgba(96, 165, 250, 0.95), rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 1));
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
   `}
   
   ${props => props.variant === 'delete' && `
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.8));
+    background: linear-gradient(135deg, rgba(228, 150, 148, 0.8), rgba(220, 38, 38, 0.8));
     color: white;
     
     &:hover {
       opacity: 1;
       transform: scale(1.05);
-      background: linear-gradient(135deg, rgba(239, 68, 68, 1), rgba(220, 38, 38, 1));
+      background: linear-gradient(135deg, rgba(248, 113, 113, 0.95), rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 1));
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
   `}
   

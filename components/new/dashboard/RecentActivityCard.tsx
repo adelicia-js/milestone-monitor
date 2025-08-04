@@ -1,79 +1,128 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
-import { CheckCircle, Clock, AlertCircle, FileText, Send } from "lucide-react";
+import Loader from "@/components/ui/Loader";
+import { LoadingContainer, LoadingText } from "@/components/ui/GenericStyles";
+import { CheckCircle, Clock, FileText, XCircle } from "lucide-react";
+import { useRecentActivity } from "@/lib/hooks/useRecentActivity";
+import { useGetUser } from "@/lib/hooks/useGetUser";
+import { Inter } from "next/font/google";
 
-// Dummy data for recent activities
-const recentActivities = [
-  {
-    id: 1,
-    type: "upload",
-    title: "Journal Uploaded",
-    description: "Machine Learning in Healthcare - IEEE Trans.",
-    timestamp: "30 minutes ago",
-    icon: FileText,
-    iconColor: "rgba(0, 188, 212, 0.9)",
-    bgColor: "rgba(0, 188, 212, 0.1)",
-  },
-  {
-    id: 2,
-    type: "approval",
-    title: "Patent Approved",
-    description: "AI-Powered Diagnostic System - Dr. Sarah Chen",
-    timestamp: "2 hours ago",
-    icon: CheckCircle,
-    iconColor: "rgba(128, 210, 35, 0.9)",
-    bgColor: "rgba(128, 210, 35, 0.1)",
-  },
-  {
-    id: 3,
-    type: "edit",
-    title: "Conference Updated",
-    description: "ICML 2024 presentation details modified",
-    timestamp: "5 hours ago",
-    icon: AlertCircle,
-    iconColor: "rgba(0, 131, 143, 0.9)",
-    bgColor: "rgba(0, 131, 143, 0.1)",
-  },
-  {
-    id: 4,
-    type: "pending",
-    title: "Workshop Pending",
-    description: "Quantum Computing Workshop awaiting review",
-    timestamp: "1 day ago",
-    icon: Clock,
-    iconColor: "rgba(255, 152, 0, 0.9)",
-    bgColor: "rgba(255, 152, 0, 0.1)",
-  },
-  {
-    id: 5,
-    type: "submission",
-    title: "Research Submitted",
-    description: "Neural Networks Study - Prof. Kumar",
-    timestamp: "2 days ago",
-    icon: Send,
-    iconColor: "rgba(103, 58, 183, 0.9)",
-    bgColor: "rgba(103, 58, 183, 0.1)",
-  },
-];
+const bodyText = Inter({
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const getActivityIcon = (category: string) => {
+  switch (category) {
+    case "approval":
+      return CheckCircle;
+    case "pending":
+      return Clock;
+    case "rejection":
+      return XCircle;
+    case "upload":
+    case "edit":
+    default:
+      return FileText;
+  }
+};
+
+const getActivityColors = (category: string) => {
+  switch (category) {
+    case "approval":
+      return {
+        iconColor: "rgba(128, 210, 35, 0.9)",
+        bgColor: "rgba(128, 210, 35, 0.1)",
+      };
+    case "pending":
+      return {
+        iconColor: "rgba(255, 152, 0, 0.9)",
+        bgColor: "rgba(255, 152, 0, 0.1)",
+      };
+    case "rejection":
+      return {
+        iconColor: "rgba(244, 67, 54, 0.9)",
+        bgColor: "rgba(244, 67, 54, 0.1)",
+      };
+    case "upload":
+    case "edit":
+    default:
+      return {
+        iconColor: "rgba(0, 188, 212, 0.9)",
+        bgColor: "rgba(0, 188, 212, 0.1)",
+      };
+  }
+};
 
 export default function RecentActivityCard() {
+  const { userDetails, fetchUserDetails, loading: userLoading } = useGetUser();
+  const {
+    activities,
+    loading: activitiesLoading,
+    error,
+  } = useRecentActivity(userDetails?.faculty_id, 5);
+
+  useEffect(() => {
+    if (!userDetails) {
+      fetchUserDetails();
+    }
+  }, [userDetails, fetchUserDetails]);
+
+  // Show loading if either user details are loading OR activities are loading OR we don't have userDetails yet
+  const isLoading = userLoading || activitiesLoading || !userDetails;
+
+  if (isLoading) {
+    return (
+      <ActivityWrapper>
+        <LoadingContainer>
+          <Loader customHeight="h-fit" />
+          <LoadingText>Loading recent activities...</LoadingText>
+        </LoadingContainer>
+      </ActivityWrapper>
+    );
+  }
+
+  if (error) {
+    return (
+      <ActivityWrapper>
+        <ErrorContainer>
+          <ErrorText>Failed to load recent activities</ErrorText>
+        </ErrorContainer>
+      </ActivityWrapper>
+    );
+  }
+
+  if (!activities.length) {
+    return (
+      <ActivityWrapper>
+        <EmptyContainer>
+          <EmptyText>No recent activities</EmptyText>
+          <EmptySubtext>
+            Your recent submissions and updates will appear here
+          </EmptySubtext>
+        </EmptyContainer>
+      </ActivityWrapper>
+    );
+  }
+
   return (
     <ActivityWrapper>
       <ActivityList>
-        {recentActivities.map((activity, index) => {
-          const Icon = activity.icon;
+        {activities.map((activity, index) => {
+          const Icon = getActivityIcon(activity.category);
+          const colors = getActivityColors(activity.category);
           return (
             <ActivityItem key={activity.id}>
               <Timeline>
                 <IconContainer
-                  $iconColor={activity.iconColor}
-                  $bgColor={activity.bgColor}
+                  $iconColor={colors.iconColor}
+                  $bgColor={colors.bgColor}
                 >
                   <Icon size={16} />
                 </IconContainer>
-                {index < recentActivities.length - 1 && <TimelineLine />}
+                {index < activities.length - 1 && <TimelineLine />}
               </Timeline>
               <ActivityContent>
                 <ActivityTitle>{activity.title}</ActivityTitle>
@@ -91,6 +140,7 @@ export default function RecentActivityCard() {
 }
 
 const ActivityWrapper = styled.div`
+  font-family: ${bodyText.style.fontFamily};
   width: 100%;
   height: 100%;
   display: flex;
@@ -224,4 +274,40 @@ const ActivityTimestamp = styled.span`
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+`;
+
+const ErrorContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+`;
+
+const ErrorText = styled.p`
+  font-size: 0.875rem;
+  color: rgba(244, 67, 54, 0.8);
+  margin: 0;
+`;
+
+const EmptyContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 0.5rem;
+`;
+
+const EmptyText = styled.p`
+  font-size: 0.875rem;
+  color: rgba(0, 131, 143, 0.7);
+  margin: 0;
+  font-weight: 500;
+`;
+
+const EmptySubtext = styled.p`
+  font-size: 0.75rem;
+  color: rgba(0, 131, 143, 0.5);
+  margin: 0;
+  text-align: center;
 `;

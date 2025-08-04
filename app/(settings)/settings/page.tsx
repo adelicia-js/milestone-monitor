@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import ImprovedModernSettings from "@/components/new/settings/ImprovedModernSettings";
+import SettingsWrapper from "@/components/new/settings/SettingsWrapper";
 
 export const metadata: Metadata = {
   title: "Settings | Milestone Monitor",
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default function SettingsNewPage() {
-  return <ImprovedModernSettings />;
+  return <SettingsWrapper />;
 }

@@ -5,11 +5,8 @@ import styled from "styled-components";
 import StaffTable from "./StaffTable";
 import StaffModal from "./StaffModal";
 import { Faculty } from "@/lib/types";
-import {
-  GenericHeader,
-  GenericHeaderContainer,
-} from "@/components/ui/GenericStyles";
-import { Users, Plus } from "lucide-react";
+import { GenericHeader } from "@/components/ui/GenericStyles";
+import { Plus } from "lucide-react";
 import { Inter } from "next/font/google";
 
 const bodyText = Inter({
@@ -34,26 +31,26 @@ export default function StaffManagementWrapper({
   onEditStaff,
   onDeleteStaff,
   loading,
-  error
+  error,
 }: StaffManagementWrapperProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Faculty | null>(null);
-  const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
 
   const handleAddNew = () => {
     setEditingStaff(null);
-    setModalMode('add');
+    setModalMode("add");
     setIsModalOpen(true);
   };
 
   const handleEdit = (staff: Faculty) => {
     setEditingStaff(staff);
-    setModalMode('edit');
+    setModalMode("edit");
     setIsModalOpen(true);
   };
 
   const handleModalSubmit = (staffData: any) => {
-    if (modalMode === 'edit') {
+    if (modalMode === "edit") {
       onEditStaff(staffData);
     } else {
       onAddStaff(staffData);
@@ -70,23 +67,13 @@ export default function StaffManagementWrapper({
   return (
     <Layout>
       <Container>
-        <Header>
-          <HeaderContent>
-            <GenericHeaderContainer>
-              <GenericHeader>
-                <Users size={20} />
-                Staff Management
-              </GenericHeader>
-            </GenericHeaderContainer>
-            <DepartmentBadge>
-              Department: {currentUserDept}
-            </DepartmentBadge>
-          </HeaderContent>
+        <HeaderWrapper>
+          <HeaderText>Staff Management</HeaderText>
           <AddButton onClick={handleAddNew}>
             <Plus size={18} />
             Add Staff
           </AddButton>
-        </Header>
+        </HeaderWrapper>
 
         <TableWrapper>
           <StaffTable
@@ -129,37 +116,37 @@ const Container = styled.section`
   gap: 1.5rem;
 `;
 
-const Header = styled.div`
+const HeaderWrapper = styled.div`
+  z-index: 20;
+  top: 1.5rem;
+  position: absolute;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-`;
-
-const HeaderContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const DepartmentBadge = styled.div`
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.1), rgba(6, 95, 70, 0.1));
-  color: rgba(4, 103, 112, 0.9);
-  border: 1px solid rgba(4, 103, 112, 0.2);
-  border-radius: 0.75rem;
-  font-family: ${bodyText.style.fontFamily};
-  font-size: 0.9rem;
-  font-weight: 500;
+  align-items: center;
+  gap: 1.5rem;
   width: fit-content;
 `;
 
+const HeaderText = styled(GenericHeader)`
+  z-index: 20;
+  font-size: 1.05rem;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
+`;
+
 const AddButton = styled.button`
+  z-index: 20;
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.9), rgba(6, 95, 70, 0.9));
+  background: linear-gradient(
+    120deg,
+    rgba(0, 131, 143, 0.65),
+    rgba(179, 217, 217, 0.7)
+  );
+  border: 0.1px solid rgba(0, 131, 143, 0.27);
   color: white;
   border: none;
   border-radius: 0.75rem;
@@ -172,7 +159,11 @@ const AddButton = styled.button`
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15);
-    background: linear-gradient(135deg, rgba(4, 103, 112, 1), rgba(6, 95, 70, 1));
+    background: linear-gradient(
+      135deg,
+      rgba(0, 131, 143, 0.2),
+      rgba(0, 131, 143, 1)
+    );
   }
 
   &:active {
@@ -181,6 +172,7 @@ const AddButton = styled.button`
 `;
 
 const TableWrapper = styled.div`
+  margin-top: 1.5rem;
   flex: 1;
   overflow: hidden;
 `;

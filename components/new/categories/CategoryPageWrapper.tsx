@@ -5,6 +5,7 @@ import styled from "styled-components";
 import CategoryHeader from "./CategoryHeader";
 import CategoryGrid from "./CategoryGrid";
 import CategoryModal from "./CategoryModal";
+import DeleteModal from "./DeleteModal";
 
 interface FormField {
   key: string;
@@ -44,6 +45,8 @@ export default function CategoryPageWrapper({
 }: CategoryPageWrapperProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingData, setEditingData] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingItem, setDeletingItem] = useState<any>(null);
 
   const handleAddNew = () => {
     setEditingData(null);
@@ -70,6 +73,24 @@ export default function CategoryPageWrapper({
     setEditingData(null);
   };
 
+  const handleDelete = (data: any) => {
+    setDeletingItem(data);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deletingItem && onDelete) {
+      onDelete(deletingItem);
+    }
+    setIsDeleteModalOpen(false);
+    setDeletingItem(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingItem(null);
+  };
+
   return (
     <Layout>
       <Container>
@@ -79,7 +100,7 @@ export default function CategoryPageWrapper({
             data={data}
             fields={fields}
             onEdit={onEdit ? handleEdit : undefined}
-            onDelete={onDelete}
+            onDelete={onDelete ? handleDelete : undefined}
             emptyMessage={emptyMessage}
           />
         </ContentWrapper>
@@ -96,6 +117,16 @@ export default function CategoryPageWrapper({
         }
         fields={formFields}
         initialData={editingData || {}}
+        isLoading={isLoading}
+      />
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Item"
+        message="Are you sure you want to delete this item?"
+        itemName={deletingItem?.paper_title || deletingItem?.journal_name || deletingItem?.title || deletingItem?.patent_name || "this item"}
         isLoading={isLoading}
       />
     </Layout>
@@ -120,6 +151,7 @@ const Container = styled.section`
 `;
 
 const ContentWrapper = styled.section`
+  margin-top: 1rem;
   flex: 1;
   overflow-y: auto;
   padding: 1rem 0;

@@ -3,15 +3,41 @@ import { settingsApi } from "../api";
 import { Faculty } from "../types";
 import { SettingsFormData, ProfileUpdateData, PasswordUpdateData } from "../api/settings/settingsApi";
 
+interface LoadingStates {
+  profile: boolean;
+  profileField: boolean;
+  fullProfile: boolean;
+  password: boolean;
+  profilePicture: boolean;
+}
+
+// Helper function to format field names for success messages
+const formatFieldName = (field: string): string => {
+  const fieldMap: Record<string, string> = {
+    faculty_name: 'Name',
+    faculty_phone: 'Phone number',
+    faculty_linkedin: 'LinkedIn profile',
+    faculty_google_scholar: 'Google Scholar profile',
+  };
+  
+  return fieldMap[field] || field.replace('faculty_', '').replace('_', ' ');
+};
+
 export const useSettings = () => {
   const [profile, setProfile] = useState<Faculty | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<LoadingStates>({
+    profile: false,
+    profileField: false,
+    fullProfile: false,
+    password: false,
+    profilePicture: false,
+  });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   // Load user profile
   const loadProfile = useCallback(async () => {
-    setLoading(true);
+    setLoading(prev => ({ ...prev, profile: true }));
     setError(null);
 
     try {
@@ -28,13 +54,13 @@ export const useSettings = () => {
       setError(errorMessage);
       setProfile(null);
     } finally {
-      setLoading(false);
+      setLoading(prev => ({ ...prev, profile: false }));
     }
   }, []);
 
   // Update profile field
   const updateProfileField = useCallback(async (field: keyof ProfileUpdateData, value: string) => {
-    setLoading(true);
+    setLoading(prev => ({ ...prev, profileField: true }));
     setError(null);
     setSuccess(null);
 
@@ -47,7 +73,7 @@ export const useSettings = () => {
       }
 
       setProfile(result.data);
-      setSuccess(`${field.replace('faculty_', '').replace('_', ' ')} updated successfully`);
+      setSuccess(`${formatFieldName(field)} updated successfully`);
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000);
@@ -58,13 +84,13 @@ export const useSettings = () => {
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
-      setLoading(false);
+      setLoading(prev => ({ ...prev, profileField: false }));
     }
   }, []);
 
   // Update full profile
   const updateFullProfile = useCallback(async (formData: SettingsFormData) => {
-    setLoading(true);
+    setLoading(prev => ({ ...prev, fullProfile: true }));
     setError(null);
     setSuccess(null);
 
@@ -88,13 +114,13 @@ export const useSettings = () => {
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
-      setLoading(false);
+      setLoading(prev => ({ ...prev, fullProfile: false }));
     }
   }, []);
 
   // Update password
   const updatePassword = useCallback(async (passwordData: PasswordUpdateData) => {
-    setLoading(true);
+    setLoading(prev => ({ ...prev, password: true }));
     setError(null);
     setSuccess(null);
 
@@ -117,13 +143,13 @@ export const useSettings = () => {
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
-      setLoading(false);
+      setLoading(prev => ({ ...prev, password: false }));
     }
   }, []);
 
   // Upload profile picture
   const uploadProfilePicture = useCallback(async (file: File) => {
-    setLoading(true);
+    setLoading(prev => ({ ...prev, profilePicture: true }));
     setError(null);
     setSuccess(null);
 
@@ -146,7 +172,7 @@ export const useSettings = () => {
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
-      setLoading(false);
+      setLoading(prev => ({ ...prev, profilePicture: false }));
     }
   }, []);
 

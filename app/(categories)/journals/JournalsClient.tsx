@@ -109,6 +109,7 @@ export default function JournalsClient({ data, facultyData }: JournalsClientProp
         issn_number: formData.issn_number,
         indexed_in: formData.indexed_in,
         link: formData.link,
+        is_verified: 'PENDING',
       };
       
       const result = await journalApi.updateJournal(formData.id, updates);
@@ -123,14 +124,29 @@ export default function JournalsClient({ data, facultyData }: JournalsClientProp
     }
   };
 
+  const handleDelete = async (item: any) => {
+    try {
+      const result = await journalApi.deleteJournal(item.id);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting journal:', error);
+      alert('Failed to delete journal publication. Please try again.');
+    }
+  };
+
   return (
     <CategoryPageWrapper
-      title="Journals"
+      title="Your Journals"
       data={data}
       fields={displayFields}
       formFields={formFields}
       onAddNew={handleAddNew}
       onEdit={handleEdit}
+      onDelete={handleDelete}
       emptyMessage="No journal publications found. Start by adding your first publication!"
     />
   );

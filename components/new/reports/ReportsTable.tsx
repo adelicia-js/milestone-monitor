@@ -5,40 +5,38 @@ import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { DisplayData } from "@/lib/hooks/useReport";
 import { Faculty } from "@/lib/types";
-import { CheckCircle, Clock, XCircle, Download, FileText, FileSpreadsheet, FileImage } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Download } from "lucide-react";
 import ExportModal from "./ExportModal";
-import {
-  GenericHeader,
-  GenericHeaderContainer,
-} from "@/components/ui/GenericStyles";
+import { LoadingContainer, LoadingText } from "@/components/ui/GenericStyles";
+import Loader from "@/components/ui/Loader";
 
 const bodyText = Inter({
   weight: "400",
   subsets: ["latin"],
 });
 
-interface ModernReportsTableProps {
+interface ReportsTableProps {
   tableData: DisplayData[];
   staffDetails: Faculty[] | null;
   loading?: boolean;
   error?: string | null;
 }
 
-export default function ModernReportsTable({
+export default function ReportsTable({
   tableData,
   staffDetails,
   loading,
-  error
-}: ModernReportsTableProps) {
+  error,
+}: ReportsTableProps) {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const getStatusIcon = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'approved':
+      case "approved":
         return <CheckCircle size={16} color="#059669" />;
-      case 'pending':
+      case "pending":
         return <Clock size={16} color="#d97706" />;
-      case 'rejected':
+      case "rejected":
         return <XCircle size={16} color="#dc2626" />;
       default:
         return <Clock size={16} color="#6b7280" />;
@@ -47,14 +45,14 @@ export default function ModernReportsTable({
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'approved':
-        return '#059669';
-      case 'pending':
-        return '#d97706';
-      case 'rejected':
-        return '#dc2626';
+      case "approved":
+        return "#059669";
+      case "pending":
+        return "#d97706";
+      case "rejected":
+        return "#dc2626";
       default:
-        return '#6b7280';
+        return "#6b7280";
     }
   };
 
@@ -64,27 +62,17 @@ export default function ModernReportsTable({
   };
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString();
-  };
-
-  const formatEntryType = (type: string) => {
-    const typeMap: { [key: string]: string } = {
-      'conferences': 'Conference',
-      'journal_publications': 'Journal',
-      'patents': 'Patent',
-      'fdp_workshop_refresher_course': 'Workshop'
-    };
-    return typeMap[type] || type;
   };
 
   if (loading) {
     return (
       <TableCard>
-        <LoadingState>
-          <LoadingSpinner />
+        <LoadingContainer>
+          <Loader customHeight="h-fit" />
           <LoadingText>Loading reports data...</LoadingText>
-        </LoadingState>
+        </LoadingContainer>
       </TableCard>
     );
   }
@@ -103,21 +91,13 @@ export default function ModernReportsTable({
   return (
     <>
       <TableCard>
-        <TableHeader>
-          <GenericHeaderContainer>
-            <GenericHeader>Reports Data</GenericHeader>
-          </GenericHeaderContainer>
-          <ExportButton onClick={() => setIsExportModalOpen(true)}>
-            <Download size={18} />
-            Export
-          </ExportButton>
-        </TableHeader>
-
         {tableData.length === 0 ? (
           <EmptyState>
             <EmptyIcon>📊</EmptyIcon>
             <EmptyMessage>No data found</EmptyMessage>
-            <EmptySubtext>Try adjusting your filters to see more results.</EmptySubtext>
+            <EmptySubtext>
+              Try adjusting your filters to see more results.
+            </EmptySubtext>
           </EmptyState>
         ) : (
           <TableWrapper>
@@ -126,26 +106,33 @@ export default function ModernReportsTable({
                 <TableRow>
                   <TableHeaderCell>Faculty ID</TableHeaderCell>
                   <TableHeaderCell>Faculty Name</TableHeaderCell>
+                  <TableHeaderCell>Title</TableHeaderCell>
                   <TableHeaderCell>Entry Type</TableHeaderCell>
                   <TableHeaderCell>Date</TableHeaderCell>
-                  <TableHeaderCell>Title</TableHeaderCell>
                   <TableHeaderCell>Status</TableHeaderCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {tableData.map((row, index) => (
                   <TableRow key={index}>
-                    <TableCell>{row.faculty_id}</TableCell>
-                    <TableCell>
-                      <FacultyName>{getfacultyname(row.faculty_id)}</FacultyName>
+                    <TableCell
+                      style={{ wordWrap: "break-word", maxWidth: "100px" }}
+                    >
+                      {row.faculty_id}
                     </TableCell>
                     <TableCell>
-                      <EntryTypeBadge>{formatEntryType(row.entry_type)}</EntryTypeBadge>
+                      <FacultyName>
+                        {getfacultyname(row.faculty_id)}
+                      </FacultyName>
                     </TableCell>
-                    <TableCell>{formatDate(row.date)}</TableCell>
                     <TableCell>
                       <TitleCell>{row.title}</TitleCell>
                     </TableCell>
+                    <TableCell>
+                      <EntryTypeBadge>{row.entry_type}</EntryTypeBadge>
+                    </TableCell>
+                    <TableCell>{formatDate(row.date)}</TableCell>
+
                     <TableCell>
                       <StatusWrapper>
                         {getStatusIcon(row.status)}
@@ -160,6 +147,13 @@ export default function ModernReportsTable({
             </Table>
           </TableWrapper>
         )}
+
+        {tableData.length > 0 && (
+          <FloatingExportButton onClick={() => setIsExportModalOpen(true)}>
+            <Download size={20} />
+            Export
+          </FloatingExportButton>
+        )}
       </TableCard>
 
       <ExportModal
@@ -173,55 +167,46 @@ export default function ModernReportsTable({
 }
 
 const TableCard = styled.div`
+  font-family: ${bodyText.style.fontFamily};
+  position: relative;
   height: 100%;
   border: 0.1px solid rgba(56, 68, 68, 0.28);
   border-radius: 1rem;
-  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
   background-color: rgba(244, 253, 252, 0.75);
-  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 `;
 
-const TableHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid rgba(56, 68, 68, 0.1);
-`;
-
-const ExportButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.9), rgba(6, 95, 70, 0.9));
-  color: white;
-  border: none;
-  border-radius: 0.75rem;
-  font-family: ${bodyText.style.fontFamily};
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15);
-    background: linear-gradient(135deg, rgba(4, 103, 112, 1), rgba(6, 95, 70, 1));
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
 const TableWrapper = styled.div`
   flex: 1;
-  overflow: auto;
   padding: 0;
+  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
+  backdrop-filter: blur(10px);
+  overflow: auto;
+
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 131, 143, 0.2);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 131, 143, 0.2);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 131, 143, 0.2);
+  }
+
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 131, 143, 0.3) rgba(0, 0, 0, 0.075);
 `;
 
 const Table = styled.table`
@@ -258,6 +243,9 @@ const TableHeaderCell = styled.th`
   text-transform: uppercase;
   letter-spacing: 0.3px;
   border-bottom: 2px solid rgba(4, 103, 112, 0.2);
+  white-space: nowrap;
+  vertical-align: middle;
+  height: 60px; /* Fixed header height */
 `;
 
 const TableCell = styled.td`
@@ -265,70 +253,63 @@ const TableCell = styled.td`
   font-family: ${bodyText.style.fontFamily};
   font-size: 0.9rem;
   color: rgba(31, 41, 55, 0.9);
-  vertical-align: top;
+  vertical-align: middle; /* Changed from top to middle for better alignment */
+  height: 70px; /* Fixed cell height for consistent alignment */
 `;
 
 const FacultyName = styled.span`
+  display: inline-block;
+  max-width: 180px;
   font-weight: 500;
   color: rgba(4, 103, 112, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const TitleCell = styled.div`
-  max-width: 300px;
+  max-width: 250px;
   word-wrap: break-word;
-  line-height: 1.4;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const EntryTypeBadge = styled.span`
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.25rem 0.75rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.1), rgba(6, 95, 70, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(4, 103, 112, 0.1),
+    rgba(6, 95, 70, 0.1)
+  );
   color: rgba(4, 103, 112, 0.9);
   border: 1px solid rgba(4, 103, 112, 0.2);
   border-radius: 0.5rem;
   font-size: 0.8rem;
   font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
 `;
 
 const StatusWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
 `;
 
 const StatusText = styled.span<{ color: string }>`
-  color: ${props => props.color};
+  color: ${(props) => props.color};
   font-weight: 500;
   text-transform: capitalize;
-`;
-
-const LoadingState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem;
-  gap: 1rem;
-`;
-
-const LoadingSpinner = styled.div`
-  width: 3rem;
-  height: 3rem;
-  border: 3px solid rgba(4, 103, 112, 0.2);
-  border-top: 3px solid rgba(4, 103, 112, 0.8);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;
-
-const LoadingText = styled.p`
-  font-family: ${bodyText.style.fontFamily};
-  color: rgba(107, 114, 128, 0.8);
-  font-size: 1rem;
 `;
 
 const ErrorState = styled.div`
@@ -337,7 +318,7 @@ const ErrorState = styled.div`
   align-items: center;
   justify-content: center;
   padding: 4rem;
-  gap: 1rem;
+  height: 100%;
 `;
 
 const ErrorIcon = styled.div`
@@ -357,7 +338,7 @@ const EmptyState = styled.div`
   align-items: center;
   justify-content: center;
   padding: 4rem;
-  gap: 1rem;
+  height: 100%;
 `;
 
 const EmptyIcon = styled.div`
@@ -374,11 +355,49 @@ const EmptyMessage = styled.h3`
 `;
 
 const EmptySubtext = styled.p`
-  font-family: ${bodyText.style.fontFamily};
   font-size: 0.9rem;
   color: rgba(107, 114, 128, 0.8);
   text-align: center;
   max-width: 400px;
   line-height: 1.5;
   margin: 0;
+`;
+
+const FloatingExportButton = styled.button`
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 131, 143, 0.2),
+    rgba(0, 131, 143, 1)
+  );
+  color: white;
+  border-radius: 1.5rem;
+  font-family: ${bodyText.style.fontFamily};
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.4);
+  }
+
+  &:active {
+    transform: translateY(-1px) scale(1);
+  }
+
+  &:focus {
+    outline: 2px solid rgba(4, 103, 112, 0.3);
+    outline-offset: 2px;
+  }
 `;

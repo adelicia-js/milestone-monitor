@@ -3,7 +3,16 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
-import { X, Check, XCircle, Calendar, User, FileText, ExternalLink, Download } from "lucide-react";
+import {
+  X,
+  Check,
+  XCircle,
+  Calendar,
+  User,
+  FileText,
+  ExternalLink,
+  Download,
+} from "lucide-react";
 
 const bodyText = Inter({
   weight: "400",
@@ -15,7 +24,7 @@ interface ApprovalModalProps {
   onClose: () => void;
   entry: any;
   onApprove: (entry: any) => void;
-  onReject: (entry: any, reason: string) => void;
+  onReject: (entry: any) => void;
 }
 
 export default function ApprovalModal({
@@ -23,27 +32,19 @@ export default function ApprovalModal({
   onClose,
   entry,
   onApprove,
-  onReject
+  onReject,
 }: ApprovalModalProps) {
-  const [rejectionReason, setRejectionReason] = useState("");
-  const [showRejectionForm, setShowRejectionForm] = useState(false);
 
   const handleApprove = () => {
     onApprove(entry);
   };
 
   const handleReject = () => {
-    if (!rejectionReason.trim()) {
-      alert("Please provide a reason for rejection");
-      return;
-    }
-    onReject(entry, rejectionReason);
-    setRejectionReason("");
-    setShowRejectionForm(false);
+    onReject(entry);
   };
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -51,16 +52,16 @@ export default function ApprovalModal({
     if (!entry) return null;
 
     switch (entry.entry_type) {
-      case 'Conference':
+      case "Conference":
         return (
           <DetailsGrid>
             <DetailItem>
               <DetailLabel>Paper Title:</DetailLabel>
-              <DetailValue>{entry.paper_title || 'N/A'}</DetailValue>
+              <DetailValue>{entry.paper_title || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Conference Name:</DetailLabel>
-              <DetailValue>{entry.conf_name || 'N/A'}</DetailValue>
+              <DetailValue>{entry.conf_name || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Conference Date:</DetailLabel>
@@ -68,7 +69,7 @@ export default function ApprovalModal({
             </DetailItem>
             <DetailItem>
               <DetailLabel>Conference Type:</DetailLabel>
-              <DetailValue>{entry.type || 'N/A'}</DetailValue>
+              <DetailValue>{entry.type || "N/A"}</DetailValue>
             </DetailItem>
             {entry.proceedings && (
               <DetailItem>
@@ -90,28 +91,30 @@ export default function ApprovalModal({
           </DetailsGrid>
         );
 
-      case 'Journal':
+      case "Journal":
         return (
           <DetailsGrid>
             <DetailItem>
               <DetailLabel>Paper Title:</DetailLabel>
-              <DetailValue>{entry.paper_title || 'N/A'}</DetailValue>
+              <DetailValue>{entry.paper_title || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Journal Name:</DetailLabel>
-              <DetailValue>{entry.journal_name || 'N/A'}</DetailValue>
+              <DetailValue>{entry.journal_name || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>ISSN Number:</DetailLabel>
-              <DetailValue>{entry.issn_number || 'N/A'}</DetailValue>
+              <DetailValue>{entry.issn_number || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Publication Date:</DetailLabel>
-              <DetailValue>{entry.month_and_year_of_publication || 'N/A'}</DetailValue>
+              <DetailValue>
+                {entry.month_and_year_of_publication || "N/A"}
+              </DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Indexed In:</DetailLabel>
-              <DetailValue>{entry.indexed_in || 'N/A'}</DetailValue>
+              <DetailValue>{entry.indexed_in || "N/A"}</DetailValue>
             </DetailItem>
             {entry.link && (
               <DetailItem>
@@ -133,24 +136,24 @@ export default function ApprovalModal({
           </DetailsGrid>
         );
 
-      case 'Patent':
+      case "Patent":
         return (
           <DetailsGrid>
             <DetailItem>
               <DetailLabel>Patent Name:</DetailLabel>
-              <DetailValue>{entry.patent_name || 'N/A'}</DetailValue>
+              <DetailValue>{entry.patent_name || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Patent Type:</DetailLabel>
-              <DetailValue>{entry.patent_type || 'N/A'}</DetailValue>
+              <DetailValue>{entry.patent_type || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Application Number:</DetailLabel>
-              <DetailValue>{entry.application_no || 'N/A'}</DetailValue>
+              <DetailValue>{entry.application_no || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Status:</DetailLabel>
-              <DetailValue>{entry.status || 'N/A'}</DetailValue>
+              <DetailValue>{entry.status || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Patent Date:</DetailLabel>
@@ -176,16 +179,16 @@ export default function ApprovalModal({
           </DetailsGrid>
         );
 
-      case 'Workshop':
+      case "Workshop":
         return (
           <DetailsGrid>
             <DetailItem>
               <DetailLabel>Title:</DetailLabel>
-              <DetailValue>{entry.title || 'N/A'}</DetailValue>
+              <DetailValue>{entry.title || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Organized By:</DetailLabel>
-              <DetailValue>{entry.organized_by || 'N/A'}</DetailValue>
+              <DetailValue>{entry.organized_by || "N/A"}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Date:</DetailLabel>
@@ -193,11 +196,13 @@ export default function ApprovalModal({
             </DetailItem>
             <DetailItem>
               <DetailLabel>Duration:</DetailLabel>
-              <DetailValue>{entry.number_of_days ? `${entry.number_of_days} days` : 'N/A'}</DetailValue>
+              <DetailValue>
+                {entry.number_of_days ? `${entry.number_of_days} days` : "N/A"}
+              </DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Type:</DetailLabel>
-              <DetailValue>{entry.type || 'N/A'}</DetailValue>
+              <DetailValue>{entry.type || "N/A"}</DetailValue>
             </DetailItem>
           </DetailsGrid>
         );
@@ -240,45 +245,17 @@ export default function ApprovalModal({
             {renderEntryDetails()}
           </Section>
 
-          {showRejectionForm && (
-            <Section>
-              <SectionTitle>Rejection Reason</SectionTitle>
-              <TextArea
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Please provide a clear reason for rejecting this entry..."
-                rows={4}
-              />
-            </Section>
-          )}
         </ModalBody>
 
         <ModalFooter>
-          {showRejectionForm ? (
-            <>
-              <CancelButton onClick={() => {
-                setShowRejectionForm(false);
-                setRejectionReason("");
-              }}>
-                Cancel
-              </CancelButton>
-              <RejectButton onClick={handleReject}>
-                <XCircle size={16} />
-                Confirm Rejection
-              </RejectButton>
-            </>
-          ) : (
-            <>
-              <RejectButton onClick={() => setShowRejectionForm(true)}>
-                <XCircle size={16} />
-                Reject
-              </RejectButton>
-              <ApproveButton onClick={handleApprove}>
-                <Check size={16} />
-                Approve
-              </ApproveButton>
-            </>
-          )}
+          <RejectButton onClick={handleReject}>
+            <XCircle size={16} />
+            Reject
+          </RejectButton>
+          <ApproveButton onClick={handleApprove}>
+            <Check size={16} />
+            Approve
+          </ApproveButton>
         </ModalFooter>
       </ModalContent>
     </ModalOverlay>
@@ -503,7 +480,11 @@ const ApproveButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(177, 204, 144),
+    rgba(22, 163, 74, 0.9)
+  );
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -513,7 +494,8 @@ const ApproveButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 1), rgba(22, 163, 74, 1));
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.95), rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 1));
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: translateY(-1px);
   }
 `;
@@ -523,7 +505,11 @@ const RejectButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(228, 150, 148, 0.8),
+    rgba(220, 38, 38, 0.8)
+  );
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -533,7 +519,12 @@ const RejectButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 1), rgba(220, 38, 38, 1));
+    background: linear-gradient(
+      135deg,
+      rgba(248, 113, 113, 0.95),
+      rgba(239, 68, 68, 0.9),
+      rgba(220, 38, 38, 1)
+    );
     transform: translateY(-1px);
   }
 `;

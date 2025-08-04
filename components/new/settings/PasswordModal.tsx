@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
-import { X, Lock, Eye, EyeOff } from "lucide-react";
-import { updateStaffPW } from "@/app/api/dbfunctions";
+import { X, Lock, Eye, EyeOff, CheckCircle, AlertCircle, Loader } from "lucide-react";
+import { useSettings } from "@/lib/hooks/useSettings";
 
 const bodyText = Inter({
   weight: "400",
@@ -14,43 +14,58 @@ const bodyText = Inter({
 interface PasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
+  loading?: boolean;
 }
 
-export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
+interface PasswordValidation {
+  length: boolean;
+  match: boolean;
+}
+
+export default function PasswordModal({ isOpen, onClose, loading: externalLoading }: PasswordModalProps) {
+  const { updatePassword, loading, error, success } = useSettings();
+  
+  // Use external loading if provided, otherwise use hook's loading state
+  const isLoading = externalLoading !== undefined ? externalLoading : loading.password;
+  
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const validation: PasswordValidation = {
+    length: newPassword.length >= 6,
+    match: newPassword === confirmPassword && newPassword.length > 0,
+  };
+
+  const isFormValid = validation.length && validation.match;
 
   const handlePasswordChange = async () => {
+    setLocalError(null);
+
     if (!newPassword.trim()) {
-      alert("Please enter a new password");
+      setLocalError("Please enter a new password");
       return;
     }
 
-    if (newPassword.length < 6) {
-      alert("Password must be at least 6 characters long");
+    if (!isFormValid) {
+      setLocalError("Please fix the validation errors before continuing");
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-
-    setIsLoading(true);
     try {
-      await updateStaffPW(newPassword);
-      alert("Password updated successfully!");
-      setNewPassword("");
-      setConfirmPassword("");
-      onClose();
-    } catch (error) {
-      console.error("Error updating password:", error);
-      alert("Failed to update password. Please try again.");
-    } finally {
-      setIsLoading(false);
+      const result = await updatePassword({
+        newPassword,
+        confirmPassword,
+      });
+
+      if (result.success) {
+        // Reset form and close modal
+        handleClose();
+      }
+    } catch (err) {
+      console.error("Password update error:", err);
     }
   };
 
@@ -59,10 +74,13 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
     setConfirmPassword("");
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setLocalError(null);
     onClose();
   };
 
   if (!isOpen) return null;
+
+  const displayError = localError || error;
 
   return (
     <ModalOverlay onClick={handleClose}>
@@ -73,14 +91,30 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
               <Lock size={20} />
               Change Password
             </ModalTitle>
-            <ModalSubtitle>Enter your new password below</ModalSubtitle>
+            <ModalSubtitle>Choose a strong password to keep your account secure</ModalSubtitle>
           </HeaderInfo>
-          <CloseButton onClick={handleClose}>
+          <CloseButton onClick={handleClose} disabled={isLoading}>
             <X size={20} />
           </CloseButton>
         </ModalHeader>
 
         <ModalBody>
+          {/* Success Message */}
+          {success && (
+            <MessageCard variant="success">
+              <CheckCircle size={18} />
+              <span>{success}</span>
+            </MessageCard>
+          )}
+
+          {/* Error Message */}
+          {displayError && (
+            <MessageCard variant="error">
+              <AlertCircle size={18} />
+              <span>{displayError}</span>
+            </MessageCard>
+          )}
+
           <FormGroup>
             <Label>New Password</Label>
             <PasswordWrapper>
@@ -89,16 +123,30 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
-                minLength={6}
+                disabled={isLoading}
               />
               <ToggleButton
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </ToggleButton>
             </PasswordWrapper>
-            <PasswordHint>Password must be at least 6 characters long</PasswordHint>
+            
+            {/* Password Requirements */}
+            <ValidationList>
+              <ValidationItem isValid={validation.length}>
+                <ValidationIcon>
+                  {validation.length ? (
+                    <CheckCircle size={14} />
+                  ) : (
+                    <AlertCircle size={14} />
+                  )}
+                </ValidationIcon>
+                At least 6 characters long
+              </ValidationItem>
+            </ValidationList>
           </FormGroup>
 
           <FormGroup>
@@ -109,26 +157,57 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                minLength={6}
+                disabled={isLoading}
               />
               <ToggleButton
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={isLoading}
               >
                 {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </ToggleButton>
             </PasswordWrapper>
+            
+            {/* Password Match Validation */}
+            {confirmPassword && (
+              <ValidationList>
+                <ValidationItem isValid={validation.match}>
+                  <ValidationIcon>
+                    {validation.match ? (
+                      <CheckCircle size={14} />
+                    ) : (
+                      <AlertCircle size={14} />
+                    )}
+                  </ValidationIcon>
+                  Passwords match
+                </ValidationItem>
+              </ValidationList>
+            )}
           </FormGroup>
 
-          {newPassword && confirmPassword && newPassword !== confirmPassword && (
-            <ErrorMessage>Passwords do not match</ErrorMessage>
-          )}
+          {/* Password Strength Indicator */}
+          <PasswordStrength>
+            <StrengthLabel>Password Strength:</StrengthLabel>
+            <StrengthBar>
+              <StrengthFill strength={getPasswordStrength(newPassword)} />
+            </StrengthBar>
+            <StrengthText>{getPasswordStrengthText(newPassword)}</StrengthText>
+          </PasswordStrength>
         </ModalBody>
 
         <ModalFooter>
-          <CancelButton onClick={handleClose}>Cancel</CancelButton>
-          <ConfirmButton onClick={handlePasswordChange} disabled={isLoading}>
-            <Lock size={16} />
+          <CancelButton onClick={handleClose} disabled={isLoading}>
+            Cancel
+          </CancelButton>
+          <ConfirmButton 
+            onClick={handlePasswordChange} 
+            disabled={isLoading || !isFormValid}
+          >
+            {isLoading ? (
+              <Loader size={16} className="animate-spin" />
+            ) : (
+              <Lock size={16} />
+            )}
             {isLoading ? "Updating..." : "Update Password"}
           </ConfirmButton>
         </ModalFooter>
@@ -137,6 +216,44 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
   );
 }
 
+// Helper functions
+function getPasswordStrength(password: string): number {
+  if (password.length === 0) return 0;
+  
+  let strength = 0;
+  
+  // Length
+  if (password.length >= 6) strength += 1;
+  if (password.length >= 10) strength += 1;
+  
+  // Character variety
+  if (/[a-z]/.test(password)) strength += 1;
+  if (/[A-Z]/.test(password)) strength += 1;
+  if (/[0-9]/.test(password)) strength += 1;
+  if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+  
+  return Math.min(strength, 4);
+}
+
+function getPasswordStrengthText(password: string): string {
+  const strength = getPasswordStrength(password);
+  
+  switch (strength) {
+    case 0:
+    case 1:
+      return "Weak";
+    case 2:
+      return "Fair";
+    case 3:
+      return "Good";
+    case 4:
+      return "Strong";
+    default:
+      return "Weak";
+  }
+}
+
+// Styled Components
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -158,7 +275,9 @@ const ModalContent = styled.div`
   border-radius: 1rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 450px;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
 `;
 
 const ModalHeader = styled.div`
@@ -206,9 +325,14 @@ const CloseButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: rgba(239, 68, 68, 0.2);
     color: rgba(239, 68, 68, 1);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
@@ -219,10 +343,31 @@ const ModalBody = styled.div`
   gap: 1.5rem;
 `;
 
+const MessageCard = styled.div<{ variant: 'success' | 'error' }>`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid;
+  
+  ${props => props.variant === 'success' && `
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.2);
+    color: rgba(22, 163, 74, 0.9);
+  `}
+  
+  ${props => props.variant === 'error' && `
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: rgba(220, 38, 38, 0.9);
+  `}
+`;
+
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 `;
 
 const Label = styled.label`
@@ -257,6 +402,11 @@ const PasswordInput = styled.input`
     background: rgba(255, 255, 255, 0.95);
   }
 
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   &::placeholder {
     color: rgba(107, 114, 128, 0.6);
   }
@@ -276,26 +426,88 @@ const ToggleButton = styled.button`
   cursor: pointer;
   transition: color 0.3s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     color: rgba(4, 103, 112, 0.8);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
-const PasswordHint = styled.span`
-  font-family: ${bodyText.style.fontFamily};
-  font-size: 0.8rem;
-  color: rgba(107, 114, 128, 0.6);
+const ValidationList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 
-const ErrorMessage = styled.div`
-  padding: 0.75rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 0.5rem;
-  color: rgba(239, 68, 68, 0.8);
+const ValidationItem = styled.div<{ isValid: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-family: ${bodyText.style.fontFamily};
-  font-size: 0.9rem;
-  text-align: center;
+  font-size: 0.8rem;
+  transition: color 0.3s ease;
+  
+  color: ${props => props.isValid 
+    ? 'rgba(22, 163, 74, 0.9)' 
+    : 'rgba(107, 114, 128, 0.6)'
+  };
+`;
+
+const ValidationIcon = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const PasswordStrength = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const StrengthLabel = styled.span`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(107, 114, 128, 0.8);
+`;
+
+const StrengthBar = styled.div`
+  height: 0.5rem;
+  background: rgba(107, 114, 128, 0.2);
+  border-radius: 0.25rem;
+  overflow: hidden;
+`;
+
+const StrengthFill = styled.div<{ strength: number }>`
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 0.25rem;
+  
+  width: ${props => (props.strength / 4) * 100}%;
+  
+  ${props => {
+    if (props.strength <= 1) return 'background: rgba(239, 68, 68, 0.8);';
+    if (props.strength === 2) return 'background: rgba(245, 158, 11, 0.8);';
+    if (props.strength === 3) return 'background: rgba(59, 130, 246, 0.8);';
+    return 'background: rgba(34, 197, 94, 0.8);';
+  }}
+`;
+
+const StrengthText = styled.span`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 0.8rem;
+  font-weight: 500;
+  
+  ${props => {
+    const text = props.children as string;
+    if (text === 'Weak') return 'color: rgba(239, 68, 68, 0.8);';
+    if (text === 'Fair') return 'color: rgba(245, 158, 11, 0.8);';
+    if (text === 'Good') return 'color: rgba(59, 130, 246, 0.8);';
+    return 'color: rgba(34, 197, 94, 0.8);';
+  }}
 `;
 
 const ModalFooter = styled.div`
@@ -317,9 +529,14 @@ const CancelButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: rgba(107, 114, 128, 0.1);
     border-color: rgba(107, 114, 128, 0.5);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 

@@ -34,7 +34,7 @@ export default function CategoryGrid({
       <EmptyState>
         <EmptyIcon>📋</EmptyIcon>
         <EmptyMessage>{emptyMessage}</EmptyMessage>
-        <EmptySubtext>Start by adding your first entry using the "Add New" button above.</EmptySubtext>
+        <EmptySubtext>Start by adding your first entry using the &quot;Add New&quot; button above.</EmptySubtext>
       </EmptyState>
     );
   }
@@ -96,6 +96,6 @@ const EmptySubtext = styled.p`
   font-family: ${bodyText.style.fontFamily};
   font-size: 0.9rem;
   color: rgba(107, 114, 128, 0.8);
-  max-width: 400px;
+  max-width: 300px;
   line-height: 1.5;
 `;

@@ -111,6 +111,7 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
         application_no: formData.application_no,
         status: formData.status,
         patent_link: formData.patent_link,
+        is_verified: 'PENDING',
       };
       
       const result = await patentApi.updatePatent(formData.id, updates);
@@ -125,14 +126,29 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
     }
   };
 
+  const handleDelete = async (item: any) => {
+    try {
+      const result = await patentApi.deletePatent(item.id);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting patent:', error);
+      alert('Failed to delete patent. Please try again.');
+    }
+  };
+
   return (
     <CategoryPageWrapper
-      title="Patents"
+      title="Your Patents"
       data={data}
       fields={displayFields}
       formFields={formFields}
       onAddNew={handleAddNew}
       onEdit={handleEdit}
+      onDelete={handleDelete}
       emptyMessage="No patents found. Start by adding your first patent application!"
     />
   );

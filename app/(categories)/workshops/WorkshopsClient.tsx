@@ -11,7 +11,7 @@ interface WorkshopsClientProps {
 
 export default function WorkshopsClient({ data, facultyData }: WorkshopsClientProps) {
   const displayFields = [
-    { key: 'title', label: 'Workshop/Course Title', type: 'text' as const },
+    { key: 'title', label: 'Workshop Title', type: 'text' as const },
     { key: 'organized_by', label: 'Organized By', type: 'text' as const },
     { key: 'date', label: 'Date', type: 'date' as const },
     { key: 'type', label: 'Type', type: 'badge' as const },
@@ -22,7 +22,7 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
   const formFields = [
     {
       key: 'title',
-      label: 'Workshop/Course Title',
+      label: 'Workshop Title',
       type: 'text' as const,
       required: true,
       placeholder: 'Enter the title of the workshop or course'
@@ -92,7 +92,8 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
         date: formData.date,
         type: formData.type,
         number_of_days: formData.number_of_days,
-        organized_by: formData.organized_by
+        organized_by: formData.organized_by,
+        is_verified: 'PENDING'
       };
       
       const result = await workshopApi.updateWorkshop(formData.id, updates);
@@ -107,14 +108,29 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
     }
   };
 
+  const handleDelete = async (item: any) => {
+    try {
+      const result = await workshopApi.deleteWorkshop(item.id);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting workshop:', error);
+      alert('Failed to delete workshop. Please try again.');
+    }
+  };
+
   return (
     <CategoryPageWrapper
-      title="Workshops"
+      title="Your Workshops"
       data={data}
       fields={displayFields}
       formFields={formFields}
       onAddNew={handleAddNew}
       onEdit={handleEdit}
+      onDelete={handleDelete}
       emptyMessage="No workshops found. Start by adding your first workshop or training program!"
     />
   );

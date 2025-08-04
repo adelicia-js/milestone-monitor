@@ -142,11 +142,27 @@ export class SettingsApi extends ApiClient {
 
       const facultyId = profileResult.data.faculty_id;
       const fileExt = file.name.split('.').pop();
-      const fileName = `${facultyId}_${Date.now()}.${fileExt}`;
+      const fileName = `profilePictures/${facultyId}.${fileExt}`;
+
+      // Check for existing files and delete them (matching old behavior)
+      const { data: existingFiles, error: listError } = await supabase.storage
+        .from('staff-media')
+        .list('profilePictures', {
+          limit: 100,
+          offset: 0,
+          search: facultyId
+        });
+
+      if (existingFiles && existingFiles.length > 0) {
+        const filesToDelete = existingFiles.map(file => `profilePictures/${file.name}`);
+        await supabase.storage
+          .from('staff-media')
+          .remove(filesToDelete);
+      }
 
       // Upload to Supabase storage
       const { data, error } = await supabase.storage
-        .from('profile_pictures')
+        .from('staff-media')
         .upload(fileName, file, {
           cacheControl: '3600',
           upsert: true
@@ -158,7 +174,7 @@ export class SettingsApi extends ApiClient {
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('profile_pictures')
+        .from('staff-media')
         .getPublicUrl(fileName);
 
       // Update faculty record with profile picture URL (if you have this field)

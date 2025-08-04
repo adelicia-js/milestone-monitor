@@ -4,7 +4,9 @@ import React from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { Faculty } from "@/lib/types";
-import { Edit, Trash2, Crown, User, Settings } from "lucide-react";
+import { Edit, Trash2, Crown, User, Settings, PencilRulerIcon } from "lucide-react";
+import Loader from "@/components/ui/Loader";
+import { LoadingContainer, LoadingText } from "@/components/ui/GenericStyles";
 
 const bodyText = Inter({
   weight: "400",
@@ -29,11 +31,11 @@ export default function StaffTable({
   const getRoleIcon = (role: string) => {
     switch (role?.toLowerCase()) {
       case 'hod':
-        return <Crown size={16} color="#d97706" />;
+        return <Crown size={16} color="#d97706" style={{ marginBottom: '1%' }}/>;
       case 'editor':
-        return <Settings size={16} color="#059669" />;
+        return <PencilRulerIcon size={16} color="#059669" style={{ marginBottom: '1%' }}/>;
       default:
-        return <User size={16} color="#6b7280" />;
+        return <User size={18} color="#6b7280" style={{ marginBottom: '1%' }}/>;
     }
   };
 
@@ -51,10 +53,10 @@ export default function StaffTable({
   if (loading) {
     return (
       <TableCard>
-        <LoadingState>
-          <LoadingSpinner />
+        <LoadingContainer>
+          <Loader customHeight="h-fit"/>
           <LoadingText>Loading staff data...</LoadingText>
-        </LoadingState>
+        </LoadingContainer>
       </TableCard>
     );
   }
@@ -76,7 +78,7 @@ export default function StaffTable({
         <EmptyState>
           <EmptyIcon>👥</EmptyIcon>
           <EmptyMessage>No staff members found</EmptyMessage>
-          <EmptySubtext>Add your first staff member using the "Add Staff" button above.</EmptySubtext>
+          <EmptySubtext>Add your first staff member using the &quot;Add Staff&quot; button above.</EmptySubtext>
         </EmptyState>
       </TableCard>
     );
@@ -271,57 +273,30 @@ const ActionButton = styled.button<{ variant: 'edit' | 'delete' }>`
   transition: all 0.3s ease;
   
   ${props => props.variant === 'edit' && `
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8));
+   background: linear-gradient(135deg, rgba(122, 194, 226, 0.8), rgba(37, 99, 235, 0.8));
     color: white;
     
     &:hover {
       transform: scale(1.05);
-      background: linear-gradient(135deg, rgba(59, 130, 246, 1), rgba(37, 99, 235, 1));
+      background: linear-gradient(135deg, rgba(96, 165, 250, 0.95), rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 1));
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
   `}
   
   ${props => props.variant === 'delete' && `
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.8));
+    background: linear-gradient(135deg, rgba(228, 150, 148, 0.8), rgba(220, 38, 38, 0.8));
     color: white;
     
     &:hover {
       transform: scale(1.05);
-      background: linear-gradient(135deg, rgba(239, 68, 68, 1), rgba(220, 38, 38, 1));
+      background: linear-gradient(135deg, rgba(248, 113, 113, 0.95), rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 1));
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
   `}
   
   &:active {
     transform: scale(0.95);
   }
-`;
-
-const LoadingState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem;
-  gap: 1rem;
-`;
-
-const LoadingSpinner = styled.div`
-  width: 3rem;
-  height: 3rem;
-  border: 3px solid rgba(4, 103, 112, 0.2);
-  border-top: 3px solid rgba(4, 103, 112, 0.8);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;
-
-const LoadingText = styled.p`
-  font-family: ${bodyText.style.fontFamily};
-  color: rgba(107, 114, 128, 0.8);
-  font-size: 1rem;
 `;
 
 const ErrorState = styled.div`
