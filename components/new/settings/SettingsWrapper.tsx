@@ -381,17 +381,23 @@ export default function SettingsWrapper() {
         
         {/* Made with love footer */}
         <Footer>
-          <FooterContent>
-            <FooterText>Made with</FooterText>
-            <HeartIcon>
-              <Heart size={16} fill="currentColor" />
-            </HeartIcon>
-            <FooterText>by</FooterText>
-            <CreatorName>Supastrssd</CreatorName>
-            <RocketIcon>
-              <Rocket size={16} />
-            </RocketIcon>
-          </FooterContent>
+          <FooterLink 
+            href="https://github.com/adelicia-js/milestone-monitor" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            <FooterContent>
+              <FooterText>Made with</FooterText>
+              <HeartIcon>
+                <Heart size={16} fill="currentColor" />
+              </HeartIcon>
+              <FooterText>by</FooterText>
+              <CreatorName>Supastrssd</CreatorName>
+              <RocketIcon>
+                <Rocket size={16} />
+              </RocketIcon>
+            </FooterContent>
+          </FooterLink>
         </Footer>
       </Container>
     </Layout>
@@ -913,6 +919,11 @@ const Footer = styled.div`
   width: 100%;
 `;
 
+const FooterLink = styled.a`
+  text-decoration: none;
+  cursor: pointer;
+`;
+
 const FooterContent = styled.div`
   display: flex;
   align-items: center;
@@ -920,15 +931,14 @@ const FooterContent = styled.div`
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background: rgba(244, 253, 252, 0.8);
-  border: 0.1px solid rgba(56, 68, 68, 0.2);
+  border: 0.1px solid rgba(0, 131, 143, 0.27);
   border-radius: 2rem;
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 15px 3px rgba(0, 131, 143, 0.27);
   transition: all 0.3s ease;
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.15);
     background: rgba(244, 253, 252, 0.95);
   }
 `;
