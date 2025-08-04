@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { useGetFacultyList } from "@/lib/hooks/useGetFacultyList";
 import { useReport, ReportFiltersI } from "@/lib/hooks/useReport";
-import { redirect } from "next/navigation";
-import ReportsPageWrapper from "@/components/new/reports/ReportsPageWrapper";
+import { useRouter } from "next/navigation";
+import ReportsPageWrapper from "@/components/reports/ReportsPageWrapper";
 import Loader from "@/components/ui/Loader";
 
 export default function ReportsNewClient() {
+  const router = useRouter();
+  
   const {
     loading: facultyDataLoading,
     userError,
@@ -55,7 +57,8 @@ export default function ReportsNewClient() {
     userDetails.faculty_role !== "editor"
   ) {
     alert("Unauthorized access");
-    redirect("/");
+    router.push("/");
+    return null;
   }
 
   // Show loading state while checking authorization

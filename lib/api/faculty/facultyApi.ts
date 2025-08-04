@@ -223,4 +223,60 @@ export class FacultyApi extends ApiClient {
       return { data: null, error: 'Failed to update password' };
     }
   }
+
+  // Dashboard Statistics
+  async getMilestoneStatistics(email: string): Promise<ApiResponse<number[]>> {
+    try {
+      // First get the faculty data to get faculty_id
+      const facultyResponse = await this.getFacultyByEmail(email);
+      if (facultyResponse.error || !facultyResponse.data) {
+        return { data: null, error: facultyResponse.error || 'Faculty not found' };
+      }
+
+      const facultyId = facultyResponse.data.faculty_id;
+      const supabase = this.getSupabase();
+
+      // Get counts for each table
+      const [confResult, workshopResult, journalResult, patentResult] = await Promise.all([
+        supabase
+          .from('conferences')
+          .select('*', { count: 'exact', head: true })
+          .eq('faculty_id', facultyId),
+        supabase
+          .from('fdp_workshop_refresher_course')
+          .select('*', { count: 'exact', head: true })
+          .eq('faculty_id', facultyId),
+        supabase
+          .from('journal_publications')
+          .select('*', { count: 'exact', head: true })
+          .eq('faculty_id', facultyId),
+        supabase
+          .from('patents')
+          .select('*', { count: 'exact', head: true })
+          .eq('faculty_id', facultyId)
+      ]);
+
+      // Check for errors
+      if (confResult.error || workshopResult.error || journalResult.error || patentResult.error) {
+        const errors = [confResult.error, workshopResult.error, journalResult.error, patentResult.error]
+          .filter(Boolean)
+          .map(e => e?.message)
+          .join(', ');
+        return { data: null, error: `Database error: ${errors}` };
+      }
+
+      // Return counts as array [conferences, workshops, journals, patents]
+      const statistics = [
+        confResult.count || 0,
+        workshopResult.count || 0,
+        journalResult.count || 0,
+        patentResult.count || 0
+      ];
+
+      return { data: statistics, error: null };
+    } catch (error) {
+      console.error('Error in getMilestoneStatistics:', error);
+      return { data: null, error: 'Failed to fetch milestone statistics' };
+    }
+  }
 } 

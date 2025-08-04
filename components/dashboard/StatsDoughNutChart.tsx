@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { LoadingContainer, LoadingText } from "../ui/GenericStyles";
-import { getMilestoneNumbers } from "@/app/api/dbfunctions";
+import { useMilestoneStats } from "@/lib/hooks/useMilestoneStats";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Loader from "@/components/ui/Loader";
@@ -15,26 +15,19 @@ const bodyText = Inter({
 });
 
 const StatsDoughNutChart = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [statArr, setStatArr] = useState<(number | null)[]>([0, 0, 0, 0]);
-  useEffect(() => {
-    getMilestoneNumbers().then((data) => {
-      setStatArr(data);
-      setIsLoading(false);
-    });
-  }, []);
+  const { statistics, isLoading, error } = useMilestoneStats();
 
   const statsData = {
     labels: [
-      `Conferences (${statArr[0] || 0})`,
-      `Workshops (${statArr[1] || 0})`,
-      `Journals (${statArr[2] || 0})`,
-      `Patents (${statArr[3] || 0})`,
+      `Conferences (${statistics[0] || 0})`,
+      `Workshops (${statistics[1] || 0})`,
+      `Journals (${statistics[2] || 0})`,
+      `Patents (${statistics[3] || 0})`,
     ],
     datasets: [
       {
         label: "Attended/Published",
-        data: statArr,
+        data: statistics,
         backgroundColor: [
           "rgba(0, 187, 212, 0.45)",
           "rgba(139, 195, 74, 0.45)",
@@ -101,8 +94,20 @@ const StatsDoughNutChart = () => {
     );
   }
 
+  if (error) {
+    return (
+      <EmptyDataContainer>
+        <EmptyDataIcon>⚠️</EmptyDataIcon>
+        <EmptyDataHeader>Error Loading Data</EmptyDataHeader>
+        <EmptyDataDesc>
+          {error}. Please try refreshing the page.
+        </EmptyDataDesc>
+      </EmptyDataContainer>
+    );
+  }
+
   // Check if all stats are zero or empty
-  const hasData = statArr.some((stat) => stat && stat > 0);
+  const hasData = statistics.some((stat) => stat && stat > 0);
 
   if (!hasData) {
     return (

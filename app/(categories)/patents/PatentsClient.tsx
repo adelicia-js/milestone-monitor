@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import CategoryPageWrapper from "@/components/new/categories/CategoryPageWrapper";
+import CategoryPageWrapper from "@/components/categories/CategoryPageWrapper";
 import { patentApi } from "@/lib/api";
 
 interface PatentsClientProps {

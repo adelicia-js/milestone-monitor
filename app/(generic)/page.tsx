@@ -1,5 +1,5 @@
 import React from "react";
-import DashboardPageWrapper from "@/components/new/dashboard/DashboardPageWrapper";
+import DashboardPageWrapper from "@/components/dashboard/DashboardPageWrapper";
 
 export const dynamic = "force-dynamic";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import ApprovalsWrapper from "@/components/new/approvals/ApprovalsWrapper";
+import ApprovalsWrapper from "@/components/approvals/ApprovalsWrapper";
 import { PendingData } from "@/app/(modify)/modify/approvals/types";
 import { approvalApi } from "@/lib/api";
 import { useRouter } from "next/navigation";

@@ -4,7 +4,7 @@ import React from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { Faculty } from "@/lib/types";
-import { Edit, Trash2, Crown, User, Settings, PencilRulerIcon } from "lucide-react";
+import { Edit, Trash2, Crown, User, PencilRulerIcon } from "lucide-react";
 import Loader from "@/components/ui/Loader";
 import { LoadingContainer, LoadingText } from "@/components/ui/GenericStyles";
 

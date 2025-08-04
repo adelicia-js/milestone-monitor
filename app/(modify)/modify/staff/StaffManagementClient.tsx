@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import StaffManagementWrapper from "@/components/new/staff/StaffManagementWrapper";
+import StaffManagementWrapper from "@/components/staff/StaffManagementWrapper";
 import { Faculty } from "@/lib/types";
 import { facultyApi } from "@/lib/api";
 import { useRouter } from "next/navigation";

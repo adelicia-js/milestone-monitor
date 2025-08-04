@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import SettingsWrapper from "@/components/new/settings/SettingsWrapper";
+import SettingsWrapper from "@/components/settings/SettingsWrapper";
 
 export const metadata: Metadata = {
   title: "Settings | Milestone Monitor",
