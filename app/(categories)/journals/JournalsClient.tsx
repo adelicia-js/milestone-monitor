@@ -109,7 +109,7 @@ export default function JournalsClient({ data, facultyData }: JournalsClientProp
         issn_number: formData.issn_number,
         indexed_in: formData.indexed_in,
         link: formData.link,
-        is_verified: 'PENDING',
+        is_verified: 'PENDING' as 'PENDING',
       };
       
       const result = await journalApi.updateJournal(formData.id, updates);

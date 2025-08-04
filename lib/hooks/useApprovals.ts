@@ -54,7 +54,7 @@ export const useApprovals = () => {
     setError(null);
 
     try {
-      const result = await approvalApi.rejectEntry(data, reason);
+      const result = await approvalApi.rejectEntry(data);
       
       if (result.error) {
         setError(result.error);
@@ -120,7 +120,7 @@ export const useApprovals = () => {
     setError(null);
 
     try {
-      const result = await approvalApi.bulkReject(entries, reason);
+      const result = await approvalApi.bulkReject(entries);
       
       if (result.error) {
         setError(result.error);

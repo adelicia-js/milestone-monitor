@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useGetFacultyList } from "@/lib/hooks/useGetFacultyList";
-import { useReport, ReportFilters } from "@/lib/hooks/useReport";
+import { useReport, ReportFiltersI } from "@/lib/hooks/useReport";
 import { redirect } from "next/navigation";
 import ReportsPageWrapper from "@/components/new/reports/ReportsPageWrapper";
 import Loader from "@/components/ui/Loader";
@@ -21,7 +21,7 @@ export default function ReportsNewClient() {
 
   const { data, loading: reportDataLoading, error, fetchReportData } = useReport();
 
-  const [filterState, setFilterState] = useState<ReportFilters>({
+  const [filterState, setFilterState] = useState<ReportFiltersI>({
     searchQuery: "",
     startDate: "2001-01-01",
     endDate: new Date().toJSON().slice(0, 10),
@@ -42,7 +42,7 @@ export default function ReportsNewClient() {
     }
   }, [facultyDept]);
 
-  const handleFiltersChange = (filters: ReportFilters) => {
+  const handleFiltersChange = (filters: ReportFiltersI) => {
     setFilterState(filters);
     fetchReportData(filters);
   };

@@ -109,7 +109,7 @@ export default function ConferencesClient({ data, facultyData }: ConferencesClie
         type: formData.type,
         proceedings: formData.proceedings === 'true',
         proceeding_fp: formData.proceeding_fp,
-        is_verified: 'PENDING',
+        is_verified: 'PENDING' as 'PENDING',
       };
       
       const result = await conferenceApi.updateConference(formData.id, updates);

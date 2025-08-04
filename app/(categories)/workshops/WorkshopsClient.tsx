@@ -93,7 +93,7 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
         type: formData.type,
         number_of_days: formData.number_of_days,
         organized_by: formData.organized_by,
-        is_verified: 'PENDING'
+        is_verified: 'PENDING' as 'PENDING'
       };
       
       const result = await workshopApi.updateWorkshop(formData.id, updates);
