@@ -27,10 +27,21 @@ const bodyText = Inter({
 export default function QuickActionsCard() {
   const router = useRouter();
 
-  const handleAddConference = () => {};
-  const handleAddJournal = () => {};
-  const handleAddPatent = () => {};
-  const handleAddWorkshop = () => {};
+  const handleAddConference = () => {
+    router.push("/conferences?action=add");
+  };
+  
+  const handleAddJournal = () => {
+    router.push("/journals?action=add");
+  };
+  
+  const handleAddPatent = () => {
+    router.push("/patents?action=add");
+  };
+  
+  const handleAddWorkshop = () => {
+    router.push("/workshops?action=add");
+  };
 
   return (
     <Card>

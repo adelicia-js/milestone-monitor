@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import styled from "styled-components";
 import CategoryHeader from "./CategoryHeader";
 import CategoryGrid from "./CategoryGrid";
@@ -43,10 +44,21 @@ export default function CategoryPageWrapper({
   emptyMessage,
   isLoading = false,
 }: CategoryPageWrapperProps) {
+  const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingData, setEditingData] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingItem, setDeletingItem] = useState<any>(null);
+
+  // Check for action=add query parameter and open modal
+  useEffect(() => {
+    if (searchParams.get('action') === 'add') {
+      setEditingData(null);
+      setIsModalOpen(true);
+      // Clean up URL after opening modal
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [searchParams]);
 
   const handleAddNew = () => {
     setEditingData(null);
@@ -113,7 +125,7 @@ export default function CategoryPageWrapper({
         title={
           editingData
             ? `Edit ${title.slice(0, -1)}`
-            : `Add New ${title.slice(0, -1)}`
+            : `Add New ${title.replace('Your ', '').slice(0, -1)}`
         }
         fields={formFields}
         initialData={editingData || {}}
