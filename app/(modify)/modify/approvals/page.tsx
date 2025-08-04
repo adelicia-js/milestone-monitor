@@ -2,21 +2,18 @@ import React from "react";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Approval from "./Approval";
-import {
-  PendingConference,
-  PendingJournal,
-  PendingWorkshop,
-  PendingPatent,
-} from "./types";
-import { fetchRole } from "@/app/api/dbfunctions";
+import { approvalApi, facultyApi } from "@/lib/api";
 import { Metadata } from "next";
+import ApprovalsClient from "./ApprovalsClient";
+import { Conference, Journal, Workshop, Patent } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: 'Approvals | Milestone Monitor',
 }
 
-const page = async () => {
+export const dynamic = "force-dynamic";
+
+const ApprovalsNewPage = async () => {
   const supabase = createServerComponentClient({ cookies });
   let userData;
 
@@ -25,50 +22,31 @@ const page = async () => {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    // This route can only be accessed by authenticated users.
-    // Unauthenticated users will be redirected to the `/login` route.
     redirect("/login");
-  }else{
-    userData = await fetchRole(user.email as string);
-    if(userData.faculty_role!="hod"){
+  } else {
+    const facultyResult = await facultyApi.getFacultyByEmail(user.email as string);
+    userData = facultyResult.data;
+    
+    if (!userData || userData.faculty_role !== "hod") {
       redirect("/404");
     }
   }
 
-  //get all pending conferences
-  const { data: conference } = await supabase
-    .from("conferences")
-    .select()
-    .eq("is_verified", "PENDING");
+  // Get all pending entries using the new API
+  const pendingResult = await approvalApi.getAllPendingEntries();
+  
+  if (pendingResult.error) {
+    console.error('Error fetching pending entries:', pendingResult.error);
+  }
 
-  //get all pending journals
-  const { data: journal } = await supabase
-    .from("journal_publications")
-    .select()
-    .eq("is_verified", "PENDING");
-
-  //get all pending workshops
-  const { data: workshop } = await supabase
-    .from("fdp_workshop_refresher_course")
-    .select()
-    .eq("is_verified", "PENDING");
-
-  //get all pending patents
-  const { data: patent } = await supabase
-    .from("patents")
-    .select()
-    .eq("is_verified", "PENDING");
-
-  const pending_objects = {
-    pending_conferences: conference as PendingConference[],
-    pending_journal: journal as PendingJournal[],
-    pending_workshop: workshop as PendingWorkshop[],
-    pending_patent: patent as PendingPatent[],
+  const pending_objects = pendingResult.data || {
+    pending_conferences: [] as Conference[],
+    pending_journal: [] as Journal[],
+    pending_workshop: [] as Workshop[],
+    pending_patent: [] as Patent[],
   };
 
-  // console.log("printing data from page", pending_objects);
-
-  return <Approval pending_data={pending_objects} userData={userData}/>;
+  return <ApprovalsClient pending_data={pending_objects} userData={userData} />;
 };
 
-export default page;
+export default ApprovalsNewPage;

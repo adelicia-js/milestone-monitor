@@ -5,6 +5,7 @@ export interface Faculty {
   faculty_role: string;
   faculty_phone: string | null;
   faculty_email: string;
+  faculty_linkedin?: string | null;
   faculty_google_scholar?: string | null;
 }
 
@@ -53,6 +54,8 @@ export interface Patent {
   patent_type: string;
   status: string;
   application_no: string;
+  patent_link?: string;
+  image?: string;
   is_verified: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 

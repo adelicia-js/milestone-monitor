@@ -39,3 +39,4 @@ next-env.d.ts
 # misc
 /docs
 .claude
+CLAUDE.md

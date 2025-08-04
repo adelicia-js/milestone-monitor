@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { ReportApi } from '../api';
 
-export interface ReportFilters {
+export interface ReportFiltersI {
   searchQuery: string;
   startDate: string;
   endDate: string;
@@ -37,10 +37,10 @@ export interface EntryData {
 export const useReport = () => {
   const [data, setData] = useState<DisplayData[]>([]);
   const [fullData, setFullData] = useState<EntryData[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchReportData = useCallback(async (filters: ReportFilters) => {
+  const fetchReportData = useCallback(async (filters: ReportFiltersI) => {
     setLoading(true);
     setError(null);
     
@@ -49,9 +49,9 @@ export const useReport = () => {
       const response = await reportApi.getReportData(
         filters.startDate || '2001-01-01',
         filters.endDate || new Date().toISOString().split('T')[0],
-        filters.selectedType || 'all',
+        filters.selectedType || '',
         filters.searchQuery,
-        filters.selectedStatus || 'PENDING',
+        filters.selectedStatus || '',
         filters.selectedStaff || null,
         filters.department || null
       );

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import { FacultyApi } from '../api/faculty/facultyApi';
+import toast from 'react-hot-toast';
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +20,8 @@ export const useAuth = () => {
 
       if (error) {
         console.error("Login error:", error);
-        alert("Invalid email or password, please try again!");
+        toast.error("Invalid email or password, please try again!");
+        setIsLoading(false);
         return;
       }
 
@@ -28,7 +30,8 @@ export const useAuth = () => {
 
       if (facultyError) {
         console.error("Error checking faculty data:", facultyError);
-        alert("Error accessing faculty data. Please try again.");
+        toast.error("Error accessing faculty data. Please try again.");
+        setIsLoading(false);
         return;
       }
 
@@ -37,17 +40,18 @@ export const useAuth = () => {
         const { error: createError } = await facultyApi.createDefaultFacultyData(email);
         if (createError) {
           console.error("Error creating faculty data:", createError);
-          alert("Error creating faculty profile. Please try again.");
+          toast.error("Error creating faculty profile. Please try again.");
+          setIsLoading(false);
           return;
         }
       }
 
+      toast.success("Signed in successfully!");
       router.push("/");
       router.refresh();
     } catch (error) {
       console.error("Login error:", error);
-      alert("An unexpected error occurred. Please try again.");
-    } finally {
+      toast.error("An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }
   };
@@ -72,8 +76,6 @@ export const useAuth = () => {
     } catch (error) {
       console.error("Signup error:", error);
       alert("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 

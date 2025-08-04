@@ -123,14 +123,16 @@ export default function NavOne(props: NavOneProps) {
       >
         <h1
           id="home-greeting-user-header"
-          className={`${headerText.className} text-lg sm:text-xl lg:text-2xl xl:text-3xl text-center row-start-2 col-span-3 sm:col-span-1 sm:col-start-2 sm:row-start-1 -mt-20 lg:-mt-[1rem] sm:m-0`}
+          className={`${headerText.className} text-lg sm:text-xl lg:text-2xl xl:text-3xl text-center row-start-2 col-span-3 sm:col-span-1 sm:col-start-2 sm:row-start-1 -mt-20 sm:m-0`}
         >
           {pathName == "/modify/approvals" ? (
             <div>Approvals</div>
           ) : (
             <div className="text-teal-950">
               Welcome back,
-              <span className={`${fancyText.className} tracking-tight text-cyan-500`}>
+              <span
+                className={`${fancyText.className} tracking-tight text-cyan-500`}
+              >
                 {" "}
                 {props.userData.faculty_name}.
               </span>
@@ -139,7 +141,7 @@ export default function NavOne(props: NavOneProps) {
         </h1>
         <ul
           id="home-user-actions-elements"
-          className={`lg:-mt-[1rem] row-start-1 col-start-3 justify-self-end flex flex-row items-center justify-center gap-2 sm:gap-4 md:gap-6 pr-4`}
+          className={`row-start-1 col-start-3 justify-self-end flex flex-row items-center justify-center gap-2 sm:gap-4 md:gap-6 pr-4`}
         >
           <li id="home-user-settings-link" className="hidden sm:inline">
             <a href="/settings">
