@@ -15,7 +15,7 @@ const bodyText = Inter({
 interface StaffModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Faculty & { password?: string }) => void;
   mode: 'add' | 'edit';
   initialData?: Faculty | null;
   defaultDepartment: string;

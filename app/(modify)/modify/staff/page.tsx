@@ -2,7 +2,7 @@ import React from "react";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { facultyApi } from "@/lib/api";
+import { serverFacultyApi } from "@/lib/api/server-apis";
 import { Metadata } from "next";
 import StaffManagementClient from "./StaffManagementClient";
 
@@ -22,7 +22,7 @@ const StaffManagementPage = async () => {
     redirect("/login");
   }
 
-  const facultyResult = await facultyApi.getFacultyByEmail(user.email as string);
+  const facultyResult = await serverFacultyApi.getFacultyByEmail(user.email as string);
   const userData = facultyResult.data;
   
   if (!userData || userData.faculty_role !== "hod") {
@@ -30,7 +30,7 @@ const StaffManagementPage = async () => {
   }
 
   // Get all staff from the same department using the new API
-  const staffResult = await facultyApi.getStaffByDepartment(userData.faculty_department);
+  const staffResult = await serverFacultyApi.getStaffByDepartment(userData.faculty_department);
   const staffList = staffResult.data || [];
 
   return (

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { X, Lock, Eye, EyeOff, CheckCircle, AlertCircle, Loader } from "lucide-react";
 import { useSettings } from "@/lib/hooks/useSettings";
+import toast from 'react-hot-toast';
 
 const bodyText = Inter({
   weight: "400",
@@ -45,12 +46,12 @@ export default function PasswordModal({ isOpen, onClose, loading: externalLoadin
     setLocalError(null);
 
     if (!newPassword.trim()) {
-      setLocalError("Please enter a new password");
+      toast.error("Please enter a new password");
       return;
     }
 
     if (!isFormValid) {
-      setLocalError("Please fix the validation errors before continuing");
+      toast.error("Please fix the validation errors before continuing");
       return;
     }
 
@@ -61,11 +62,15 @@ export default function PasswordModal({ isOpen, onClose, loading: externalLoadin
       });
 
       if (result.success) {
+        toast.success("Password updated successfully!");
         // Reset form and close modal
         handleClose();
+      } else if (result.error) {
+        toast.error(result.error);
       }
     } catch (err) {
       console.error("Password update error:", err);
+      toast.error("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -79,8 +84,6 @@ export default function PasswordModal({ isOpen, onClose, loading: externalLoadin
   };
 
   if (!isOpen) return null;
-
-  const displayError = localError || error;
 
   return (
     <ModalOverlay onClick={handleClose}>
@@ -99,22 +102,6 @@ export default function PasswordModal({ isOpen, onClose, loading: externalLoadin
         </ModalHeader>
 
         <ModalBody>
-          {/* Success Message */}
-          {success && (
-            <MessageCard variant="success">
-              <CheckCircle size={18} />
-              <span>{success}</span>
-            </MessageCard>
-          )}
-
-          {/* Error Message */}
-          {displayError && (
-            <MessageCard variant="error">
-              <AlertCircle size={18} />
-              <span>{displayError}</span>
-            </MessageCard>
-          )}
-
           <FormGroup>
             <Label>New Password</Label>
             <PasswordWrapper>
@@ -179,7 +166,7 @@ export default function PasswordModal({ isOpen, onClose, loading: externalLoadin
                       <AlertCircle size={14} />
                     )}
                   </ValidationIcon>
-                  Passwords match
+                  {validation.match ? "Passwords match" : "Passwords don't match"}
                 </ValidationItem>
               </ValidationList>
             )}
@@ -343,26 +330,6 @@ const ModalBody = styled.div`
   gap: 1.5rem;
 `;
 
-const MessageCard = styled.div<{ variant: 'success' | 'error' }>`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid;
-  
-  ${props => props.variant === 'success' && `
-    background: rgba(34, 197, 94, 0.1);
-    border-color: rgba(34, 197, 94, 0.2);
-    color: rgba(22, 163, 74, 0.9);
-  `}
-  
-  ${props => props.variant === 'error' && `
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.2);
-    color: rgba(220, 38, 38, 0.9);
-  `}
-`;
 
 const FormGroup = styled.div`
   display: flex;
@@ -448,11 +415,12 @@ const ValidationItem = styled.div<{ isValid: boolean }>`
   gap: 0.5rem;
   font-family: ${bodyText.style.fontFamily};
   font-size: 0.8rem;
+  font-weight: 500;
   transition: color 0.3s ease;
   
   color: ${props => props.isValid 
     ? 'rgba(22, 163, 74, 0.9)' 
-    : 'rgba(107, 114, 128, 0.6)'
+    : 'rgba(239, 68, 68, 0.9)'
   };
 `;
 

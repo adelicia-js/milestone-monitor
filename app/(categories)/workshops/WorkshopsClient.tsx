@@ -3,10 +3,12 @@
 import React from "react";
 import CategoryPageWrapper from "@/components/categories/CategoryPageWrapper";
 import { workshopApi } from "@/lib/api";
+import { Workshop, Faculty, WorkshopFormData } from "@/lib/types";
+import toast from 'react-hot-toast';
 
 interface WorkshopsClientProps {
-  data: any[];
-  facultyData: any;
+  data: Workshop[];
+  facultyData: Faculty;
 }
 
 export default function WorkshopsClient({ data, facultyData }: WorkshopsClientProps) {
@@ -62,7 +64,7 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
     }
   ];
 
-  const handleAddNew = async (formData: any) => {
+  const handleAddNew = async (formData: WorkshopFormData) => {
     try {
       const workshopData = {
         faculty_id: facultyData.faculty_id,
@@ -81,11 +83,11 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
       window.location.reload();
     } catch (error) {
       console.error('Error adding workshop:', error);
-      alert('Failed to add workshop. Please try again.');
+      toast.error('Failed to add workshop. Please try again.');
     }
   };
 
-  const handleEdit = async (formData: any) => {
+  const handleEdit = async (formData: Workshop) => {
     try {
       const updates = {
         title: formData.title,
@@ -96,6 +98,9 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
         is_verified: 'PENDING' as 'PENDING'
       };
       
+      if (!formData.id) {
+        throw new Error('Workshop ID is required for updates');
+      }
       const result = await workshopApi.updateWorkshop(formData.id, updates);
       if (result.error) {
         throw new Error(result.error);
@@ -104,12 +109,15 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
       window.location.reload();
     } catch (error) {
       console.error('Error updating workshop:', error);
-      alert('Failed to update workshop. Please try again.');
+      toast.error('Failed to update workshop. Please try again.');
     }
   };
 
-  const handleDelete = async (item: any) => {
+  const handleDelete = async (item: Workshop) => {
     try {
+      if (!item.id) {
+        throw new Error('Workshop ID is required for deletion');
+      }
       const result = await workshopApi.deleteWorkshop(item.id);
       if (result.error) {
         throw new Error(result.error);
@@ -118,7 +126,7 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
       window.location.reload();
     } catch (error) {
       console.error('Error deleting workshop:', error);
-      alert('Failed to delete workshop. Please try again.');
+      toast.error('Failed to delete workshop. Please try again.');
     }
   };
 

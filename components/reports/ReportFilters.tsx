@@ -47,17 +47,43 @@ export default function ReportFilters({
   const [selectedStaff, setSelectedStaff] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [dateError, setDateError] = useState("");
+
+  // Validate date range
+  const validateDateRange = (start: string, end: string) => {
+    if (start && end && new Date(start) > new Date(end)) {
+      setDateError("Start date cannot be after end date");
+      return false;
+    }
+    setDateError("");
+    return true;
+  };
+
+  // Handle start date change with validation
+  const handleStartDateChange = (newStartDate: string) => {
+    setStartDate(newStartDate);
+    validateDateRange(newStartDate, endDate);
+  };
+
+  // Handle end date change with validation
+  const handleEndDateChange = (newEndDate: string) => {
+    setEndDate(newEndDate);
+    validateDateRange(startDate, newEndDate);
+  };
 
   useEffect(() => {
-    onFiltersChange({
-      searchQuery,
-      startDate,
-      endDate,
-      selectedStaff,
-      selectedType,
-      selectedStatus,
-      department: staffDepartment,
-    });
+    // Only trigger filters change if date range is valid
+    if (validateDateRange(startDate, endDate)) {
+      onFiltersChange({
+        searchQuery,
+        startDate,
+        endDate,
+        selectedStaff,
+        selectedType,
+        selectedStatus,
+        department: staffDepartment,
+      });
+    }
   }, [
     searchQuery,
     startDate,
@@ -75,6 +101,7 @@ export default function ReportFilters({
     setSelectedStaff("");
     setSelectedType("");
     setSelectedStatus("");
+    setDateError("");
   };
 
   if (loading) {
@@ -119,7 +146,7 @@ export default function ReportFilters({
           </FilterLabel>
           <SearchInput
             type="text"
-            placeholder="Search by title, name..."
+            placeholder="Search by title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -134,14 +161,18 @@ export default function ReportFilters({
             <DateInput
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => handleStartDateChange(e.target.value)}
+              max={endDate}
             />
             <DateInput
               type="date"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={(e) => handleEndDateChange(e.target.value)}
+              min={startDate}
+              max={new Date().toJSON().slice(0, 10)}
             />
           </DateInputs>
+          {dateError && <DateError>{dateError}</DateError>}
         </FilterGroup>
 
         <FilterGroup>
@@ -372,5 +403,24 @@ const ClearButton = styled.button`
 
   &:hover svg {
     transform: rotate(-180deg);
+  }
+`;
+
+const DateError = styled.div`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 0.75rem;
+  color: rgba(239, 68, 68, 0.8);
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(254, 242, 242, 0.8);
+  border: 1px solid rgba(252, 165, 165, 0.4);
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  &::before {
+    content: "⚠️";
+    font-size: 0.75rem;
   }
 `;

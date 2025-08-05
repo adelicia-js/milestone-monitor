@@ -53,7 +53,7 @@ export default function DeleteModal({
         <ModalBody>
           <Message>{message}</Message>
           {itemName && (
-            <ItemName>"{itemName}"</ItemName>
+            <ItemName>&quot;{itemName}&quot;</ItemName>
           )}
           <WarningText>This action cannot be undone.</WarningText>
         </ModalBody>

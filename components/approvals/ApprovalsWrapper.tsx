@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 import ApprovalsTable from "./ApprovalsTable";
 import ApprovalModal from "./ApprovalModal";
-// import { Conference, Journal, Workshop, Patent } from "@/lib/types";
+import { ApprovalEntry, Faculty } from "@/lib/types";
 import { PendingData } from "@/app/(modify)/modify/approvals/types";
 import { CheckCircle, AlertCircle, X } from "lucide-react";
+import MobileAdvisory from "@/components/ui/MobileAdvisory";
 
 const bodyText = Inter({
   weight: "400",
@@ -24,9 +25,9 @@ const bodyText = Inter({
 
 interface ApprovalsWrapperProps {
   pendingData: PendingData;
-  userData: any;
-  onApprove: (data: any) => void;
-  onReject: (data: any) => void;
+  userData: Faculty;
+  onApprove: (data: ApprovalEntry) => void;
+  onReject: (data: ApprovalEntry) => void;
   success?: string | null;
   error?: string | null;
   onClearMessages?: () => void;
@@ -39,7 +40,7 @@ interface TabConfig {
   label: string;
   icon: React.ReactNode;
   count: number;
-  data: any[];
+  data: ApprovalEntry[];
 }
 
 export default function ApprovalsWrapper({
@@ -52,7 +53,7 @@ export default function ApprovalsWrapper({
   onClearMessages,
 }: ApprovalsWrapperProps) {
   const [activeTab, setActiveTab] = useState<TabType>("all");
-  const [selectedEntry, setSelectedEntry] = useState<any>(null);
+  const [selectedEntry, setSelectedEntry] = useState<ApprovalEntry | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Combine all data for the "All" tab
@@ -69,35 +70,35 @@ export default function ApprovalsWrapper({
       label: "Conferences",
       icon: <Users size={16} />,
       count: pendingData.pending_conferences?.length || 0,
-      data: pendingData.pending_conferences || [],
+      data: (pendingData.pending_conferences || []) as unknown as ApprovalEntry[],
     },
     {
       key: "journals",
       label: "Journals",
       icon: <BookOpen size={16} />,
       count: pendingData.pending_journal?.length || 0,
-      data: pendingData.pending_journal || [],
+      data: (pendingData.pending_journal || []) as unknown as ApprovalEntry[],
     },
     {
       key: "patents",
       label: "Patents",
       icon: <Lightbulb size={16} />,
       count: pendingData.pending_patent?.length || 0,
-      data: pendingData.pending_patent || [],
+      data: (pendingData.pending_patent || []) as unknown as ApprovalEntry[],
     },
     {
       key: "workshops",
       label: "Workshops",
       icon: <Briefcase size={16} />,
       count: pendingData.pending_workshop?.length || 0,
-      data: pendingData.pending_workshop || [],
+      data: (pendingData.pending_workshop || []) as unknown as ApprovalEntry[],
     },
     {
       key: "all",
       label: "All",
       icon: <LayoutGridIcon size={16} />,
       count: allData.length,
-      data: allData,
+      data: allData as unknown as ApprovalEntry[],
     },
   ];
 
@@ -106,25 +107,27 @@ export default function ApprovalsWrapper({
     .filter((tab) => tab.label !== "All")
     .reduce((sum, tab) => sum + tab.count, 0);
 
-  const handleViewDetails = (entry: any) => {
+  const handleViewDetails = (entry: ApprovalEntry) => {
     setSelectedEntry(entry);
     setIsModalOpen(true);
   };
 
-  const handleApprove = (entry: any) => {
+  const handleApprove = (entry: ApprovalEntry) => {
     onApprove(entry);
     setIsModalOpen(false);
     setSelectedEntry(null);
   };
 
-  const handleReject = (entry: any) => {
+  const handleReject = (entry: ApprovalEntry) => {
     onReject(entry);
     setIsModalOpen(false);
     setSelectedEntry(null);
   };
 
   return (
-    <Layout>
+    <>
+      <MobileAdvisory />
+      <Layout>
       <Container>
         <HeaderWrapper>
           <HeaderText>Record Approvals</HeaderText>
@@ -199,6 +202,7 @@ export default function ApprovalsWrapper({
         onReject={handleReject}
       />
     </Layout>
+    </>
   );
 }
 
@@ -206,10 +210,25 @@ const Layout = styled.main`
   z-index: 0;
   position: absolute;
   height: 100vh;
-  width: 92vw;
+  width: calc(100vw - 8vw);
   left: 8vw;
   padding: 1rem;
   background-color: rgba(140, 242, 233, 0.35);
+  box-sizing: border-box;
+  
+  @media (max-width: 1024px) {
+    width: calc(100vw - 8vw - 2rem);
+    padding: 0.75rem;
+    top: 60px;
+    height: calc(100vh - 60px);
+  }
+  
+  @media (max-width: 768px) {
+    width: calc(100vw - 8vw - 1rem);
+    padding: 0.5rem;
+    top: 50px;
+    height: calc(100vh - 50px);
+  }
 `;
 
 const Container = styled.section`
@@ -218,6 +237,16 @@ const Container = styled.section`
   flex-direction: column;
   padding: 3rem;
   gap: 1.5rem;
+  
+  @media (max-width: 1024px) {
+    padding: 2rem;
+    gap: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
 `;
 
 const HeaderWrapper = styled.div`
@@ -228,6 +257,18 @@ const HeaderWrapper = styled.div`
   align-items: center;
   gap: 1rem;
   width: fit-content;
+  
+  @media (max-width: 1024px) {
+    gap: 0.75rem;
+    top: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    top: 0.75rem;
+  }
 `;
 
 const HeaderText = styled(GenericHeader)`
@@ -236,6 +277,18 @@ const HeaderText = styled(GenericHeader)`
   text-transform: none;
   letter-spacing: 0;
   margin: 0;
+  
+  @media (max-width: 1024px) {
+    font-size: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
 `;
 
 const StatsBadge = styled.div`

@@ -3,10 +3,12 @@
 import React from "react";
 import CategoryPageWrapper from "@/components/categories/CategoryPageWrapper";
 import { conferenceApi } from "@/lib/api";
+import { Conference, Faculty, ConferenceFormData } from "@/lib/types";
+import toast from 'react-hot-toast';
 
 interface ConferencesClientProps {
-  data: any[];
-  facultyData: any;
+  data: Conference[];
+  facultyData: Faculty;
 }
 
 export default function ConferencesClient({ data, facultyData }: ConferencesClientProps) {
@@ -75,7 +77,7 @@ export default function ConferencesClient({ data, facultyData }: ConferencesClie
     }
   ];
 
-  const handleAddNew = async (formData: any) => {
+  const handleAddNew = async (formData: ConferenceFormData & { files?: { certificate?: File; proceedings?: File } }) => {
     try {
       const conferenceData = {
         faculty_id: facultyData.faculty_id,
@@ -83,7 +85,7 @@ export default function ConferencesClient({ data, facultyData }: ConferencesClie
         conf_name: formData.conf_name,
         conf_date: formData.conf_date,
         type: formData.type,
-        proceedings: formData.proceedings === 'true',
+        proceedings: formData.proceedings,
         proceeding_fp: formData.proceeding_fp,
         files: formData.files
       };
@@ -93,48 +95,57 @@ export default function ConferencesClient({ data, facultyData }: ConferencesClie
         throw new Error(result.error);
       }
       
+      toast.success('Conference added successfully!');
       window.location.reload();
     } catch (error) {
       console.error('Error adding conference:', error);
-      alert('Failed to add conference. Please try again.');
+      toast.error('Failed to add conference. Please try again.');
     }
   };
 
-  const handleEdit = async (formData: any) => {
+  const handleEdit = async (formData: Conference) => {
     try {
       const updates = {
         paper_title: formData.paper_title,
         conf_name: formData.conf_name,
         conf_date: formData.conf_date,
         type: formData.type,
-        proceedings: formData.proceedings === 'true',
+        proceedings: formData.proceedings === true,
         proceeding_fp: formData.proceeding_fp,
         is_verified: 'PENDING' as 'PENDING',
       };
       
+      if (!formData.id) {
+        throw new Error('Conference ID is required for updates');
+      }
       const result = await conferenceApi.updateConference(formData.id, updates);
       if (result.error) {
         throw new Error(result.error);
       }
       
+      toast.success('Conference updated successfully!');
       window.location.reload();
     } catch (error) {
       console.error('Error updating conference:', error);
-      alert('Failed to update conference. Please try again.');
+      toast.error('Failed to update conference. Please try again.');
     }
   };
 
-  const handleDelete = async (item: any) => {
+  const handleDelete = async (item: Conference) => {
     try {
+      if (!item.id) {
+        throw new Error('Conference ID is required for deletion');
+      }
       const result = await conferenceApi.deleteConference(item.id);
       if (result.error) {
         throw new Error(result.error);
       }
       
+      toast.success('Conference deleted successfully!');
       window.location.reload();
     } catch (error) {
       console.error('Error deleting conference:', error);
-      alert('Failed to delete conference. Please try again.');
+      toast.error('Failed to delete conference. Please try again.');
     }
   };
 

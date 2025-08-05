@@ -4,23 +4,20 @@ import React, { useState } from "react";
 import StaffManagementWrapper from "@/components/staff/StaffManagementWrapper";
 import { Faculty } from "@/lib/types";
 import { facultyApi } from "@/lib/api";
-import { useRouter } from "next/navigation";
 
 interface StaffManagementClientProps {
   initialStaffList: Faculty[];
   currentUserDept: string;
-  userData: any;
+  userData: Faculty;
 }
 
 export default function StaffManagementClient({
   initialStaffList,
   currentUserDept,
-  userData
 }: StaffManagementClientProps) {
   const [staffList, setStaffList] = useState<Faculty[]>(initialStaffList);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const refreshStaffList = async () => {
     try {
@@ -33,7 +30,7 @@ export default function StaffManagementClient({
     }
   };
 
-  const handleAddStaff = async (staffData: any) => {
+  const handleAddStaff = async (staffData: Faculty & { password?: string }) => {
     setLoading(true);
     setError(null);
     try {
@@ -44,7 +41,7 @@ export default function StaffManagementClient({
         faculty_role: staffData.faculty_role,
         faculty_phone: staffData.faculty_phone || null,
         faculty_email: staffData.faculty_email,
-        password: staffData.password
+        password: staffData.password || ''
       });
       
       if (result.error) {
@@ -62,7 +59,7 @@ export default function StaffManagementClient({
     }
   };
 
-  const handleEditStaff = async (staffData: any) => {
+  const handleEditStaff = async (staffData: Faculty & { password?: string }) => {
     setLoading(true);
     setError(null);
     try {

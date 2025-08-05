@@ -10,18 +10,18 @@ const bodyText = Inter({
   subsets: ["latin"],
 });
 
-interface CategoryCardProps {
-  data: any;
+interface CategoryCardProps<T> {
+  data: T;
   fields: Array<{
     key: string;
     label: string;
     type?: 'text' | 'date' | 'status' | 'badge';
   }>;
-  onEdit?: (data: any) => void;
-  onDelete?: (data: any) => void;
+  onEdit?: (data: T) => void;
+  onDelete?: (data: T) => void;
 }
 
-export default function CategoryCard({ data, fields, onEdit, onDelete }: CategoryCardProps) {
+export default function CategoryCard<T extends Record<string, string | number | boolean | null | undefined>>({ data, fields, onEdit, onDelete }: CategoryCardProps<T>) {
   const getStatusIcon = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
@@ -48,19 +48,23 @@ export default function CategoryCard({ data, fields, onEdit, onDelete }: Categor
     }
   };
 
-  const formatValue = (value: any, type?: string) => {
+  const formatValue = (value: string | number | boolean | null | undefined, type?: string) => {
     if (!value) return 'N/A';
     
     let formattedValue: string;
     switch (type) {
       case 'date':
-        formattedValue = new Date(value).toLocaleDateString();
+        if (typeof value === 'string' || typeof value === 'number') {
+          formattedValue = new Date(value).toLocaleDateString();
+        } else {
+          formattedValue = 'N/A';
+        }
         break;
       case 'status':
-        formattedValue = value;
+        formattedValue = String(value);
         break;
       default:
-        formattedValue = value.toString();
+        formattedValue = String(value);
     }
     
     // Truncate text if it exceeds the specified length (only for strings, not dates/status)
@@ -80,8 +84,8 @@ export default function CategoryCard({ data, fields, onEdit, onDelete }: Categor
             <FieldLabel>{field.label}:</FieldLabel>
             {field.type === 'status' ? (
               <StatusWrapper>
-                {getStatusIcon(data[field.key])}
-                <StatusText color={getStatusColor(data[field.key])}>
+                {getStatusIcon(String(data[field.key] || ''))}
+                <StatusText color={getStatusColor(String(data[field.key] || ''))}>
                   {formatValue(data[field.key], field.type)}
                 </StatusText>
               </StatusWrapper>
@@ -148,6 +152,21 @@ const FieldLabel = styled.span`
   @media (min-width: 768px) {
     min-width: 140px;
   }
+  
+  @media (max-width: 1024px) {
+    font-size: 0.8rem;
+    min-width: 110px;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+    min-width: 100px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.7rem;
+    min-width: 90px;
+  }
 `;
 
 const FieldValue = styled.span`
@@ -155,6 +174,18 @@ const FieldValue = styled.span`
   color: rgba(31, 41, 55, 0.9);
   font-size: 0.9rem;
   flex: 1;
+  
+  @media (max-width: 1024px) {
+    font-size: 0.85rem;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const StatusWrapper = styled.div`
@@ -169,6 +200,18 @@ const StatusText = styled.span<{ color: string }>`
   font-weight: 500;
   font-size: 0.9rem;
   text-transform: capitalize;
+  
+  @media (max-width: 1024px) {
+    font-size: 0.85rem;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Badge = styled.span`
@@ -181,6 +224,21 @@ const Badge = styled.span`
   font-family: ${bodyText.style.fontFamily};
   font-size: 0.8rem;
   font-weight: 500;
+  
+  @media (max-width: 1024px) {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.4rem;
+  }
 `;
 
 const ActionButtons = styled.div`

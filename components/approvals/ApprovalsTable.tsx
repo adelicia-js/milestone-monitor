@@ -4,6 +4,7 @@ import React from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { Eye, Calendar } from "lucide-react";
+import { ApprovalEntry } from "@/lib/types";
 
 const bodyText = Inter({
   weight: "400",
@@ -11,9 +12,9 @@ const bodyText = Inter({
 });
 
 interface ApprovalsTableProps {
-  data: any[];
+  data: ApprovalEntry[];
   category: string;
-  onViewDetails: (entry: any) => void;
+  onViewDetails: (entry: ApprovalEntry) => void;
   emptyMessage: string;
 }
 
@@ -32,8 +33,8 @@ export default function ApprovalsTable({
     switch (category) {
       case "all":
         return [
-          { key: "title", label: "Title" },
           { key: "faculty_id", label: "Faculty ID" },
+          { key: "title", label: "Title" },
           { key: "date", label: "Date" },
           { key: "entry_type", label: "Type" },
         ];
@@ -74,7 +75,7 @@ export default function ApprovalsTable({
     }
   };
 
-  const renderCellValue = (item: any, columnKey: string) => {
+  const renderCellValue = (item: ApprovalEntry, columnKey: string) => {
     // Handle unified fields for "all" category
     if (category === "all") {
       if (columnKey === "title") {
@@ -90,14 +91,14 @@ export default function ApprovalsTable({
             : item.entry_type === "Patent"
             ? "patent_date"
             : "date"; // Workshop
-        return formatDate(item[dateField]);
+        return formatDate(String(item[dateField] || ""));
       }
       if (columnKey === "entry_type") {
         return item.entry_type || "N/A";
       }
     }
 
-    const value = item[columnKey];
+    const value = String(item[columnKey] || "");
 
     if (!value) return "N/A";
 
@@ -170,7 +171,7 @@ export default function ApprovalsTable({
                 <TableCell>
                   <DateWrapper>
                     <Calendar size={14} />
-                    {formatDate(item.created_at)}
+                    {formatDate(String(item.created_at || ""))}
                   </DateWrapper>
                 </TableCell>
                 <TableCell>
@@ -192,9 +193,7 @@ const TableCard = styled.div`
   height: 100%;
   border: 0.1px solid rgba(56, 68, 68, 0.28);
   border-radius: 1rem;
-  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
   background-color: rgba(244, 253, 252, 0.75);
-  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -203,6 +202,39 @@ const TableCard = styled.div`
 const TableWrapper = styled.div`
   flex: 1;
   overflow: auto;
+  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
+  backdrop-filter: blur(10px);
+  
+  /* Custom scrollbar styling similar to reports and recent activity */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 131, 143, 0.1);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 131, 143, 0.25);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 131, 143, 0.4);
+  }
+
+  /* Firefox scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 131, 143, 0.25) rgba(0, 131, 143, 0.1);
+  scroll-behavior: smooth;
+  
+  /* Ensure smooth scrolling on smaller screens */
+  @media (max-width: 1024px) {
+    overflow-x: auto;
+  }
 `;
 
 const Table = styled.table`
@@ -241,7 +273,19 @@ const TableHeaderCell = styled.th`
   border-bottom: 2px solid rgba(4, 103, 112, 0.2);
   white-space: nowrap;
   vertical-align: middle;
-  height: 60px; /* Fixed header height */
+  height: 60px;
+  
+  @media (max-width: 1024px) {
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    height: 50px;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    height: 45px;
+  }
 `;
 
 const TableCell = styled.td`
@@ -249,8 +293,20 @@ const TableCell = styled.td`
   font-family: ${bodyText.style.fontFamily};
   font-size: 0.9rem;
   color: rgba(31, 41, 55, 0.9);
-  vertical-align: middle; /* Changed from top to middle for better alignment */
-  height: 70px; /* Fixed cell height for consistent alignment */
+  vertical-align: middle;
+  height: 70px;
+  
+  @media (max-width: 1024px) {
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    height: 60px;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    height: 50px;
+  }
 `;
 
 const FacultyId = styled.span`
@@ -264,6 +320,14 @@ const TitleCell = styled.div`
   max-width: 250px;
   word-wrap: break-word;
   line-height: 1.3;
+  
+  @media (max-width: 1024px) {
+    max-width: 200px;
+  }
+  
+  @media (max-width: 768px) {
+    max-width: 150px;
+  }
   font-weight: 500;
   display: -webkit-box;
   -webkit-line-clamp: 2;

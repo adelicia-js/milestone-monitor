@@ -89,7 +89,7 @@ export class SettingsApi extends ApiClient {
   }
 
   // Update user password (client-side only)
-  async updatePassword(passwordData: PasswordUpdateData): Promise<ApiResponse<any>> {
+  async updatePassword(passwordData: PasswordUpdateData): Promise<ApiResponse<{ success: boolean }>> {
     try {
       // Validate password data
       const validation = this.validatePasswordUpdate(passwordData);
@@ -109,7 +109,7 @@ export class SettingsApi extends ApiClient {
         return { data: null, error: error.message };
       }
 
-      return { data: data, error: null };
+      return { data: { success: true }, error: null };
     } catch (error) {
       console.error('Error in updatePassword:', error);
       return { data: null, error: 'Failed to update password' };

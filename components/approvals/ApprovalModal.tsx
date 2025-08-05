@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Download,
 } from "lucide-react";
+import { ApprovalEntry } from "@/lib/types";
 
 const bodyText = Inter({
   weight: "400",
@@ -22,9 +23,9 @@ const bodyText = Inter({
 interface ApprovalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  entry: any;
-  onApprove: (entry: any) => void;
-  onReject: (entry: any) => void;
+  entry: ApprovalEntry | null;
+  onApprove: (entry: ApprovalEntry) => void;
+  onReject: (entry: ApprovalEntry) => void;
 }
 
 export default function ApprovalModal({
@@ -36,11 +37,11 @@ export default function ApprovalModal({
 }: ApprovalModalProps) {
 
   const handleApprove = () => {
-    onApprove(entry);
+    if (entry) onApprove(entry);
   };
 
   const handleReject = () => {
-    onReject(entry);
+    if (entry) onReject(entry);
   };
 
   const formatDate = (dateString: string) => {
@@ -65,7 +66,7 @@ export default function ApprovalModal({
             </DetailItem>
             <DetailItem>
               <DetailLabel>Conference Date:</DetailLabel>
-              <DetailValue>{formatDate(entry.conf_date)}</DetailValue>
+              <DetailValue>{formatDate(String(entry.conf_date || ''))}</DetailValue>
             </DetailItem>
             <DetailItem>
               <DetailLabel>Conference Type:</DetailLabel>
@@ -74,7 +75,7 @@ export default function ApprovalModal({
             {entry.proceedings && (
               <DetailItem>
                 <DetailLabel>Proceedings:</DetailLabel>
-                <LinkValue href={entry.proceedings} target="_blank">
+                <LinkValue href={String(entry.proceedings || '')} target="_blank">
                   View Proceedings <ExternalLink size={14} />
                 </LinkValue>
               </DetailItem>
@@ -119,7 +120,7 @@ export default function ApprovalModal({
             {entry.link && (
               <DetailItem>
                 <DetailLabel>Publication Link:</DetailLabel>
-                <LinkValue href={entry.link} target="_blank">
+                <LinkValue href={String(entry.link || '')} target="_blank">
                   View Publication <ExternalLink size={14} />
                 </LinkValue>
               </DetailItem>
@@ -157,12 +158,12 @@ export default function ApprovalModal({
             </DetailItem>
             <DetailItem>
               <DetailLabel>Patent Date:</DetailLabel>
-              <DetailValue>{formatDate(entry.patent_date)}</DetailValue>
+              <DetailValue>{formatDate(String(entry.patent_date || ''))}</DetailValue>
             </DetailItem>
             {entry.patent_link && (
               <DetailItem>
                 <DetailLabel>Patent Link:</DetailLabel>
-                <LinkValue href={entry.patent_link} target="_blank">
+                <LinkValue href={String(entry.patent_link || '')} target="_blank">
                   View Patent <ExternalLink size={14} />
                 </LinkValue>
               </DetailItem>
@@ -227,7 +228,7 @@ export default function ApprovalModal({
               </MetaItem>
               <MetaItem>
                 <Calendar size={14} />
-                Submitted: {formatDate(entry.created_at)}
+                Submitted: {formatDate(String(entry.created_at || ''))}
               </MetaItem>
             </EntryMeta>
           </HeaderInfo>

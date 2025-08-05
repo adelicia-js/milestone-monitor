@@ -13,50 +13,99 @@ const bodyText = Inter({
 interface FormField {
   key: string;
   label: string;
-  type: 'text' | 'textarea' | 'date' | 'select' | 'file' | 'number';
+  type: "text" | "textarea" | "date" | "select" | "file" | "number";
   required?: boolean;
   options?: Array<{ value: string; label: string }>;
   placeholder?: string;
 }
 
-interface CategoryModalProps {
+interface CategoryModalProps<T> {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: T) => void;
   title: string;
   fields: FormField[];
-  initialData?: any;
+  initialData?: Record<string, string | number | boolean | null | undefined>;
   isLoading?: boolean;
 }
 
-export default function CategoryModal({
+export default function CategoryModal<T>({
   isOpen,
   onClose,
   onSubmit,
   title,
   fields,
   initialData = {},
-  isLoading = false
-}: CategoryModalProps) {
+  isLoading = false,
+}: CategoryModalProps<T>) {
   const [formData, setFormData] = useState(initialData);
   const [files, setFiles] = useState<{ [key: string]: File | null }>({});
+  const [dateErrors, setDateErrors] = useState<{ [key: string]: string }>({});
 
   // Update formData when initialData changes (for editing)
   useEffect(() => {
     setFormData(initialData);
+    setDateErrors({});
   }, [initialData]);
 
-  const handleInputChange = (key: string, value: any) => {
-    setFormData((prev: any) => ({ ...prev, [key]: value }));
+  // Validate date field
+  const validateDate = (key: string, value: string, field: FormField) => {
+    if (field.type !== 'date' || !value) {
+      setDateErrors((prev) => ({ ...prev, [key]: '' }));
+      return true;
+    }
+
+    const selectedDate = new Date(value);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Set to end of today for comparison
+    
+    // Check if date is in the future (not allowed for most academic records)
+    if (selectedDate > today) {
+      setDateErrors((prev) => ({ 
+        ...prev, 
+        [key]: `${field.label} cannot be in the future` 
+      }));
+      return false;
+    }
+    
+    // Check if date is too far in the past (reasonable validation)
+    const minDate = new Date('1900-01-01');
+    if (selectedDate < minDate) {
+      setDateErrors((prev) => ({ 
+        ...prev, 
+        [key]: `${field.label} cannot be before 1900` 
+      }));
+      return false;
+    }
+
+    setDateErrors((prev) => ({ ...prev, [key]: '' }));
+    return true;
+  };
+
+  const handleInputChange = (key: string, value: string | number | boolean) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    
+    // Validate date fields
+    const field = fields.find(f => f.key === key);
+    if (field && field.type === 'date' && typeof value === 'string') {
+      validateDate(key, value, field);
+    }
   };
 
   const handleFileChange = (key: string, file: File | null) => {
-    setFiles(prev => ({ ...prev, [key]: file }));
+    setFiles((prev) => ({ ...prev, [key]: file }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ ...formData, files });
+    
+    // Check if there are any date validation errors
+    const hasDateErrors = Object.values(dateErrors).some(error => error !== '');
+    if (hasDateErrors) {
+      return; // Don't submit if there are validation errors
+    }
+    
+    onSubmit({ ...formData, files } as T);
   };
 
   if (!isOpen) return null;
@@ -79,18 +128,26 @@ export default function CategoryModal({
                   {field.label}
                   {field.required && <Required>*</Required>}
                 </Label>
-                
-                {field.type === 'textarea' ? (
+
+                {field.type === "textarea" ? (
                   <TextArea
-                    value={formData[field.key] || ''}
-                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                    value={String(
+                      formData[field.key as keyof typeof formData] || ""
+                    )}
+                    onChange={(e) =>
+                      handleInputChange(field.key, e.target.value)
+                    }
                     placeholder={field.placeholder}
                     required={field.required}
                   />
-                ) : field.type === 'select' ? (
+                ) : field.type === "select" ? (
                   <Select
-                    value={formData[field.key] || ''}
-                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                    value={String(
+                      formData[field.key as keyof typeof formData] || ""
+                    )}
+                    onChange={(e) =>
+                      handleInputChange(field.key, e.target.value)
+                    }
                     required={field.required}
                   >
                     <option value="">Select {field.label}</option>
@@ -100,27 +157,39 @@ export default function CategoryModal({
                       </option>
                     ))}
                   </Select>
-                ) : field.type === 'file' ? (
+                ) : field.type === "file" ? (
                   <FileInputWrapper>
                     <FileInput
                       type="file"
                       id={field.key}
-                      onChange={(e) => handleFileChange(field.key, e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        handleFileChange(field.key, e.target.files?.[0] || null)
+                      }
                       required={field.required}
                     />
                     <FileInputLabel htmlFor={field.key}>
                       <Upload size={16} />
-                      {files[field.key] ? files[field.key]?.name : `Choose ${field.label}`}
+                      {files[field.key]
+                        ? files[field.key]?.name
+                        : `Choose ${field.label}`}
                     </FileInputLabel>
                   </FileInputWrapper>
                 ) : (
                   <Input
                     type={field.type}
-                    value={formData[field.key] || ''}
-                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                    value={String(
+                      formData[field.key as keyof typeof formData] || ""
+                    )}
+                    onChange={(e) =>
+                      handleInputChange(field.key, e.target.value)
+                    }
                     placeholder={field.placeholder}
                     required={field.required}
+                    max={field.type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
                   />
+                )}
+                {field.type === 'date' && dateErrors[field.key] && (
+                  <DateError>{dateErrors[field.key]}</DateError>
                 )}
               </FormGroup>
             ))}
@@ -130,9 +199,12 @@ export default function CategoryModal({
             <CancelButton type="button" onClick={onClose}>
               Cancel
             </CancelButton>
-            <SubmitButton type="submit" disabled={isLoading}>
+            <SubmitButton 
+              type="submit" 
+              disabled={isLoading || Object.values(dateErrors).some(error => error !== '')}
+            >
               <Save size={16} />
-              {isLoading ? 'Saving...' : 'Save'}
+              {isLoading ? "Saving..." : "Save"}
             </SubmitButton>
           </ModalFooter>
         </Form>
@@ -165,6 +237,33 @@ const ModalContent = styled.div`
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
+
+  /* Custom scrollbar styling - properly aligned inside modal */
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 131, 143, 0.1);
+    border-radius: 3px;
+    margin: 8px; /* Add margin to keep scrollbar inside the modal border */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 131, 143, 0.25);
+    border-radius: 3px;
+    transition: background 0.3s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 131, 143, 0.4);
+  }
+
+  /* Firefox scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 131, 143, 0.25) rgba(0, 131, 143, 0.1);
+  scroll-behavior: smooth;
 `;
 
 const ModalHeader = styled.div`
@@ -181,6 +280,18 @@ const ModalTitle = styled.h2`
   font-weight: 600;
   color: rgba(4, 103, 112, 0.9);
   margin: 0;
+  
+  @media (max-width: 1024px) {
+    font-size: 1.15rem;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -223,6 +334,18 @@ const Label = styled.label`
   font-weight: 500;
   color: rgba(4, 103, 112, 0.9);
   font-size: 0.9rem;
+  
+  @media (max-width: 1024px) {
+    font-size: 0.85rem;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Required = styled.span`
@@ -355,7 +478,11 @@ const SubmitButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.9), rgba(6, 95, 70, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(4, 103, 112, 0.9),
+    rgba(6, 95, 70, 0.9)
+  );
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -365,12 +492,35 @@ const SubmitButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(4, 103, 112, 1), rgba(6, 95, 70, 1));
+    background: linear-gradient(
+      135deg,
+      rgba(4, 103, 112, 1),
+      rgba(6, 95, 70, 1)
+    );
     transform: translateY(-1px);
   }
 
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+`;
+
+const DateError = styled.div`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 0.75rem;
+  color: rgba(239, 68, 68, 0.9);
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(254, 242, 242, 0.8);
+  border: 1px solid rgba(252, 165, 165, 0.4);
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  &::before {
+    content: "⚠️";
+    font-size: 0.75rem;
   }
 `;

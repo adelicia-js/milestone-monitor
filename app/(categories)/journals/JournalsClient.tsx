@@ -3,10 +3,12 @@
 import React from "react";
 import CategoryPageWrapper from "@/components/categories/CategoryPageWrapper";
 import { journalApi } from "@/lib/api";
+import { Journal, Faculty, JournalFormData } from "@/lib/types";
+import toast from 'react-hot-toast';
 
 interface JournalsClientProps {
-  data: any[];
-  facultyData: any;
+  data: Journal[];
+  facultyData: Faculty;
 }
 
 export default function JournalsClient({ data, facultyData }: JournalsClientProps) {
@@ -75,7 +77,7 @@ export default function JournalsClient({ data, facultyData }: JournalsClientProp
     }
   ];
 
-  const handleAddNew = async (formData: any) => {
+  const handleAddNew = async (formData: JournalFormData & { files?: { upload_image?: File } }) => {
     try {
       const journalData = {
         faculty_id: facultyData.faculty_id,
@@ -96,11 +98,11 @@ export default function JournalsClient({ data, facultyData }: JournalsClientProp
       window.location.reload();
     } catch (error) {
       console.error('Error adding journal:', error);
-      alert('Failed to add journal publication. Please try again.');
+      toast.error('Failed to add journal publication. Please try again.');
     }
   };
 
-  const handleEdit = async (formData: any) => {
+  const handleEdit = async (formData: Journal) => {
     try {
       const updates = {
         paper_title: formData.paper_title,
@@ -112,6 +114,9 @@ export default function JournalsClient({ data, facultyData }: JournalsClientProp
         is_verified: 'PENDING' as 'PENDING',
       };
       
+      if (!formData.id) {
+        throw new Error('Journal ID is required for updates');
+      }
       const result = await journalApi.updateJournal(formData.id, updates);
       if (result.error) {
         throw new Error(result.error);
@@ -120,12 +125,15 @@ export default function JournalsClient({ data, facultyData }: JournalsClientProp
       window.location.reload();
     } catch (error) {
       console.error('Error updating journal:', error);
-      alert('Failed to update journal publication. Please try again.');
+      toast.error('Failed to update journal publication. Please try again.');
     }
   };
 
-  const handleDelete = async (item: any) => {
+  const handleDelete = async (item: Journal) => {
     try {
+      if (!item.id) {
+        throw new Error('Journal ID is required for deletion');
+      }
       const result = await journalApi.deleteJournal(item.id);
       if (result.error) {
         throw new Error(result.error);
@@ -134,7 +142,7 @@ export default function JournalsClient({ data, facultyData }: JournalsClientProp
       window.location.reload();
     } catch (error) {
       console.error('Error deleting journal:', error);
-      alert('Failed to delete journal publication. Please try again.');
+      toast.error('Failed to delete journal publication. Please try again.');
     }
   };
 

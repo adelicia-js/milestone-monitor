@@ -2,7 +2,7 @@ import React from "react";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { conferenceApi, facultyApi } from "@/lib/api";
+import { serverConferenceApi, serverFacultyApi } from "@/lib/api/server-apis";
 import { Metadata } from "next";
 import ConferencesClient from "./ConferencesClient";
 
@@ -23,11 +23,15 @@ const ConferencesNewPage = async () => {
     redirect("/login");
   }
 
-  const conferenceResult = await conferenceApi.getConferencesByEmail(user.email as string);
-  const facultyResult = await facultyApi.getFacultyByEmail(user.email as string);
+  const conferenceResult = await serverConferenceApi.getConferencesByEmail(user.email as string);
+  const facultyResult = await serverFacultyApi.getFacultyByEmail(user.email as string);
 
   const tableData = conferenceResult.data || [];
   const facultyData = facultyResult.data;
+
+  if (!facultyData) {
+    redirect("/login");
+  }
 
   return <ConferencesClient data={tableData} facultyData={facultyData} />;
 };

@@ -40,6 +40,11 @@ export default async function RootLayout({
     if (userData?.faculty_role !== "editor") {
       editorBool = false;
     }
+    
+    // Only HOD and Editor can access reports
+    if (userData?.faculty_role !== "hod" && userData?.faculty_role !== "editor") {
+      redirect("/");
+    }
   }
 
   return (

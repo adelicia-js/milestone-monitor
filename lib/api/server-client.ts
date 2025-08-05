@@ -1,9 +1,14 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 import { ApiResponse } from '../types';
 
-// Base API client class that handles database operations
-export class ApiClient {
-  private supabase = createClientComponentClient();
+// Server-side API client class that handles database operations with proper auth context
+export class ServerApiClient {
+  private supabase;
+
+  constructor() {
+    this.supabase = createServerComponentClient({ cookies });
+  }
 
   protected getSupabase() {
     return this.supabase;
@@ -12,7 +17,7 @@ export class ApiClient {
   /**
    * Generic query method to fetch data from a table with optional filters, ordering and limits
    * @param table - Name of the table to query
-   * @param options - Query parameters including filters (to filter), order (to sort), and limit (max rows to be returned)
+   * @param options - Query parameters including filters, order, and limit
    * @returns Promise with query results or error
    */
   protected async query<T>(
@@ -177,50 +182,6 @@ export class ApiClient {
       return { data: data as T, error: null };
     } catch (error) {
       console.error(`Error updating ${table}:`, error);
-      return { data: null, error: 'An unexpected error occurred' };
-    }
-  }
-
-  protected async uploadToStorage(
-    bucket: string,
-    path: string,
-    file: File,
-    options: { upsert?: boolean; cacheControl?: string } = {}
-  ): Promise<ApiResponse<string>> {
-    try {
-      const { error } = await this.supabase.storage
-        .from(bucket)
-        .upload(path, file, { upsert: true, cacheControl: '3600', ...options });
-
-      if (error) {
-        console.error('Error uploading file: ', error);
-        return { data: null, error: error.message };
-      }
-
-      return { data: path, error: null };
-    } catch (error) {
-      console.error('Error uploading file: ', error);
-      return { data: null, error: 'An unexpected error occurred' };
-    }
-  }
-
-  protected async deleteByEmail<T>(table: string, email: string): Promise<ApiResponse<T>> {
-    try {
-      const { data, error } = await this.supabase
-        .from(table)
-        .delete()
-        .eq('email', email)
-        .select()
-        .single();
-
-      if (error) {
-        console.error(`Error deleting from ${table}:`, error);
-        return { data: null, error: error.message };
-      }
-
-      return { data: data as T, error: null };
-    } catch (error) {
-      console.error(`Error deleting from ${table}:`, error);
       return { data: null, error: 'An unexpected error occurred' };
     }
   }

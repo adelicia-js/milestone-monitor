@@ -2,7 +2,7 @@ import React from "react";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { workshopApi, facultyApi } from "@/lib/api";
+import { serverWorkshopApi, serverFacultyApi } from "@/lib/api/server-apis";
 import { Metadata } from "next";
 import WorkshopsClient from "./WorkshopsClient";
 
@@ -23,11 +23,15 @@ const WorkshopsNewPage = async () => {
     redirect("/login");
   }
 
-  const workshopResult = await workshopApi.getWorkshopsByEmail(user.email as string);
-  const facultyResult = await facultyApi.getFacultyByEmail(user.email as string);
+  const workshopResult = await serverWorkshopApi.getWorkshopsByEmail(user.email as string);
+  const facultyResult = await serverFacultyApi.getFacultyByEmail(user.email as string);
 
   const tableData = workshopResult.data || [];
   const facultyData = facultyResult.data;
+
+  if (!facultyData) {
+    redirect("/login");
+  }
 
   return <WorkshopsClient data={tableData} facultyData={facultyData} />;
 };

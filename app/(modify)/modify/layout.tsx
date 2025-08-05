@@ -40,6 +40,11 @@ export default async function RootLayout({
     if (userData?.faculty_role !== "editor") {
       editorBool = false;
     }
+    
+    // Only HOD can access modify pages
+    if (userData?.faculty_role !== "hod") {
+      redirect("/");
+    }
   }
 
   return (

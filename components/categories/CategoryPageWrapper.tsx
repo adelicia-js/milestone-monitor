@@ -7,6 +7,7 @@ import CategoryHeader from "./CategoryHeader";
 import CategoryGrid from "./CategoryGrid";
 import CategoryModal from "./CategoryModal";
 import DeleteModal from "./DeleteModal";
+import MobileAdvisory from "@/components/ui/MobileAdvisory";
 
 interface FormField {
   key: string;
@@ -17,23 +18,23 @@ interface FormField {
   placeholder?: string;
 }
 
-interface CategoryPageWrapperProps {
+interface CategoryPageWrapperProps<T, TForm = Omit<T, 'id' | 'is_verified'>> {
   title: string;
-  data: any[];
+  data: T[];
   fields: Array<{
     key: string;
     label: string;
     type?: "text" | "date" | "status" | "badge";
   }>;
   formFields: FormField[];
-  onAddNew: (data: any) => void;
-  onEdit?: (data: any) => void;
-  onDelete?: (data: any) => void;
+  onAddNew: (data: TForm) => void;
+  onEdit?: (data: T) => void;
+  onDelete?: (data: T) => void;
   emptyMessage?: string;
   isLoading?: boolean;
 }
 
-export default function CategoryPageWrapper({
+export default function CategoryPageWrapper<T extends { id?: number; paper_title?: string; journal_name?: string; title?: string; patent_name?: string }, TForm = Omit<T, 'id' | 'is_verified'>>({
   title,
   data,
   fields,
@@ -43,12 +44,12 @@ export default function CategoryPageWrapper({
   onDelete,
   emptyMessage,
   isLoading = false,
-}: CategoryPageWrapperProps) {
+}: CategoryPageWrapperProps<T, TForm>) {
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingData, setEditingData] = useState(null);
+  const [editingData, setEditingData] = useState<T | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deletingItem, setDeletingItem] = useState<any>(null);
+  const [deletingItem, setDeletingItem] = useState<T | null>(null);
 
   // Check for action=add query parameter and open modal
   useEffect(() => {
@@ -65,16 +66,16 @@ export default function CategoryPageWrapper({
     setIsModalOpen(true);
   };
 
-  const handleEdit = (data: any) => {
+  const handleEdit = (data: T) => {
     setEditingData(data);
     setIsModalOpen(true);
   };
 
-  const handleModalSubmit = (formData: any) => {
+  const handleModalSubmit = (formData: TForm | T) => {
     if (editingData) {
-      onEdit?.(formData);
+      onEdit?.(formData as T);
     } else {
-      onAddNew(formData);
+      onAddNew(formData as TForm);
     }
     setIsModalOpen(false);
     setEditingData(null);
@@ -85,7 +86,7 @@ export default function CategoryPageWrapper({
     setEditingData(null);
   };
 
-  const handleDelete = (data: any) => {
+  const handleDelete = (data: T) => {
     setDeletingItem(data);
     setIsDeleteModalOpen(true);
   };
@@ -104,7 +105,9 @@ export default function CategoryPageWrapper({
   };
 
   return (
-    <Layout>
+    <>
+      <MobileAdvisory />
+      <Layout>
       <Container>
         <CategoryHeader title={title} onAddNew={handleAddNew} />
         <ContentWrapper>
@@ -142,6 +145,7 @@ export default function CategoryPageWrapper({
         isLoading={isLoading}
       />
     </Layout>
+    </>
   );
 }
 
@@ -149,10 +153,25 @@ const Layout = styled.main`
   z-index: 0;
   position: absolute;
   height: 100vh;
-  width: 92vw;
+  width: calc(100vw - 8vw);
   left: 8vw;
   padding: 1rem;
   background-color: rgba(140, 242, 233, 0.35);
+  box-sizing: border-box;
+  
+  @media (max-width: 1024px) {
+    width: calc(100vw - 8vw - 2rem);
+    padding: 0.75rem;
+    top: 60px; /* Account for advisory message */
+    height: calc(100vh - 60px);
+  }
+  
+  @media (max-width: 768px) {
+    width: calc(100vw - 8vw - 1rem);
+    padding: 0.5rem;
+    top: 50px;
+    height: calc(100vh - 50px);
+  }
 `;
 
 const Container = styled.section`
@@ -160,6 +179,14 @@ const Container = styled.section`
   display: flex;
   flex-direction: column;
   padding: 3rem;
+  
+  @media (max-width: 1024px) {
+    padding: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const ContentWrapper = styled.section`

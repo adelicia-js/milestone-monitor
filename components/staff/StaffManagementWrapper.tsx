@@ -4,10 +4,12 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import StaffTable from "./StaffTable";
 import StaffModal from "./StaffModal";
+import DeleteModal from "@/components/categories/DeleteModal";
 import { Faculty } from "@/lib/types";
 import { GenericHeader } from "@/components/ui/GenericStyles";
 import { Plus } from "lucide-react";
 import { Inter } from "next/font/google";
+import MobileAdvisory from "@/components/ui/MobileAdvisory";
 
 const bodyText = Inter({
   weight: "400",
@@ -17,8 +19,8 @@ const bodyText = Inter({
 interface StaffManagementWrapperProps {
   staffList: Faculty[];
   currentUserDept: string;
-  onAddStaff: (staffData: any) => void;
-  onEditStaff: (staffData: any) => void;
+  onAddStaff: (staffData: Faculty & { password?: string }) => void;
+  onEditStaff: (staffData: Faculty & { password?: string }) => void;
   onDeleteStaff: (staffId: string) => void;
   loading?: boolean;
   error?: string | null;
@@ -36,6 +38,8 @@ export default function StaffManagementWrapper({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Faculty | null>(null);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingStaff, setDeletingStaff] = useState<Faculty | null>(null);
 
   const handleAddNew = () => {
     setEditingStaff(null);
@@ -49,7 +53,7 @@ export default function StaffManagementWrapper({
     setIsModalOpen(true);
   };
 
-  const handleModalSubmit = (staffData: any) => {
+  const handleModalSubmit = (staffData: Faculty & { password?: string }) => {
     if (modalMode === "edit") {
       onEditStaff(staffData);
     } else {
@@ -59,13 +63,36 @@ export default function StaffManagementWrapper({
     setEditingStaff(null);
   };
 
+  const handleDelete = (staffId: string) => {
+    const staff = staffList.find(s => s.faculty_id === staffId);
+    if (staff) {
+      setDeletingStaff(staff);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deletingStaff) {
+      onDeleteStaff(deletingStaff.faculty_id);
+    }
+    setIsDeleteModalOpen(false);
+    setDeletingStaff(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingStaff(null);
+  };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingStaff(null);
   };
 
   return (
-    <Layout>
+    <>
+      <MobileAdvisory />
+      <Layout>
       <Container>
         <HeaderWrapper>
           <HeaderText>Staff Management</HeaderText>
@@ -79,7 +106,7 @@ export default function StaffManagementWrapper({
           <StaffTable
             staffList={staffList}
             onEdit={handleEdit}
-            onDelete={onDeleteStaff}
+            onDelete={handleDelete}
             loading={loading}
             error={error}
           />
@@ -94,7 +121,18 @@ export default function StaffManagementWrapper({
         initialData={editingStaff}
         defaultDepartment={currentUserDept}
       />
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Staff Member"
+        message="Are you sure you want to delete this staff member?"
+        itemName={deletingStaff?.faculty_name}
+        isLoading={loading}
+      />
     </Layout>
+    </>
   );
 }
 
@@ -102,10 +140,25 @@ const Layout = styled.main`
   z-index: 0;
   position: absolute;
   height: 100vh;
-  width: 92vw;
+  width: calc(100vw - 8vw);
   left: 8vw;
   padding: 1rem;
   background-color: rgba(140, 242, 233, 0.35);
+  box-sizing: border-box;
+  
+  @media (max-width: 1024px) {
+    width: calc(100vw - 8vw - 2rem);
+    padding: 0.75rem;
+    top: 60px;
+    height: calc(100vh - 60px);
+  }
+  
+  @media (max-width: 768px) {
+    width: calc(100vw - 8vw - 1rem);
+    padding: 0.5rem;
+    top: 50px;
+    height: calc(100vh - 50px);
+  }
 `;
 
 const Container = styled.section`

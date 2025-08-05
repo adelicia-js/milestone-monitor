@@ -135,11 +135,7 @@ export default function StaffTable({
                       <Edit size={16} />
                     </ActionButton>
                     <ActionButton 
-                      onClick={() => {
-                        if (window.confirm(`Are you sure you want to delete ${staff.faculty_name}?`)) {
-                          onDelete(staff.faculty_id);
-                        }
-                      }} 
+                      onClick={() => onDelete(staff.faculty_id)} 
                       variant="delete"
                       title="Delete Staff"
                     >

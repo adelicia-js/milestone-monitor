@@ -86,7 +86,7 @@ export default function ExportModal({
 
   const handleExport = () => {
     const filteredData = data.map(row => {
-      const filteredRow: any = {};
+      const filteredRow: Record<string, string | number | boolean | null | undefined> = {};
       
       if (selectedColumns.faculty_id) filteredRow['Faculty ID'] = row.faculty_id;
       if (selectedColumns.faculty_name) filteredRow['Faculty Name'] = getfacultyname(row.faculty_id);
@@ -113,7 +113,7 @@ export default function ExportModal({
     onClose();
   };
 
-  const exportToCSV = (exportData: any[]) => {
+  const exportToCSV = (exportData: Record<string, string | number | boolean | null | undefined>[]) => {
     if (exportData.length === 0) return;
 
     const headers = Object.keys(exportData[0]);
@@ -135,7 +135,7 @@ export default function ExportModal({
     document.body.removeChild(link);
   };
 
-  const exportToExcel = (exportData: any[]) => {
+  const exportToExcel = (exportData: Record<string, string | number | boolean | null | undefined>[]) => {
     if (exportData.length === 0) return;
 
     // Create a new workbook
@@ -160,7 +160,7 @@ export default function ExportModal({
     XLSX.writeFile(workbook, filename);
   };
 
-  const exportToPDF = (exportData: any[]) => {
+  const exportToPDF = (exportData: Record<string, string | number | boolean | null | undefined>[]) => {
     if (exportData.length === 0) return;
 
     // Create new PDF document

@@ -2,7 +2,7 @@ import React from "react";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { approvalApi, facultyApi } from "@/lib/api";
+import { serverApprovalApi, serverFacultyApi } from "@/lib/api/server-apis";
 import { Metadata } from "next";
 import ApprovalsClient from "./ApprovalsClient";
 import { Conference, Journal, Workshop, Patent } from "@/lib/types";
@@ -24,7 +24,7 @@ const ApprovalsNewPage = async () => {
   if (!user) {
     redirect("/login");
   } else {
-    const facultyResult = await facultyApi.getFacultyByEmail(user.email as string);
+    const facultyResult = await serverFacultyApi.getFacultyByEmail(user.email as string);
     userData = facultyResult.data;
     
     if (!userData || userData.faculty_role !== "hod") {
@@ -32,8 +32,8 @@ const ApprovalsNewPage = async () => {
     }
   }
 
-  // Get all pending entries using the new API
-  const pendingResult = await approvalApi.getAllPendingEntries();
+  // Get pending entries filtered by HOD's department
+  const pendingResult = await serverApprovalApi.getPendingEntriesByDepartment(userData.faculty_department);
   
   if (pendingResult.error) {
     console.error('Error fetching pending entries:', pendingResult.error);

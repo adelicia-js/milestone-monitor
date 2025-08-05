@@ -1,17 +1,9 @@
 import { ApiClient } from '../client';
-import { Conference, Journal, Patent, Workshop, ApiResponse } from '../../types';
+import { Conference, Journal, Patent, Workshop, ApiResponse, ApprovalEntry } from '../../types';
 
 type CategoryType = 'Conference' | 'Journal' | 'Patent' | 'Workshop';
 type CategoryData = Conference | Journal | Patent | Workshop;
 
-interface ApprovalEntry {
-  id: number;
-  entry_type: CategoryType;
-  title: string;
-  faculty_id: string;
-  is_verified: 'PENDING' | 'APPROVED' | 'REJECTED';
-  [key: string]: any; // Allow additional fields specific to each category
-}
 
 interface PendingData {
   pending_conferences: Conference[];
@@ -71,6 +63,79 @@ export class ApprovalApi extends ApiClient {
     }
   }
 
+  // Get pending entries filtered by department
+  async getPendingEntriesByDepartment(department: string): Promise<ApiResponse<PendingData>> {
+    try {
+      // First get all faculty IDs from the specified department
+      const facultyResult = await this.query<{faculty_id: string}>('faculty_profile', {
+        filters: { faculty_department: department }
+      });
+      
+      if (facultyResult.error || !facultyResult.data) {
+        return { data: null, error: 'Failed to fetch faculty for department' };
+      }
+      
+      const facultyIds = facultyResult.data.map(f => f.faculty_id);
+      
+      if (facultyIds.length === 0) {
+        return { 
+          data: {
+            pending_conferences: [],
+            pending_journal: [],
+            pending_workshop: [],
+            pending_patent: []
+          }, 
+          error: null 
+        };
+      }
+
+      // Now get pending entries for those faculty IDs
+      const [
+        conferencesResult,
+        journalsResult,
+        workshopsResult,
+        patentsResult
+      ] = await Promise.all([
+        this.query<Conference>('conferences', {
+          filters: { is_verified: 'PENDING', faculty_id: { in: facultyIds } }
+        }),
+        this.query<Journal>('journal_publications', {
+          filters: { is_verified: 'PENDING', faculty_id: { in: facultyIds } }
+        }),
+        this.query<Workshop>('fdp_workshop_refresher_course', {
+          filters: { is_verified: 'PENDING', faculty_id: { in: facultyIds } }
+        }),
+        this.query<Patent>('patents', {
+          filters: { is_verified: 'PENDING', faculty_id: { in: facultyIds } }
+        })
+      ]);
+
+      // Check for any errors
+      const errors = [
+        conferencesResult.error,
+        journalsResult.error,
+        workshopsResult.error,
+        patentsResult.error
+      ].filter(Boolean);
+
+      if (errors.length > 0) {
+        return { data: null, error: `Failed to fetch department pending entries: ${errors.join(', ')}` };
+      }
+
+      const pendingData: PendingData = {
+        pending_conferences: conferencesResult.data || [],
+        pending_journal: journalsResult.data || [],
+        pending_workshop: workshopsResult.data || [],
+        pending_patent: patentsResult.data || []
+      };
+
+      return { data: pendingData, error: null };
+    } catch (error) {
+      console.error('Error in getPendingEntriesByDepartment:', error);
+      return { data: null, error: 'Failed to fetch department pending entries' };
+    }
+  }
+
   // Get pending entries by category
   async getPendingEntriesByCategory(category: CategoryType): Promise<ApiResponse<CategoryData[]>> {
     try {
@@ -124,7 +189,7 @@ export class ApprovalApi extends ApiClient {
           return { data: null, error: `Unknown entry type: ${data.entry_type}` };
       }
 
-      return this.update<CategoryData>(tableName, data.id, { is_verified: 'APPROVED' });
+      return this.update<CategoryData>(tableName, data.id!, { is_verified: 'APPROVED' });
     } catch (error) {
       console.error('Error in approveEntry:', error);
       return { data: null, error: 'Failed to approve entry' };
@@ -153,7 +218,7 @@ export class ApprovalApi extends ApiClient {
           return { data: null, error: `Unknown entry type: ${data.entry_type}` };
       }
 
-      return this.update<CategoryData>(tableName, data.id, { is_verified: 'REJECTED' });
+      return this.update<CategoryData>(tableName, data.id!, { is_verified: 'REJECTED' });
     } catch (error) {
       console.error('Error in rejectEntry:', error);
       return { data: null, error: 'Failed to reject entry' };

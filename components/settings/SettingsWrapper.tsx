@@ -24,8 +24,8 @@ import {
   AlertCircle,
   Loader as LoaderIcon,
   X,
-  Heart,
-  Rocket,
+  // Heart,
+  // Rocket,
 } from "lucide-react";
 import PasswordModal from "./PasswordModal";
 
@@ -378,12 +378,12 @@ export default function SettingsWrapper() {
           onClose={() => setIsPasswordModalOpen(false)}
           loading={loading.password}
         />
-        
+
         {/* Made with love footer */}
-        <Footer>
-          <FooterLink 
-            href="https://github.com/adelicia-js/milestone-monitor" 
-            target="_blank" 
+        {/* <Footer>
+          <FooterLink
+            href="https://github.com/adelicia-js/milestone-monitor"
+            target="_blank"
             rel="noopener noreferrer"
           >
             <FooterContent>
@@ -398,7 +398,7 @@ export default function SettingsWrapper() {
               </RocketIcon>
             </FooterContent>
           </FooterLink>
-        </Footer>
+        </Footer> */}
       </Container>
     </Layout>
   );
@@ -416,6 +416,7 @@ const Layout = styled.main`
 `;
 
 const Container = styled.section`
+  height: 50vh;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -910,75 +911,91 @@ const PasswordButton = styled.button`
   }
 `;
 
-const Footer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem 0 1rem 0;
-  margin-top: auto;
-  width: 100%;
-`;
+// const Footer = styled.div`
+//   height: 20vh;
+//   position: absolute;
+//   bottom: 5%;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   padding: 2rem 0 1rem 0;
+//   margin-top: auto;
+//   width: 100%;
+// `;
 
-const FooterLink = styled.a`
-  text-decoration: none;
-  cursor: pointer;
-`;
+// const FooterLink = styled.a`
+//   text-decoration: none;
+//   cursor: pointer;
+// `;
 
-const FooterContent = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: rgba(244, 253, 252, 0.8);
-  border: 0.1px solid rgba(0, 131, 143, 0.27);
-  border-radius: 2rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 1px 15px 3px rgba(0, 131, 143, 0.27);
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-2px);
-    background: rgba(244, 253, 252, 0.95);
-  }
-`;
+// const FooterContent = styled.div`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 0.5rem;
+//   padding: 0.75rem 1.5rem;
+//   background: rgba(244, 253, 252, 0.8);
+//   border: 0.1px solid rgba(0, 131, 143, 0.27);
+//   border-radius: 2rem;
+//   backdrop-filter: blur(10px);
+//   box-shadow: 0 1px 15px 3px rgba(0, 131, 143, 0.27);
+//   transition: all 0.3s ease;
 
-const FooterText = styled.span`
-  font-family: ${bodyText.style.fontFamily};
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: rgba(4, 103, 112, 0.8);
-`;
+//   &:hover {
+//     transform: translateY(-2px);
+//     background: rgba(244, 253, 252, 0.95);
+//   }
+// `;
 
-const HeartIcon = styled.div`
-  color: rgba(239, 68, 68, 0.8);
-  animation: heartbeat 2s ease-in-out infinite;
-  
-  @keyframes heartbeat {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-  }
-`;
+// const FooterText = styled.span`
+//   font-family: ${bodyText.style.fontFamily};
+//   font-size: 0.9rem;
+//   font-weight: 500;
+//   color: rgba(4, 103, 112, 0.8);
+// `;
 
-const CreatorName = styled.span`
-  font-family: ${bodyText.style.fontFamily};
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: rgba(4, 103, 112, 1);
-  background: linear-gradient(135deg, rgba(4, 103, 112, 1), rgba(6, 95, 70, 1));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-`;
+// const HeartIcon = styled.div`
+//   color: rgba(239, 68, 68, 0.8);
+//   animation: heartbeat 2s ease-in-out infinite;
 
-const RocketIcon = styled.div`
-  color: rgba(251, 146, 60, 0.8);
-  animation: rocket 3s ease-in-out infinite;
-  
-  @keyframes rocket {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    25% { transform: translateY(-3px) rotate(5deg); }
-    75% { transform: translateY(-1px) rotate(-3deg); }
-  }
-`;
+//   @keyframes heartbeat {
+//     0% {
+//       transform: scale(1);
+//     }
+//     50% {
+//       transform: scale(1.1);
+//     }
+//     100% {
+//       transform: scale(1);
+//     }
+//   }
+// `;
+
+// const CreatorName = styled.span`
+//   font-family: ${bodyText.style.fontFamily};
+//   font-size: 0.9rem;
+//   font-weight: 600;
+//   color: rgba(4, 103, 112, 1);
+//   background: linear-gradient(135deg, rgba(4, 103, 112, 1), rgba(6, 95, 70, 1));
+//   -webkit-background-clip: text;
+//   -webkit-text-fill-color: transparent;
+//   background-clip: text;
+// `;
+
+// const RocketIcon = styled.div`
+//   color: rgba(251, 146, 60, 0.8);
+//   animation: rocket 3s ease-in-out infinite;
+
+//   @keyframes rocket {
+//     0%,
+//     100% {
+//       transform: translateY(0) rotate(0deg);
+//     }
+//     25% {
+//       transform: translateY(-3px) rotate(5deg);
+//     }
+//     75% {
+//       transform: translateY(-1px) rotate(-3deg);
+//     }
+//   }
+// `;

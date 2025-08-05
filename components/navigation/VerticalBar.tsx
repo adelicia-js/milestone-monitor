@@ -92,7 +92,7 @@ export default function VerticalBar(props: VerticalBarProps) {
 const ModifySubComp = () => {
   return (
     <NavItem>
-      <NavLink style={{cursor: "default"}}>
+      <NavLink style={{ cursor: "default" }}>
         <IconWrapper>
           <Shield size={30} />
         </IconWrapper>

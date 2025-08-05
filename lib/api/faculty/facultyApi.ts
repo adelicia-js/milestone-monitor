@@ -1,6 +1,5 @@
 import { ApiClient } from '../client';
 import { Faculty, ApiResponse } from '../../types';
-import { createClient } from '@supabase/supabase-js';
 
 export class FacultyApi extends ApiClient {
   async getFacultyByEmail(email: string): Promise<ApiResponse<Faculty>> {
@@ -109,41 +108,27 @@ export class FacultyApi extends ApiClient {
     faculty_id: string;
     faculty_department: string;
     faculty_role: string;
-    faculty_phone: string;
+    faculty_phone: string | null;
     faculty_email: string;
     password: string;
   }): Promise<ApiResponse<Faculty>> {
     try {
-      // Create Supabase admin client for user creation
-      const supaAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-        process.env.SERVICE_ROLE as string
-      );
-
-      // First, create the auth user
-      const { data: authUser, error: authError } = await supaAdmin.auth.admin.createUser({
-        email: staffData.faculty_email,
-        password: staffData.password,
-        email_confirm: true,
+      // Use secure server-side API endpoint for user creation
+      const response = await fetch('/api/admin/create-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(staffData)
       });
 
-      if (authError) {
-        console.error('Error creating auth user:', authError);
-        return { data: null, error: `Failed to create user account: ${authError.message}` };
+      if (!response.ok) {
+        const errorData = await response.json();
+        return { data: null, error: errorData.error || 'Failed to create staff member' };
       }
 
-      // Then create the faculty record
-      const facultyRecord: Omit<Faculty, 'id'> = {
-        faculty_id: staffData.faculty_id,
-        faculty_name: staffData.faculty_name,
-        faculty_department: staffData.faculty_department,
-        faculty_role: staffData.faculty_role,
-        faculty_phone: staffData.faculty_phone,
-        faculty_email: staffData.faculty_email,
-        faculty_google_scholar: null
-      };
-
-      return this.insert<Faculty>('faculty', facultyRecord);
+      const result = await response.json();
+      return { data: result.data, error: null };
     } catch (error) {
       console.error('Error in addStaff:', error);
       return { data: null, error: 'Failed to add staff member' };
@@ -213,7 +198,7 @@ export class FacultyApi extends ApiClient {
   }
 
   // Password management
-  async updateStaffPassword(password: string): Promise<ApiResponse<any>> {
+  async updateStaffPassword(password: string): Promise<ApiResponse<{ success: boolean }>> {
     try {
       // This needs to be called from the client-side with the current user's session
       // Since it updates the current user's password

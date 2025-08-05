@@ -10,25 +10,25 @@ const bodyText = Inter({
   subsets: ["latin"],
 });
 
-interface CategoryGridProps {
-  data: any[];
+interface CategoryGridProps<T> {
+  data: T[];
   fields: Array<{
     key: string;
     label: string;
     type?: 'text' | 'date' | 'status' | 'badge';
   }>;
-  onEdit?: (data: any) => void;
-  onDelete?: (data: any) => void;
+  onEdit?: (data: T) => void;
+  onDelete?: (data: T) => void;
   emptyMessage?: string;
 }
 
-export default function CategoryGrid({ 
+export default function CategoryGrid<T extends { id?: number }>({ 
   data, 
   fields, 
   onEdit, 
   onDelete, 
   emptyMessage = "No items found" 
-}: CategoryGridProps) {
+}: CategoryGridProps<T>) {
   if (!data || data.length === 0) {
     return (
       <EmptyState>
