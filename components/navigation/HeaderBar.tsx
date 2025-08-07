@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 import styled, { keyframes } from "styled-components";
 import { Inconsolata } from "next/font/google";
@@ -16,7 +16,10 @@ const bodyText = Inconsolata({
 
 export default function HeaderBar() {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const [lightMode, setMode] = useState(true);
 
   const handleSignOut = async () => {

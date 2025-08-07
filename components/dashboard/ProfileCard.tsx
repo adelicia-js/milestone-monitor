@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/GenericStyles";
 import Loader from "@/components/ui/Loader";
 import { useGetUser } from "@/lib/hooks/useGetUser";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
 
 interface ProfileCardProps {
   imageURL?: string;
@@ -36,7 +36,10 @@ export default function ProfileCard(props: ProfileCardProps) {
   useEffect(() => {
     if (!userDetails?.faculty_id) return;
 
-    const supabase = createClientComponentClient();
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
     const facultyId = userDetails.faculty_id;
 
     // Try the most common extension first (jpg)

@@ -1,6 +1,6 @@
 import { ApiClient } from '../client';
 import { Faculty, ApiResponse } from '../../types';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 
 export interface ProfileUpdateData {
   faculty_name?: string;
@@ -26,7 +26,10 @@ export class SettingsApi extends ApiClient {
   // Get current user's profile data
   async getCurrentUserProfile(): Promise<ApiResponse<Faculty>> {
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
       
       // Get current authenticated user
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -54,7 +57,10 @@ export class SettingsApi extends ApiClient {
   // Update current user's profile
   async updateProfile(updates: ProfileUpdateData): Promise<ApiResponse<Faculty>> {
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
       
       // Get current authenticated user
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -97,7 +103,10 @@ export class SettingsApi extends ApiClient {
         return { data: null, error: validation.error || null };
       }
 
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
 
       // Update password using Supabase client
       const { error } = await supabase.auth.updateUser({
@@ -119,7 +128,10 @@ export class SettingsApi extends ApiClient {
   // Upload profile picture
   async uploadProfilePicture(file: File): Promise<ApiResponse<string>> {
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
       
       // Get current authenticated user
       const { data: { user }, error: authError } = await supabase.auth.getUser();

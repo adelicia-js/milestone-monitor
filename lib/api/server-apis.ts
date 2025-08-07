@@ -34,7 +34,7 @@ export class ServerFacultyApi extends ServerApiClient {
 export class ServerWorkshopApi extends ServerApiClient {
   async getWorkshopsByEmail(email: string): Promise<ApiResponse<Workshop[]>> {
     // First get the faculty_id for this email
-    const supabase = this.getSupabase();
+    const supabase = await this.getSupabase();
     const { data: faculty } = await supabase
       .from('faculty')
       .select('faculty_id')
@@ -55,7 +55,7 @@ export class ServerWorkshopApi extends ServerApiClient {
 // Server-side Conference API  
 export class ServerConferenceApi extends ServerApiClient {
   async getConferencesByEmail(email: string): Promise<ApiResponse<Conference[]>> {
-    const supabase = this.getSupabase();
+    const supabase = await this.getSupabase();
     const { data: faculty } = await supabase
       .from('faculty')
       .select('faculty_id')
@@ -76,7 +76,7 @@ export class ServerConferenceApi extends ServerApiClient {
 // Server-side Journal API
 export class ServerJournalApi extends ServerApiClient {
   async getJournalsByEmail(email: string): Promise<ApiResponse<Journal[]>> {
-    const supabase = this.getSupabase();
+    const supabase = await this.getSupabase();
     const { data: faculty } = await supabase
       .from('faculty')
       .select('faculty_id')
@@ -97,7 +97,7 @@ export class ServerJournalApi extends ServerApiClient {
 // Server-side Patent API
 export class ServerPatentApi extends ServerApiClient {
   async getPatentsByEmail(email: string): Promise<ApiResponse<Patent[]>> {
-    const supabase = this.getSupabase();
+    const supabase = await this.getSupabase();
     const { data: faculty } = await supabase
       .from('faculty')
       .select('faculty_id')
@@ -124,7 +124,7 @@ export class ServerApprovalApi extends ServerApiClient {
     pending_patent: Patent[];
   }>> {
     try {
-      const supabase = this.getSupabase();
+      const supabase = await this.getSupabase();
 
       // Get all faculty IDs from the specified department
       const { data: deptFaculty, error: facultyError } = await supabase

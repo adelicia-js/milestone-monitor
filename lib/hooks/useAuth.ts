@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import { FacultyApi } from '../api/faculty/facultyApi';
 import toast from 'react-hot-toast';
@@ -7,7 +7,10 @@ import toast from 'react-hot-toast';
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const facultyApi = new FacultyApi();
 
   const signIn = async (email: string, password: string) => {

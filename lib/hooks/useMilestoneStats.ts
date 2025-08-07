@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { facultyApi } from '../api';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 
 export const useMilestoneStats = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [statistics, setStatistics] = useState<number[]>([0, 0, 0, 0]);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   const fetchStatistics = async () => {
     setIsLoading(true);

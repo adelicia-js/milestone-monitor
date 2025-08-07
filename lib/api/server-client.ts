@@ -1,17 +1,31 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { ApiResponse } from '../types';
 
 // Server-side API client class that handles database operations with proper auth context
 export class ServerApiClient {
-  private supabase;
-
-  constructor() {
-    this.supabase = createServerComponentClient({ cookies });
+  private async createSupabaseClient() {
+    const cookieStore = await cookies();
+    return createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+            })
+          },
+        },
+      }
+    );
   }
 
-  protected getSupabase() {
-    return this.supabase;
+  protected async getSupabase() {
+    return await this.createSupabaseClient();
   }
 
   /**
@@ -29,7 +43,8 @@ export class ServerApiClient {
     } = {}
   ): Promise<ApiResponse<T[]>> {
     try {
-      let query = this.supabase.from(table).select('*');
+      const supabase = await this.getSupabase();
+      let query = supabase.from(table).select('*');
 
       if (options.filters) {
         Object.entries(options.filters).forEach(([key, value]) => {
@@ -75,7 +90,8 @@ export class ServerApiClient {
    */
   protected async insert<T>(table: string, data: unknown): Promise<ApiResponse<T>> {
     try {
-      const { data: result, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data: result, error } = await supabase
         .from(table)
         .insert([data])
         .select()
@@ -106,7 +122,8 @@ export class ServerApiClient {
     updates: Partial<T>
   ): Promise<ApiResponse<T>> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase
         .from(table)
         .update(updates)
         .eq('id', id)
@@ -133,7 +150,8 @@ export class ServerApiClient {
    */
   protected async delete<T>(table: string, id: number): Promise<ApiResponse<T>> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase
         .from(table)
         .delete()
         .eq('id', id)
@@ -167,7 +185,8 @@ export class ServerApiClient {
     updates: Partial<T>
   ): Promise<ApiResponse<T>> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase
         .from(table)
         .update(updates)
         .eq(field, value)
