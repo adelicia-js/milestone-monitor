@@ -70,12 +70,6 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
       label: 'Patent Link',
       type: 'text' as const,
       placeholder: 'Enter patent URL (optional)'
-    },
-    {
-      key: 'image',
-      label: 'Patent Certificate',
-      type: 'file' as const,
-      required: false
     }
   ];
 
@@ -150,7 +144,8 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
 
   return (
     <CategoryPageWrapper
-      title="Your Patents"
+      title="Innovation & Intellectual Property"
+      description="Showcase your inventions, patent applications, and intellectual property contributions."
       data={data}
       fields={displayFields}
       formFields={formFields}

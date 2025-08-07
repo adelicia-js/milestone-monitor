@@ -184,7 +184,8 @@ export default function SettingsWrapper() {
       <Layout>
         <Container>
           <HeaderWrapper>
-            <HeaderText>Your Settings</HeaderText>
+            <HeaderText>Settings</HeaderText>
+            <HeaderDesc>Manage your profile information.</HeaderDesc>
           </HeaderWrapper>
 
           {/* Global Messages */}
@@ -408,21 +409,53 @@ const Container = styled.section`
 `;
 
 const HeaderWrapper = styled.div`
+  font-family: ${bodyText.style.fontFamily};
   z-index: 20;
   top: 1.5rem;
   position: absolute;
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: flex-start;
   width: fit-content;
+
+  @media (max-width: 1024px) {
+    top: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    gap: 0.75rem;
+    top: 0.75rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 const HeaderText = styled(GenericHeader)`
   z-index: 20;
-  font-size: 1.05rem;
+  font-size: 1.5rem;
+  font-weight: 500;
   text-transform: none;
   letter-spacing: 0;
   margin: 0;
+
+  @media (max-width: 1024px) {
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
+`;
+
+const HeaderDesc = styled.p`
+  margin-top: -0.25rem;
+  color: rgba(4, 103, 112, 0.99);
+  font-size: 1rem;
+  font-weight: 300;
 `;
 
 const MessageCard = styled.div<{ variant: "success" | "error" }>`
@@ -481,7 +514,7 @@ const CloseButton = styled.button`
 `;
 
 const SettingsGrid = styled.div`
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;

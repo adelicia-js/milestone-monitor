@@ -3,6 +3,7 @@
 import React from "react";
 import styled from "styled-components";
 import CategoryCard from "./CategoryCard";
+import AddNewCard from "./AddNewCard";
 import { Inter } from "next/font/google";
 
 const bodyText = Inter({
@@ -17,6 +18,7 @@ interface CategoryGridProps<T> {
     label: string;
     type?: 'text' | 'date' | 'status' | 'badge';
   }>;
+  onAddNew?: () => void;
   onEdit?: (data: T) => void;
   onDelete?: (data: T) => void;
   emptyMessage?: string;
@@ -24,23 +26,28 @@ interface CategoryGridProps<T> {
 
 export default function CategoryGrid<T extends { id?: number }>({ 
   data, 
-  fields, 
+  fields,
+  onAddNew,
   onEdit, 
   onDelete, 
   emptyMessage = "No items found" 
 }: CategoryGridProps<T>) {
   if (!data || data.length === 0) {
     return (
-      <EmptyState>
-        <EmptyIcon>📋</EmptyIcon>
-        <EmptyMessage>{emptyMessage}</EmptyMessage>
-        <EmptySubtext>Start by adding your first entry using the &quot;Add New&quot; button above.</EmptySubtext>
-      </EmptyState>
+      <GridContainer>
+        {onAddNew && <AddNewCard onAddNew={onAddNew} />}
+        <EmptyState>
+          <EmptyIcon>📋</EmptyIcon>
+          <EmptyMessage>{emptyMessage}</EmptyMessage>
+          <EmptySubtext>Start by adding your first entry using the card above.</EmptySubtext>
+        </EmptyState>
+      </GridContainer>
     );
   }
 
   return (
     <GridContainer>
+      {onAddNew && <AddNewCard onAddNew={onAddNew} />}
       {data.map((item, index) => (
         <CategoryCard
           key={item.id || index}
@@ -76,6 +83,7 @@ const EmptyState = styled.div`
   padding: 4rem 2rem;
   text-align: center;
   min-height: 300px;
+  grid-column: 1 / -1; /* Span all grid columns */
 `;
 
 const EmptyIcon = styled.div`

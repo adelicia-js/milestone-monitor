@@ -9,12 +9,10 @@ interface ConferenceCreateData {
   type: string;
   proceedings: boolean;
   proceeding_fp?: string;
-  certificate?: string;
 }
 
 interface ConferenceWithFiles extends ConferenceCreateData {
   files?: {
-    certificate?: File;
     proceedings?: File;
   };
 }
@@ -75,20 +73,7 @@ export class ConferenceApi extends ApiClient {
   async addConference(data: ConferenceWithFiles): Promise<ApiResponse<Conference>> {
     try {
       // Handle file uploads first if present
-      let certificatePath = data.certificate;
       let proceedingPath = data.proceeding_fp;
-
-      if (data.files?.certificate) {
-        const certificateResult = await this.uploadToStorage(
-          'certificates',
-          `conferences/${data.faculty_id}/${Date.now()}_certificate`,
-          data.files.certificate
-        );
-        if (certificateResult.error) {
-          return { data: null, error: certificateResult.error };
-        }
-        certificatePath = certificateResult.data || undefined;
-      }
 
       if (data.files?.proceedings) {
         const proceedingResult = await this.uploadToStorage(
@@ -111,7 +96,6 @@ export class ConferenceApi extends ApiClient {
         type: data.type,
         proceedings: data.proceedings,
         proceeding_fp: proceedingPath,
-        certificate: certificatePath,
         is_verified: 'PENDING'
       };
 

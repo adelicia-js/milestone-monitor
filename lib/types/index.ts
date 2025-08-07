@@ -18,7 +18,6 @@ export interface Conference {
   type: string;
   proceedings: boolean;
   proceeding_fp?: string;
-  certificate?: string;
   is_verified: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 

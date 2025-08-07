@@ -18,8 +18,9 @@ interface FormField {
   placeholder?: string;
 }
 
-interface CategoryPageWrapperProps<T, TForm = Omit<T, 'id' | 'is_verified'>> {
+interface CategoryPageWrapperProps<T, TForm = Omit<T, "id" | "is_verified">> {
   title: string;
+  description: string;
   data: T[];
   fields: Array<{
     key: string;
@@ -34,8 +35,18 @@ interface CategoryPageWrapperProps<T, TForm = Omit<T, 'id' | 'is_verified'>> {
   isLoading?: boolean;
 }
 
-export default function CategoryPageWrapper<T extends { id?: number; paper_title?: string; journal_name?: string; title?: string; patent_name?: string }, TForm = Omit<T, 'id' | 'is_verified'>>({
+export default function CategoryPageWrapper<
+  T extends {
+    id?: number;
+    paper_title?: string;
+    journal_name?: string;
+    title?: string;
+    patent_name?: string;
+  },
+  TForm = Omit<T, "id" | "is_verified">
+>({
   title,
+  description,
   data,
   fields,
   formFields,
@@ -53,11 +64,11 @@ export default function CategoryPageWrapper<T extends { id?: number; paper_title
 
   // Check for action=add query parameter and open modal
   useEffect(() => {
-    if (searchParams.get('action') === 'add') {
+    if (searchParams.get("action") === "add") {
       setEditingData(null);
       setIsModalOpen(true);
       // Clean up URL after opening modal
-      window.history.replaceState({}, '', window.location.pathname);
+      window.history.replaceState({}, "", window.location.pathname);
     }
   }, [searchParams]);
 
@@ -108,43 +119,53 @@ export default function CategoryPageWrapper<T extends { id?: number; paper_title
     <>
       <MobileAdvisory />
       <Layout>
-      <Container>
-        <CategoryHeader title={title} onAddNew={handleAddNew} />
-        <ContentWrapper>
-          <CategoryGrid
-            data={data}
-            fields={fields}
-            onEdit={onEdit ? handleEdit : undefined}
-            onDelete={onDelete ? handleDelete : undefined}
-            emptyMessage={emptyMessage}
+        <Container>
+          <CategoryHeader
+            title={title}
+            description={description}
           />
-        </ContentWrapper>
-      </Container>
+          <ContentWrapper>
+            <CategoryGrid
+              data={data}
+              fields={fields}
+              onAddNew={handleAddNew}
+              onEdit={onEdit ? handleEdit : undefined}
+              onDelete={onDelete ? handleDelete : undefined}
+              emptyMessage={emptyMessage}
+            />
+          </ContentWrapper>
+        </Container>
 
-      <CategoryModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onSubmit={handleModalSubmit}
-        title={
-          editingData
-            ? `Edit ${title.slice(0, -1)}`
-            : `Add New ${title.replace('Your ', '').slice(0, -1)}`
-        }
-        fields={formFields}
-        initialData={editingData || {}}
-        isLoading={isLoading}
-      />
+        <CategoryModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSubmit={handleModalSubmit}
+          title={
+            editingData
+              ? `Edit ${title.slice(0, -1)}`
+              : `Add New ${title.replace("Your ", "").slice(0, -1)}`
+          }
+          fields={formFields}
+          initialData={editingData || {}}
+          isLoading={isLoading}
+        />
 
-      <DeleteModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        title="Delete Item"
-        message="Are you sure you want to delete this item?"
-        itemName={deletingItem?.paper_title || deletingItem?.journal_name || deletingItem?.title || deletingItem?.patent_name || "this item"}
-        isLoading={isLoading}
-      />
-    </Layout>
+        <DeleteModal
+          isOpen={isDeleteModalOpen}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Item"
+          message="Are you sure you want to delete this item?"
+          itemName={
+            deletingItem?.paper_title ||
+            deletingItem?.journal_name ||
+            deletingItem?.title ||
+            deletingItem?.patent_name ||
+            "this item"
+          }
+          isLoading={isLoading}
+        />
+      </Layout>
     </>
   );
 }
@@ -158,11 +179,11 @@ const Layout = styled.main`
   padding: 1rem;
   background-color: rgba(140, 242, 233, 0.35);
   box-sizing: border-box;
-  
+
   @media (max-width: 1024px) {
     padding: 0.75rem;
   }
-  
+
   @media (max-width: 768px) {
     padding: 0.5rem;
   }
@@ -173,18 +194,18 @@ const Container = styled.section`
   display: flex;
   flex-direction: column;
   padding: 3rem;
-  
+
   @media (max-width: 1024px) {
     padding: 2rem;
   }
-  
+
   @media (max-width: 768px) {
     padding: 1rem;
   }
 `;
 
 const ContentWrapper = styled.section`
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   flex: 1;
   overflow-y: auto;
   padding: 1rem 0;

@@ -223,7 +223,30 @@ export class FacultyApi extends ApiClient {
     email: string,
     updates: Partial<Faculty>
   ): Promise<ApiResponse<Faculty>> {
-    return this.updateFaculty(email, updates);
+    try {
+      console.log('CLIENT updateStaff: Calling server route with:', { email, updates });
+      
+      const response = await fetch('/api/admin/update-staff', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, updates }),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        console.error('SERVER updateStaff response not ok:', result);
+        return { data: null, error: result.error || 'Failed to update staff member' };
+      }
+
+      console.log('SERVER updateStaff success:', result);
+      return { data: result.data, error: null };
+    } catch (error) {
+      console.error('Error in updateStaff:', error);
+      return { data: null, error: 'Failed to update staff member' };
+    }
   }
 
   // Debug method to check what's actually in the database
@@ -336,6 +359,37 @@ export class FacultyApi extends ApiClient {
     } catch (error) {
       console.error('Error in updateStaffPassword:', error);
       return { data: null, error: 'Failed to update password: _password' };
+    }
+  }
+
+  // Admin password reset (HOD resets staff password)
+  async resetStaffPassword(
+    email: string,
+    newPassword: string
+  ): Promise<ApiResponse<{ success: boolean; faculty_name: string; email: string }>> {
+    try {
+      console.log('CLIENT resetStaffPassword: Calling server route for:', email);
+      
+      const response = await fetch('/api/admin/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, newPassword }),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        console.error('SERVER resetStaffPassword response not ok:', result);
+        return { data: null, error: result.error || 'Failed to reset password' };
+      }
+
+      console.log('SERVER resetStaffPassword success:', result);
+      return { data: result.data, error: null };
+    } catch (error) {
+      console.error('Error in resetStaffPassword:', error);
+      return { data: null, error: 'Failed to reset password' };
     }
   }
 

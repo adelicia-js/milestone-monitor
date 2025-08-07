@@ -14,6 +14,7 @@ interface StaffManagementClientProps {
 export default function StaffManagementClient({
   initialStaffList,
   currentUserDept,
+  userData,
 }: StaffManagementClientProps) {
   const [staffList, setStaffList] = useState<Faculty[]>(initialStaffList);
   const [loading, setLoading] = useState(false);
@@ -119,6 +120,7 @@ export default function StaffManagementClient({
       onDeleteStaff={handleDeleteStaff}
       loading={loading}
       error={error}
+      currentUser={userData}
     />
   );
 }

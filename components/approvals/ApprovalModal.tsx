@@ -84,21 +84,12 @@ export default function ApprovalModal({
               <DetailLabel>Conference Type:</DetailLabel>
               <DetailValue>{entry.type || "N/A"}</DetailValue>
             </DetailItem>
-            {entry.proceedings && (
+            {entry.proceedings && entry.proceeding_fp && (
               <DetailItem>
                 <DetailLabel>Proceedings:</DetailLabel>
-                <LinkValue href={String(entry.proceedings || '')} target="_blank">
+                <LinkValue href={String(entry.proceeding_fp || '')} target="_blank">
                   View Proceedings <ExternalLink size={14} />
                 </LinkValue>
-              </DetailItem>
-            )}
-            {entry.certificate && (
-              <DetailItem>
-                <DetailLabel>Certificate:</DetailLabel>
-                <FileValue>
-                  <Download size={14} />
-                  Certificate Available
-                </FileValue>
               </DetailItem>
             )}
           </DetailsGrid>

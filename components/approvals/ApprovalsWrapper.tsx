@@ -33,7 +33,7 @@ interface ApprovalsWrapperProps {
   onClearMessages?: () => void;
   loading?: boolean;
   processingEntry?: string | null;
-  processingAction?: 'approve' | 'reject' | null;
+  processingAction?: "approve" | "reject" | null;
   tableLoading?: boolean;
 }
 
@@ -61,7 +61,9 @@ export default function ApprovalsWrapper({
   tableLoading,
 }: ApprovalsWrapperProps) {
   const [activeTab, setActiveTab] = useState<TabType>("conferences");
-  const [selectedEntry, setSelectedEntry] = useState<ApprovalEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<ApprovalEntry | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Combine all data for the "All" tab
@@ -78,7 +80,8 @@ export default function ApprovalsWrapper({
       label: "Conferences",
       icon: <Users size={16} />,
       count: pendingData.pending_conferences?.length || 0,
-      data: (pendingData.pending_conferences || []) as unknown as ApprovalEntry[],
+      data: (pendingData.pending_conferences ||
+        []) as unknown as ApprovalEntry[],
     },
     {
       key: "journals",
@@ -111,9 +114,9 @@ export default function ApprovalsWrapper({
   ];
 
   const activeTabData = tabs.find((tab) => tab.key === activeTab);
-  const totalPending = tabs
-    .filter((tab) => tab.label !== "All")
-    .reduce((sum, tab) => sum + tab.count, 0);
+  // const totalPending = tabs
+  //   .filter((tab) => tab.label !== "All")
+  //   .reduce((sum, tab) => sum + tab.count, 0);
 
   const handleViewDetails = (entry: ApprovalEntry) => {
     setSelectedEntry(entry);
@@ -138,56 +141,56 @@ export default function ApprovalsWrapper({
     <>
       <MobileAdvisory />
       <Layout>
-      <Container>
-        <HeaderWrapper>
-          <HeaderText>Record Approvals</HeaderText>
-          <StatsBadge>Total Pending: {totalPending}</StatsBadge>
-        </HeaderWrapper>
+        <Container>
+          <HeaderWrapper>
+            <HeaderText>Record Approvals</HeaderText>
+            <HeaderDesc>View and manage pending approvals.</HeaderDesc>
+            {/* <StatsBadge>Total Pending: {totalPending}</StatsBadge> */}
+          </HeaderWrapper>
 
-        {/* Notification Messages */}
-        {error && (
-          <MessageCard variant="error">
-            <MessageIcon>
-              <AlertCircle size={18} />
-            </MessageIcon>
-            <MessageText>{error}</MessageText>
-            {onClearMessages && (
-              <CloseButton onClick={onClearMessages}>
-                <X size={16} />
-              </CloseButton>
-            )}
-          </MessageCard>
-        )}
+          {/* Notification Messages */}
+          {error && (
+            <MessageCard variant="error">
+              <MessageIcon>
+                <AlertCircle size={18} />
+              </MessageIcon>
+              <MessageText>{error}</MessageText>
+              {onClearMessages && (
+                <CloseButton onClick={onClearMessages}>
+                  <X size={16} />
+                </CloseButton>
+              )}
+            </MessageCard>
+          )}
 
-        {success && (
-          <MessageCard variant="success">
-            <MessageIcon>
-              <CheckCircle size={18} />
-            </MessageIcon>
-            <MessageText>{success}</MessageText>
-            {onClearMessages && (
-              <CloseButton onClick={onClearMessages}>
-                <X size={16} />
-              </CloseButton>
-            )}
-          </MessageCard>
-        )}
+          {success && (
+            <MessageCard variant="success">
+              <MessageIcon>
+                <CheckCircle size={18} />
+              </MessageIcon>
+              <MessageText>{success}</MessageText>
+              {onClearMessages && (
+                <CloseButton onClick={onClearMessages}>
+                  <X size={16} />
+                </CloseButton>
+              )}
+            </MessageCard>
+          )}
 
-        <TabsContainer>
-          {tabs.map((tab) => (
-            <Tab
-              key={tab.key}
-              active={activeTab === tab.key}
-              onClick={() => setActiveTab(tab.key)}
-            >
-              <TabIcon>{tab.icon}</TabIcon>
-              <TabLabel>{tab.label}</TabLabel>
-              {tab.count > 0 && <TabBadge>{tab.count}</TabBadge>}
-            </Tab>
-          ))}
-        </TabsContainer>
+          <TabsContainer>
+            {tabs.map((tab) => (
+              <Tab
+                key={tab.key}
+                active={activeTab === tab.key}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                <TabIcon>{tab.icon}</TabIcon>
+                <TabLabel>{tab.label}</TabLabel>
+                {tab.count > 0 && <TabBadge>{tab.count}</TabBadge>}
+              </Tab>
+            ))}
+          </TabsContainer>
 
-        <ContentWrapper>
           <ApprovalsTable
             data={activeTabData?.data || []}
             category={activeTab}
@@ -199,23 +202,22 @@ export default function ApprovalsWrapper({
             }
             loading={tableLoading}
           />
-        </ContentWrapper>
-      </Container>
+        </Container>
 
-      <ApprovalModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedEntry(null);
-        }}
-        entry={selectedEntry}
-        onApprove={handleApprove}
-        onReject={handleReject}
-        loading={loading}
-        processingEntry={processingEntry}
-        processingAction={processingAction}
-      />
-    </Layout>
+        <ApprovalModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedEntry(null);
+          }}
+          entry={selectedEntry}
+          onApprove={handleApprove}
+          onReject={handleReject}
+          loading={loading}
+          processingEntry={processingEntry}
+          processingAction={processingAction}
+        />
+      </Layout>
     </>
   );
 }
@@ -229,11 +231,11 @@ const Layout = styled.main`
   padding: 1rem;
   background-color: rgba(140, 242, 233, 0.35);
   box-sizing: border-box;
-  
+
   @media (max-width: 1024px) {
     padding: 0.75rem;
   }
-  
+
   @media (max-width: 768px) {
     padding: 0.5rem;
   }
@@ -245,12 +247,12 @@ const Container = styled.section`
   flex-direction: column;
   padding: 3rem;
   gap: 1.5rem;
-  
+
   @media (max-width: 1024px) {
     padding: 2rem;
     gap: 1rem;
   }
-  
+
   @media (max-width: 768px) {
     padding: 1rem;
     gap: 0.75rem;
@@ -258,62 +260,71 @@ const Container = styled.section`
 `;
 
 const HeaderWrapper = styled.div`
+  font-family: ${bodyText.style.fontFamily};
   z-index: 20;
   top: 1.5rem;
   position: absolute;
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: flex-start;
   width: fit-content;
-  
+
   @media (max-width: 1024px) {
-    gap: 0.75rem;
     top: 1rem;
   }
-  
+
   @media (max-width: 768px) {
+    gap: 0.75rem;
+    top: 0.75rem;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
-    top: 0.75rem;
   }
 `;
 
 const HeaderText = styled(GenericHeader)`
   z-index: 20;
-  font-size: 1.05rem;
+  font-size: 1.5rem;
+  font-weight: 500;
   text-transform: none;
   letter-spacing: 0;
   margin: 0;
-  
+
   @media (max-width: 1024px) {
     font-size: 1rem;
   }
-  
+
   @media (max-width: 768px) {
     font-size: 0.9rem;
   }
-  
+
   @media (max-width: 480px) {
     font-size: 0.85rem;
   }
 `;
 
-const StatsBadge = styled.div`
-  padding: 0.5rem 1rem;
-  background: linear-gradient(
-    135deg,
-    rgba(4, 103, 112, 0.1),
-    rgba(6, 95, 70, 0.1)
-  );
-  color: rgba(4, 103, 112, 0.9);
-  border: 1px solid rgba(4, 103, 112, 0.2);
-  border-radius: 0.75rem;
-  font-family: ${bodyText.style.fontFamily};
-  font-size: 0.9rem;
-  font-weight: 500;
-  width: fit-content;
+const HeaderDesc = styled.p`
+  margin-top: -0.25rem;
+  color: rgba(4, 103, 112, 0.99);
+  font-size: 1rem;
+  font-weight: 300;
 `;
+
+
+// const StatsBadge = styled.div`
+//   padding: 0.5rem 1rem;
+//   background: linear-gradient(
+//     135deg,
+//     rgba(4, 103, 112, 0.1),
+//     rgba(6, 95, 70, 0.1)
+//   );
+//   color: rgba(4, 103, 112, 0.9);
+//   border: 1px solid rgba(4, 103, 112, 0.2);
+//   border-radius: 0.75rem;
+//   font-family: ${bodyText.style.fontFamily};
+//   font-size: 0.9rem;
+//   font-weight: 500;
+//   width: fit-content;
+// `;
 
 const TabsContainer = styled.div`
   margin-top: 1.5rem;
@@ -377,11 +388,6 @@ const TabBadge = styled.span`
   border-radius: 0.625rem;
   font-size: 0.75rem;
   font-weight: 600;
-`;
-
-const ContentWrapper = styled.div`
-  flex: 1;
-  overflow: hidden;
 `;
 
 const MessageCard = styled.div<{ variant: "success" | "error" }>`

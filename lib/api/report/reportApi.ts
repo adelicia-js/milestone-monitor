@@ -45,119 +45,40 @@ export class ReportApi extends ApiClient {
     facultyId: string | null = '',
     department: string | null = '',
   ): Promise<ApiResponse<ReportData>> {
-    // Department is required for efficient filtering
-    if (!department) {
-      return {
-        data: { full_data: [], disp_data: [] },
-        error: 'Department is required for report generation',
-      };
-    }
-
-    // First, get all faculty IDs from the department
-    const { data: facultyList } = await this.query<{ faculty_id: string }>('faculty', {
-      filters: { faculty_department: department },
-    });
-    
-    const departmentFacultyIds = (facultyList || []).map(f => f.faculty_id);
-    
-    if (departmentFacultyIds.length === 0) {
-      return {
-        data: { full_data: [], disp_data: [] },
-        error: null,
-      };
-    }
-
-    // Now fetch data only for faculty in this department
-    const [conferences, journals, workshops, patents] = await Promise.all([
-      this.getConferencesByDepartment(departmentFacultyIds, startDate, endDate),
-      this.getJournalsByDepartment(departmentFacultyIds, startDate, endDate),
-      this.getWorkshopsByDepartment(departmentFacultyIds, startDate, endDate),
-      this.getPatentsByDepartment(departmentFacultyIds, startDate, endDate),
-    ]);
-
-    // Filter by title, status, and specific faculty (department already filtered at query level)
-    const filterData = (data: EntryData[]) => {
-      return data.filter((item) => {
-        const titleMatch = !title || 
-          (item.paper_title?.toLowerCase().includes(title.toLowerCase()) ||
-           item.title?.toLowerCase().includes(title.toLowerCase()) ||
-           item.patent_name?.toLowerCase().includes(title.toLowerCase()));
-        const statusMatch = !status || item.is_verified === status;
-        const facultyMatch = !facultyId || item.faculty_id === facultyId;
-        return titleMatch && statusMatch && facultyMatch;
+    try {
+      console.log('CLIENT getReportData: Calling server route with:', {
+        startDate, endDate, filterType, title, status, facultyId, department
       });
-    };
+      
+      const response = await fetch('/api/admin/department-reports', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          startDate,
+          endDate,
+          filterType,
+          title,
+          status,
+          facultyId,
+          department
+        }),
+      });
 
-    const filteredConferences = filterData((conferences.data || []) as unknown as EntryData[]);
-    const filteredJournals = filterData((journals.data || []) as unknown as EntryData[]);
-    const filteredWorkshops = filterData((workshops.data || []) as unknown as EntryData[]);
-    const filteredPatents = filterData((patents.data || []) as unknown as EntryData[]);
+      const result = await response.json();
+      
+      if (!response.ok) {
+        console.error('SERVER getReportData response not ok:', result);
+        return { data: { full_data: [], disp_data: [] }, error: result.error || 'Failed to generate report' };
+      }
 
-    // Add entry types
-    filteredConferences.forEach(c => c.entry_type = 'conference');
-    filteredJournals.forEach(j => j.entry_type = 'journal');
-    filteredWorkshops.forEach(w => w.entry_type = 'workshop');
-    filteredPatents.forEach(p => p.entry_type = 'patent');
-
-    // Create display data
-    const createDisplayData = (data: EntryData[]) => {
-      return data.map(item => ({
-        title: item.paper_title || item.title || item.patent_name || 'Untitled',
-        faculty_id: item.faculty_id,
-        faculty_name: item.faculty_name,
-        entry_type: item.entry_type || 'unknown',
-        date: item.conf_date || item.month_and_year_of_publication || item.date || item.patent_date || 'No date',
-        status: item.is_verified,
-      }));
-    };
-
-    const conferenceDisplayData = createDisplayData(filteredConferences);
-    const journalDisplayData = createDisplayData(filteredJournals);
-    const workshopDisplayData = createDisplayData(filteredWorkshops);
-    const patentDisplayData = createDisplayData(filteredPatents);
-
-    let fullData: EntryData[] = [];
-    let displayData: ReportData['disp_data'] = [];
-
-    switch (filterType) {
-      case 'Conferences':
-        fullData = filteredConferences;
-        displayData = conferenceDisplayData;
-        break;
-      case 'Journals':
-        fullData = filteredJournals;
-        displayData = journalDisplayData;
-        break;
-      case 'Workshops':
-        fullData = filteredWorkshops;
-        displayData = workshopDisplayData;
-        break;
-      case 'Patents':
-        fullData = filteredPatents;
-        displayData = patentDisplayData;
-        break;
-      default:
-        fullData = [
-          ...filteredConferences,
-          ...filteredJournals,
-          ...filteredWorkshops,
-          ...filteredPatents,
-        ];
-        displayData = [
-          ...conferenceDisplayData,
-          ...journalDisplayData,
-          ...workshopDisplayData,
-          ...patentDisplayData,
-        ];
+      console.log('SERVER getReportData success:', result.data);
+      return { data: result.data, error: result.error };
+    } catch (error) {
+      console.error('Error in getReportData:', error);
+      return { data: { full_data: [], disp_data: [] }, error: 'Failed to generate report' };
     }
-
-    return {
-      data: {
-        full_data: fullData,
-        disp_data: displayData,
-      },
-      error: null,
-    };
   }
 
   // Helper methods to fetch data filtered by faculty IDs

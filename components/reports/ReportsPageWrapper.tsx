@@ -7,7 +7,13 @@ import ReportsTable from "./ReportsTable";
 import { Faculty } from "@/lib/types";
 import { DisplayData, ReportFiltersI } from "@/lib/hooks/useReport";
 import { GenericHeader } from "@/components/ui/GenericStyles";
+import { Inter } from "next/font/google";
 import MobileAdvisory from "@/components/ui/MobileAdvisory";
+
+const bodyText = Inter({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 interface ReportsPageWrapperProps {
   facultyList: Faculty[] | null;
@@ -36,7 +42,10 @@ export default function ReportsPageWrapper({
       <Layout>
         <Container>
           <ReportsHeader>
-            <HeaderText>Your Reports</HeaderText>
+            <HeaderText>Reports</HeaderText>
+            <HeaderDesc>
+              View and manage reports based on your faculty data.
+            </HeaderDesc>
           </ReportsHeader>
           <ContentWrapper>
             <ReportsTable
@@ -60,6 +69,7 @@ export default function ReportsPageWrapper({
 }
 
 const Layout = styled.main`
+  font-family: ${bodyText.style.fontFamily};
   z-index: 0;
   position: absolute;
   height: 100vh;
@@ -84,18 +94,28 @@ const Container = styled.div`
 `;
 
 const ReportsHeader = styled.div`
-  position: absolute;
+  z-index: 20;
   top: 1.5rem;
+  position: absolute;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   width: fit-content;
 `;
 
 const HeaderText = styled(GenericHeader)`
-  font-size: 1.05rem;
+  z-index: 20;
+  font-size: 1.5rem;
   text-transform: none;
   letter-spacing: 0;
   margin: 0;
+`;
+
+const HeaderDesc = styled.p`
+  margin-top: -0.25rem;
+  color: rgba(4, 103, 112, 0.99);
+  font-size: 1rem;
+  font-weight: 300;
 `;
 
 const ContentWrapper = styled.div`
@@ -105,10 +125,10 @@ const ContentWrapper = styled.div`
   gap: 1.5rem;
 
   @media (min-width: 1024px) {
-    margin-top: 1.5rem;
+    margin-top: 2.5rem;
   }
 
   @media (min-width: 1280px) {
-    margin-top: 0.5rem;
+    margin-top: 1.5rem;
   }
 `;

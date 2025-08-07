@@ -394,10 +394,22 @@ const TableHeaderArea = styled.div`
 
 const TableTitle = styled.h3`
   font-family: ${bodyText.style.fontFamily};
-  font-size: clamp(0.95rem, 0.6833rem + 0.4167vw, 1.1rem);
+  font-size: 1.25rem;
   font-weight: 600;
   color: rgba(4, 103, 112, 0.9);
   margin: 0;
+
+  @media (max-width: 1024px) {
+    font-size: 1.15rem;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const ExportButton = styled.button`
@@ -437,5 +449,15 @@ const ExportButton = styled.button`
   &:focus {
     outline: 2px solid rgba(4, 103, 112, 0.3);
     outline-offset: 2px;
+  }
+
+  @media (max-width: 1024px) {
+    padding: 0.6rem 1.2rem;
+    gap: 0.4rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 1rem;
+    gap: 0.3rem;
   }
 `;

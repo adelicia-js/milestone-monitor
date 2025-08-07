@@ -4,7 +4,7 @@ import React from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { Faculty } from "@/lib/types";
-import { Edit, Trash2, Crown, User, PencilRulerIcon } from "lucide-react";
+import { Edit, Trash2, Crown, User, PencilRulerIcon, Plus } from "lucide-react";
 import Loader from "@/components/ui/Loader";
 import { LoadingContainer, LoadingText } from "@/components/ui/GenericStyles";
 
@@ -15,18 +15,22 @@ const bodyText = Inter({
 
 interface StaffTableProps {
   staffList: Faculty[];
+  onAddNew?: () => void;
   onEdit: (staff: Faculty) => void;
   onDelete: (staffId: string) => void;
   loading?: boolean;
   error?: string | null;
+  currentUser?: Faculty;
 }
 
 export default function StaffTable({
   staffList,
+  onAddNew,
   onEdit,
   onDelete,
   loading,
   error,
+  currentUser,
 }: StaffTableProps) {
   const getRoleIcon = (role: string) => {
     switch (role?.toLowerCase()) {
@@ -91,6 +95,13 @@ export default function StaffTable({
 
   return (
     <TableCard>
+      <TableHeaderArea>
+        <TableTitle>Staff Data</TableTitle>
+        <AddButton onClick={onAddNew}>
+          <Plus size={18} />
+          Add Staff
+        </AddButton>
+      </TableHeaderArea>
       <TableWrapper>
         <Table>
           <TableHead>
@@ -139,13 +150,19 @@ export default function StaffTable({
                     >
                       <Edit size={16} />
                     </ActionButton>
-                    <ActionButton
-                      onClick={() => onDelete(staff.faculty_id)}
-                      variant="delete"
-                      title="Delete Staff"
-                    >
-                      <Trash2 size={16} />
-                    </ActionButton>
+                    {!(
+                      currentUser &&
+                      currentUser.faculty_id === staff.faculty_id &&
+                      currentUser.faculty_role.toLowerCase() === "hod"
+                    ) && (
+                      <ActionButton
+                        onClick={() => onDelete(staff.faculty_id)}
+                        variant="delete"
+                        title="Delete Staff"
+                      >
+                        <Trash2 size={16} />
+                      </ActionButton>
+                    )}
                   </ActionButtons>
                 </TableCell>
               </TableRow>
@@ -158,6 +175,8 @@ export default function StaffTable({
 }
 
 const TableCard = styled.div`
+  margin-top: 2rem;
+  background-color: rgba(244, 253, 252, 0.75);
   height: 100%;
   border: 0.1px solid rgba(56, 68, 68, 0.28);
   border-radius: 1rem;
@@ -170,7 +189,6 @@ const TableCard = styled.div`
 const TableWrapper = styled.div`
   flex: 1;
   overflow: auto;
-  background-color: rgba(244, 253, 252, 0.75);
 
   /* Custom scrollbar styling similar to other tables */
   &::-webkit-scrollbar {
@@ -414,4 +432,85 @@ const EmptySubtext = styled.p`
   max-width: 400px;
   line-height: 1.5;
   margin: 0;
+`;
+
+const TableHeaderArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(56, 68, 68, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(4, 103, 112, 0.05),
+    rgba(6, 95, 70, 0.05)
+  );
+
+  @media (min-width: 1024px) {
+    padding: 1rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 1.25rem 1.5rem;
+  }
+`;
+
+const TableTitle = styled.h2`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: rgba(4, 103, 112, 0.9);
+  margin: 0;
+
+  @media (max-width: 1024px) {
+    font-size: 1.15rem;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
+`;
+
+const AddButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 131, 143, 0.2),
+    rgba(0, 131, 143, 1)
+  );
+  color: white;
+  border-radius: 0.75rem;
+  font-family: ${bodyText.style.fontFamily};
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 1024px) {
+    padding: 0.6rem 1.2rem;
+    gap: 0.4rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 1rem;
+    gap: 0.3rem;
+  }
 `;
