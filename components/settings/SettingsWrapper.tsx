@@ -24,10 +24,9 @@ import {
   AlertCircle,
   Loader as LoaderIcon,
   X,
-  // Heart,
-  // Rocket,
 } from "lucide-react";
 import PasswordModal from "./PasswordModal";
+import MobileAdvisory from "@/components/ui/MobileAdvisory";
 
 const bodyText = Inter({
   weight: "400",
@@ -165,147 +164,156 @@ export default function SettingsWrapper() {
 
   if (loading.profile && !profile) {
     return (
-      <Layout>
-        <Container>
-          <LoadingContainer>
-            <Loader customHeight="h-fit" />
-            <LoadingText>Loading your settings...</LoadingText>
-          </LoadingContainer>
-        </Container>
-      </Layout>
+      <>
+        <MobileAdvisory />
+        <Layout>
+          <Container>
+            <LoadingContainer>
+              <Loader customHeight="h-fit" />
+              <LoadingText>Loading your settings...</LoadingText>
+            </LoadingContainer>
+          </Container>
+        </Layout>
+      </>
     );
   }
 
   return (
-    <Layout>
-      <Container>
-        <HeaderWrapper>
-          <HeaderText>Your Settings</HeaderText>
-        </HeaderWrapper>
+    <>
+      <MobileAdvisory />
+      <Layout>
+        <Container>
+          <HeaderWrapper>
+            <HeaderText>Your Settings</HeaderText>
+          </HeaderWrapper>
 
-        {/* Global Messages */}
-        {error && (
-          <MessageCard variant="error">
-            <MessageIcon>
-              <AlertCircle size={18} />
-            </MessageIcon>
-            <MessageText>{error}</MessageText>
-            <CloseButton onClick={clearMessages}>
-              <X size={16} />
-            </CloseButton>
-          </MessageCard>
-        )}
+          {/* Global Messages */}
+          {error && (
+            <MessageCard variant="error">
+              <MessageIcon>
+                <AlertCircle size={18} />
+              </MessageIcon>
+              <MessageText>{error}</MessageText>
+              <CloseButton onClick={clearMessages}>
+                <X size={16} />
+              </CloseButton>
+            </MessageCard>
+          )}
 
-        {success && (
-          <MessageCard variant="success">
-            <MessageIcon>
-              <CheckCircle size={18} />
-            </MessageIcon>
-            <MessageText>{success}</MessageText>
-            <CloseButton onClick={clearMessages}>
-              <X size={16} />
-            </CloseButton>
-          </MessageCard>
-        )}
+          {success && (
+            <MessageCard variant="success">
+              <MessageIcon>
+                <CheckCircle size={18} />
+              </MessageIcon>
+              <MessageText>{success}</MessageText>
+              <CloseButton onClick={clearMessages}>
+                <X size={16} />
+              </CloseButton>
+            </MessageCard>
+          )}
 
-        <SettingsGrid>
-          {/* Profile Information Card */}
-          <SettingsCard>
-            <CardHeader>
-              <CardTitle>
-                <User size={18} />
-                Profile Information
-              </CardTitle>
-              {profile && (
-                <ProfileMeta>
-                  <MetaItem>ID: {profile.faculty_id}</MetaItem>
-                  <MetaItem>Email: {profile.faculty_email}</MetaItem>
-                  <MetaItem>Department: {profile.faculty_department}</MetaItem>
-                  <RoleBadge role={profile.faculty_role}>
-                    {profile.faculty_role.toUpperCase()}
-                  </RoleBadge>
-                </ProfileMeta>
-              )}
-            </CardHeader>
-            <CardContent>
-              {settingsFields.map((field) => (
-                <SettingRow key={field.key}>
-                  <FieldInfo>
-                    <FieldIcon>{field.icon}</FieldIcon>
-                    <FieldLabel>
-                      {field.label}
-                      {field.required && <RequiredMark>*</RequiredMark>}:
-                    </FieldLabel>
-                  </FieldInfo>
-                  <FieldContent>
-                    {isEditing[field.key] ? (
-                      <EditingWrapper>
-                        <FieldInput
-                          value={formData[field.key]}
-                          onChange={(e) =>
-                            handleInputChange(field.key, e.target.value)
-                          }
-                          placeholder={field.placeholder}
-                          disabled={loading.profileField}
-                        />
-                        <ActionGroup>
-                          <ActionButton
-                            onClick={() => handleSaveClick(field.key)}
-                            variant="save"
-                            disabled={loading.profileField}
-                          >
-                            {loading.profileField ? (
-                              <LoaderIcon size={16} className="animate-spin" />
-                            ) : (
-                              <Save size={16} />
-                            )}
-                          </ActionButton>
-                          <ActionButton
-                            onClick={() => handleCancelEdit(field.key)}
-                            variant="cancel"
-                            disabled={loading.profileField}
-                          >
-                            <X size={16} />
-                          </ActionButton>
-                        </ActionGroup>
-                      </EditingWrapper>
-                    ) : (
-                      <>
-                        <FieldValue>
-                          {formData[field.key] || (
-                            <PlaceholderText>
-                              {field.required
-                                ? "Required - click to add"
-                                : "Not set - click to add"}
-                            </PlaceholderText>
-                          )}
-                        </FieldValue>
-                        <ActionButton
-                          onClick={() => handleEditClick(field.key)}
-                          variant="edit"
-                          disabled={loading.profileField}
-                        >
-                          <Edit size={16} />
-                        </ActionButton>
-                      </>
-                    )}
-                  </FieldContent>
-                </SettingRow>
-              ))}
-            </CardContent>
-          </SettingsCard>
-
-          {/* Right Column */}
-          <RightColumn>
-            {/* Profile Picture Card */}
+          <SettingsGrid>
+            {/* Profile Information Card */}
             <SettingsCard>
               <CardHeader>
-                <CardTitle style={{ margin: "0 0 0 0" }}>
-                  <Camera size={18} />
-                  Profile Picture
+                <CardTitle>
+                  <User size={18} />
+                  Profile Information
                 </CardTitle>
+                {profile && (
+                  <ProfileMeta>
+                    <MetaItem>ID: {profile.faculty_id}</MetaItem>
+                    <MetaItem>Email: {profile.faculty_email}</MetaItem>
+                    <MetaItem>
+                      Department: {profile.faculty_department}
+                    </MetaItem>
+                    <RoleBadge role={profile.faculty_role}>
+                      {profile.faculty_role.toUpperCase()}
+                    </RoleBadge>
+                  </ProfileMeta>
+                )}
               </CardHeader>
               <CardContent>
+                {settingsFields.map((field) => (
+                  <SettingRow key={field.key}>
+                    <FieldInfo>
+                      <FieldIcon>{field.icon}</FieldIcon>
+                      <FieldLabel>
+                        {field.label}
+                        {field.required && <RequiredMark>*</RequiredMark>}:
+                      </FieldLabel>
+                    </FieldInfo>
+                    <FieldContent>
+                      {isEditing[field.key] ? (
+                        <EditingWrapper>
+                          <FieldInput
+                            value={formData[field.key]}
+                            onChange={(e) =>
+                              handleInputChange(field.key, e.target.value)
+                            }
+                            placeholder={field.placeholder}
+                            disabled={loading.profileField}
+                          />
+                          <ActionGroup>
+                            <ActionButton
+                              onClick={() => handleSaveClick(field.key)}
+                              variant="save"
+                              disabled={loading.profileField}
+                            >
+                              {loading.profileField ? (
+                                <LoaderIcon
+                                  size={16}
+                                  className="animate-spin"
+                                />
+                              ) : (
+                                <Save size={16} />
+                              )}
+                            </ActionButton>
+                            <ActionButton
+                              onClick={() => handleCancelEdit(field.key)}
+                              variant="cancel"
+                              disabled={loading.profileField}
+                            >
+                              <X size={16} />
+                            </ActionButton>
+                          </ActionGroup>
+                        </EditingWrapper>
+                      ) : (
+                        <>
+                          <FieldValue>
+                            {formData[field.key] || (
+                              <PlaceholderText>
+                                {field.required
+                                  ? "Required - click to add"
+                                  : "Not set - click to add"}
+                              </PlaceholderText>
+                            )}
+                          </FieldValue>
+                          <ActionButton
+                            onClick={() => handleEditClick(field.key)}
+                            variant="edit"
+                            disabled={loading.profileField}
+                          >
+                            <Edit size={16} />
+                          </ActionButton>
+                        </>
+                      )}
+                    </FieldContent>
+                  </SettingRow>
+                ))}
+              </CardContent>
+            </SettingsCard>
+
+            {/* Right Column */}
+            <RightColumn>
+              {/* Profile Picture Card */}
+              <SettingsCard2>
+                <CardHeader>
+                  <CardTitle style={{ margin: "0 0 0 0" }}>
+                    <Camera size={18} />
+                    Profile Picture
+                  </CardTitle>
+                </CardHeader>
                 <ProfilePictureSection>
                   {uploadVisible ? (
                     <FileInputWrapper>
@@ -341,18 +349,16 @@ export default function SettingsWrapper() {
                     </SuccessMessage>
                   )}
                 </ProfilePictureSection>
-              </CardContent>
-            </SettingsCard>
+              </SettingsCard2>
 
-            {/* Security Card */}
-            <SettingsCard>
-              <CardHeader>
-                <CardTitle style={{ margin: "0 0 0 0" }}>
-                  <Lock size={18} />
-                  Security
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+              {/* Security Card */}
+              <SettingsCard2>
+                <CardHeader>
+                  <CardTitle style={{ margin: "0 0 0 0" }}>
+                    <Lock size={18} />
+                    Security
+                  </CardTitle>
+                </CardHeader>
                 <SecuritySection>
                   <SecurityInfo>
                     <SecurityText>Keep your account secure.</SecurityText>
@@ -368,43 +374,21 @@ export default function SettingsWrapper() {
                     Change Password
                   </PasswordButton>
                 </SecuritySection>
-              </CardContent>
-            </SettingsCard>
-          </RightColumn>
-        </SettingsGrid>
+              </SettingsCard2>
+            </RightColumn>
+          </SettingsGrid>
 
-        <PasswordModal
-          isOpen={isPasswordModalOpen}
-          onClose={() => setIsPasswordModalOpen(false)}
-          loading={loading.password}
-        />
-
-        {/* Made with love footer */}
-        {/* <Footer>
-          <FooterLink
-            href="https://github.com/adelicia-js/milestone-monitor"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FooterContent>
-              <FooterText>Made with</FooterText>
-              <HeartIcon>
-                <Heart size={16} fill="currentColor" />
-              </HeartIcon>
-              <FooterText>by</FooterText>
-              <CreatorName>Supastrssd</CreatorName>
-              <RocketIcon>
-                <Rocket size={16} />
-              </RocketIcon>
-            </FooterContent>
-          </FooterLink>
-        </Footer> */}
-      </Container>
-    </Layout>
+          <PasswordModal
+            isOpen={isPasswordModalOpen}
+            onClose={() => setIsPasswordModalOpen(false)}
+            loading={loading.password}
+          />
+        </Container>
+      </Layout>
+    </>
   );
 }
 
-// Styled Components (keeping the existing styling but enhancing it)
 const Layout = styled.main`
   z-index: 0;
   position: absolute;
@@ -416,7 +400,6 @@ const Layout = styled.main`
 `;
 
 const Container = styled.section`
-  height: 50vh;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -512,6 +495,14 @@ const RightColumn = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+
+  @media (min-width: 1024px) {
+    height: 70vh;
+  }
+
+  @media (min-width: 1280px) {
+    height: 100%;
+  }
 `;
 
 const SettingsCard = styled.div`
@@ -519,11 +510,41 @@ const SettingsCard = styled.div`
   border: 0.1px solid rgba(56, 68, 68, 0.28);
   box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
   border-radius: 1rem;
+
+  @media (min-width: 1024px) {
+    height: 70vh;
+  }
+
+  @media (min-width: 1280px) {
+    height: 100%;
+  }
+`;
+
+const SettingsCard2 = styled.div`
+  background-color: rgba(244, 253, 252, 0.75);
+  border: 0.1px solid rgba(56, 68, 68, 0.28);
+  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
+  border-radius: 1rem;
+
+  @media (min-width: 1024px) {
+    height: 33vh;
+  }
+
+  @media (min-width: 1280px) {
+    height: 100%;
+  }
 `;
 
 const CardHeader = styled.div`
-  padding: 1.5rem;
   border-bottom: 1px solid rgba(56, 68, 68, 0.1);
+
+  @media (min-width: 1024px) {
+    padding: 1rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 1.5rem;
+  }
 `;
 
 const CardTitle = styled.h3`
@@ -586,7 +607,17 @@ const RoleBadge = styled.span<{ role: string }>`
 `;
 
 const CardContent = styled.div`
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  @media (min-width: 1024px) {
+    padding: 1rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 1.5rem;
+  }
 `;
 
 const SettingRow = styled.div`
@@ -756,6 +787,14 @@ const ProfilePictureSection = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+
+  @media (min-width: 1024px) {
+    margin: 0.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    margin: 1rem;
+  }
 `;
 
 const FileInputWrapper = styled.div`
@@ -864,6 +903,14 @@ const SecuritySection = styled.div`
     align-items: center;
     justify-content: space-between;
   }
+
+  @media (min-width: 1024px) {
+    margin: 0.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    margin: 1rem;
+  }
 `;
 
 const SecurityInfo = styled.div`
@@ -880,9 +927,9 @@ const SecurityText = styled.p`
 
 const PasswordButton = styled.button`
   display: flex;
+  font-size: clamp(0.875rem, 0.6528rem + 0.3472vw, 1rem);
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
   background: linear-gradient(
     135deg,
     rgba(0, 131, 143, 0.2),
@@ -911,93 +958,12 @@ const PasswordButton = styled.button`
   &:active:not(:disabled) {
     transform: translateY(0);
   }
+
+  @media (min-width: 1024px) {
+    padding: 0.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0.75rem 1.5rem;
+  }
 `;
-
-// const Footer = styled.div`
-//   height: 20vh;
-//   position: absolute;
-//   bottom: 5%;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   padding: 2rem 0 1rem 0;
-//   margin-top: auto;
-//   width: 100%;
-// `;
-
-// const FooterLink = styled.a`
-//   text-decoration: none;
-//   cursor: pointer;
-// `;
-
-// const FooterContent = styled.div`
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   gap: 0.5rem;
-//   padding: 0.75rem 1.5rem;
-//   background: rgba(244, 253, 252, 0.8);
-//   border: 0.1px solid rgba(0, 131, 143, 0.27);
-//   border-radius: 2rem;
-//   backdrop-filter: blur(10px);
-//   box-shadow: 0 1px 15px 3px rgba(0, 131, 143, 0.27);
-//   transition: all 0.3s ease;
-
-//   &:hover {
-//     transform: translateY(-2px);
-//     background: rgba(244, 253, 252, 0.95);
-//   }
-// `;
-
-// const FooterText = styled.span`
-//   font-family: ${bodyText.style.fontFamily};
-//   font-size: 0.9rem;
-//   font-weight: 500;
-//   color: rgba(4, 103, 112, 0.8);
-// `;
-
-// const HeartIcon = styled.div`
-//   color: rgba(239, 68, 68, 0.8);
-//   animation: heartbeat 2s ease-in-out infinite;
-
-//   @keyframes heartbeat {
-//     0% {
-//       transform: scale(1);
-//     }
-//     50% {
-//       transform: scale(1.1);
-//     }
-//     100% {
-//       transform: scale(1);
-//     }
-//   }
-// `;
-
-// const CreatorName = styled.span`
-//   font-family: ${bodyText.style.fontFamily};
-//   font-size: 0.9rem;
-//   font-weight: 600;
-//   color: rgba(4, 103, 112, 1);
-//   background: linear-gradient(135deg, rgba(4, 103, 112, 1), rgba(6, 95, 70, 1));
-//   -webkit-background-clip: text;
-//   -webkit-text-fill-color: transparent;
-//   background-clip: text;
-// `;
-
-// const RocketIcon = styled.div`
-//   color: rgba(251, 146, 60, 0.8);
-//   animation: rocket 3s ease-in-out infinite;
-
-//   @keyframes rocket {
-//     0%,
-//     100% {
-//       transform: translateY(0) rotate(0deg);
-//     }
-//     25% {
-//       transform: translateY(-3px) rotate(5deg);
-//     }
-//     75% {
-//       transform: translateY(-1px) rotate(-3deg);
-//     }
-//   }
-// `;

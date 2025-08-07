@@ -108,7 +108,7 @@ export default function ReportFilters({
     return (
       <FilterCard>
         <LoadingContainer>
-          <Loader customHeight="h-fit"/>
+          <Loader customHeight="h-fit" />
           <LoadingText>Loading filters...</LoadingText>
         </LoadingContainer>
       </FilterCard>
@@ -239,6 +239,38 @@ const FilterCard = styled.div`
   background-color: rgba(244, 253, 252, 0.75);
   backdrop-filter: blur(10px);
   padding: 1.5rem;
+  overflow: auto;
+
+  @media (min-width: 1024px) {
+    height: 80vh;
+  }
+
+  @media (min-width: 1280px) {
+    height: 85vh;
+  }
+
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 131, 143, 0.2);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 131, 143, 0.2);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 131, 143, 0.2);
+  }
+
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 131, 143, 0.3) rgba(0, 0, 0, 0.075);
 `;
 
 const FiltersContent = styled.div`
@@ -267,7 +299,6 @@ const FilterLabel = styled.label`
 `;
 
 const SearchInput = styled.input`
-  padding: 0.75rem;
   border: 1px solid rgba(56, 68, 68, 0.2);
   border-radius: 0.5rem;
   background: rgba(255, 255, 255, 0.8);
@@ -286,6 +317,14 @@ const SearchInput = styled.input`
   &::placeholder {
     color: rgba(107, 114, 128, 0.6);
   }
+
+  @media (min-width: 1024px) {
+    padding: 0.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0.75rem;
+  }
 `;
 
 const DateInputs = styled.div`
@@ -295,7 +334,6 @@ const DateInputs = styled.div`
 `;
 
 const DateInput = styled.input`
-  padding: 0.75rem;
   border: 1px solid rgba(56, 68, 68, 0.2);
   border-radius: 0.5rem;
   background: rgba(255, 255, 255, 0.8);
@@ -311,10 +349,17 @@ const DateInput = styled.input`
     box-shadow: 0 0 0 3px rgba(4, 103, 112, 0.1);
     background: rgba(255, 255, 255, 0.95);
   }
+    
+  @media (min-width: 1024px) {
+    padding: 0.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0.75rem;
+  }
 `;
 
 const Select = styled.select`
-  padding: 0.75rem;
   border: 1px solid rgba(56, 68, 68, 0.2);
   border-radius: 0.5rem;
   background: rgba(255, 255, 255, 0.8);
@@ -334,6 +379,14 @@ const Select = styled.select`
   option {
     background: rgba(255, 255, 255, 0.95);
     color: rgba(31, 41, 55, 0.9);
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0.75rem;
   }
 `;
 

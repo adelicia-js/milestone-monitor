@@ -1,5 +1,5 @@
 // TODO: Remove this comment if dark mode is implemented
-/* eslint-disable @typescript-eslint/no-unused-vars */ 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useState } from "react";
@@ -57,7 +57,16 @@ export default function HeaderBar() {
         <ActionItem onClick={handleSignOut}>
           <LogOutButton>
             <LogOutIcon>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <polyline className="arrow" points="16 17 21 12 16 7" />
                 <line className="arrow" x1="21" y1="12" x2="9" y2="12" />
@@ -178,7 +187,7 @@ const LogOutIcon = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  
+
   svg .arrow {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }

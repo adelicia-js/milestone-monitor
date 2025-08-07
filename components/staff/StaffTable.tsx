@@ -233,7 +233,7 @@ const TableHeaderCell = styled.th`
   font-family: ${bodyText.style.fontFamily};
   font-weight: 600;
   color: rgba(4, 103, 112, 0.9);
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 0.6222rem + 0.2778vw, 0.9rem);
   text-transform: uppercase;
   letter-spacing: 0.3px;
   border-bottom: 2px solid rgba(4, 103, 112, 0.2);

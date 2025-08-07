@@ -6,19 +6,23 @@ import DashboardHeader from "./DashboardHeader";
 import ProfileCard from "./ProfileCard";
 import StatsCard from "./StatsCard";
 import QuickActionsCard from "./QuickActionsCard";
+import MobileAdvisory from "@/components/ui/MobileAdvisory";
 
 export default function DashboardPageWrapper() {
   return (
-    <Layout>
-      <CardContainer1>
-        <DashboardHeader />
-        <CardContainer2>
-          <ProfileCard />
-          <StatsCard />
-        </CardContainer2>
-        <QuickActionsCard />
-      </CardContainer1>
-    </Layout>
+    <>
+      <MobileAdvisory />
+      <Layout>
+        <CardContainer1>
+          <DashboardHeader />
+          <CardContainer2>
+            <ProfileCard />
+            <StatsCard />
+          </CardContainer2>
+          <QuickActionsCard />
+        </CardContainer1>
+      </Layout>
+    </>
   );
 }
 

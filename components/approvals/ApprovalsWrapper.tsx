@@ -224,24 +224,18 @@ const Layout = styled.main`
   z-index: 0;
   position: absolute;
   height: 100vh;
-  width: calc(100vw - 8vw);
+  width: 92vw;
   left: 8vw;
   padding: 1rem;
   background-color: rgba(140, 242, 233, 0.35);
   box-sizing: border-box;
   
   @media (max-width: 1024px) {
-    width: calc(100vw - 8vw - 2rem);
     padding: 0.75rem;
-    top: 60px;
-    height: calc(100vh - 60px);
   }
   
   @media (max-width: 768px) {
-    width: calc(100vw - 8vw - 1rem);
     padding: 0.5rem;
-    top: 50px;
-    height: calc(100vh - 50px);
   }
 `;
 
@@ -368,7 +362,7 @@ const TabIcon = styled.span`
 `;
 
 const TabLabel = styled.span`
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 0.6222rem + 0.2778vw, 0.9rem);
 `;
 
 const TabBadge = styled.span`

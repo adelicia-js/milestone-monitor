@@ -33,7 +33,7 @@ export default function VerticalBar(props: VerticalBarProps) {
       <NavList>
         <LogoItem>
           <LogoItemLink>
-            <LogoImage src={logoImg} alt="Logo Image" />
+            <LogoImage src={logoImg} alt="Logo Image" priority={false} />
           </LogoItemLink>
         </LogoItem>
 

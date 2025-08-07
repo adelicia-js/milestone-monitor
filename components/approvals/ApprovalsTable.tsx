@@ -142,7 +142,7 @@ export default function ApprovalsTable({
     <TableCard>
       {loading && (
         <LoadingContainer>
-          <Loader customHeight="h-fit"/>
+          <Loader customHeight="h-fit" />
           <LoadingText>Updating table...</LoadingText>
         </LoadingContainer>
       )}
@@ -214,7 +214,7 @@ const TableWrapper = styled.div`
   overflow: auto;
   box-shadow: 0 4px 15px rgba(4, 103, 112, 0.15);
   backdrop-filter: blur(10px);
-  
+
   /* Custom scrollbar styling similar to reports and recent activity */
   &::-webkit-scrollbar {
     width: 8px;
@@ -240,7 +240,7 @@ const TableWrapper = styled.div`
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 131, 143, 0.25) rgba(0, 131, 143, 0.1);
   scroll-behavior: smooth;
-  
+
   /* Ensure smooth scrolling on smaller screens */
   @media (max-width: 1024px) {
     overflow-x: auto;
@@ -277,20 +277,20 @@ const TableHeaderCell = styled.th`
   font-family: ${bodyText.style.fontFamily};
   font-weight: 600;
   color: rgba(4, 103, 112, 0.9);
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 0.6222rem + 0.2778vw, 0.9rem);
   text-transform: uppercase;
   letter-spacing: 0.3px;
   border-bottom: 2px solid rgba(4, 103, 112, 0.2);
   white-space: nowrap;
   vertical-align: middle;
   height: 60px;
-  
+
   @media (max-width: 1024px) {
     padding: 0.75rem;
     font-size: 0.8rem;
     height: 50px;
   }
-  
+
   @media (max-width: 768px) {
     padding: 0.5rem;
     font-size: 0.75rem;
@@ -301,20 +301,18 @@ const TableHeaderCell = styled.th`
 const TableCell = styled.td`
   padding: 1rem;
   font-family: ${bodyText.style.fontFamily};
-  font-size: 0.9rem;
+  font-size: clamp(0.75rem, 0.5278rem + 0.3472vw, 0.875rem);
   color: rgba(31, 41, 55, 0.9);
   vertical-align: middle;
   height: 70px;
-  
+
   @media (max-width: 1024px) {
     padding: 0.75rem;
-    font-size: 0.8rem;
     height: 60px;
   }
-  
+
   @media (max-width: 768px) {
     padding: 0.5rem;
-    font-size: 0.75rem;
     height: 50px;
   }
 `;
@@ -330,11 +328,11 @@ const TitleCell = styled.div`
   max-width: 250px;
   word-wrap: break-word;
   line-height: 1.3;
-  
+
   @media (max-width: 1024px) {
     max-width: 200px;
   }
-  
+
   @media (max-width: 768px) {
     max-width: 150px;
   }
@@ -371,7 +369,7 @@ const DateWrapper = styled.div`
   align-items: center;
   gap: 0.5rem;
   color: rgba(107, 114, 128, 0.8);
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 0.4333rem + 0.4167vw, 0.85rem);
   white-space: nowrap;
 `;
 
@@ -391,7 +389,7 @@ const ActionButton = styled.button`
   border-radius: 0.5rem;
   font-family: ${bodyText.style.fontFamily};
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 0.4333rem + 0.4167vw, 0.85rem);
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;

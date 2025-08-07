@@ -109,51 +109,51 @@ export default function ReportsTable({
               </ExportButton>
             </TableHeaderArea>
             <TableWrapper>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableHeaderCell>Faculty ID</TableHeaderCell>
-                  <TableHeaderCell>Faculty Name</TableHeaderCell>
-                  <TableHeaderCell>Title</TableHeaderCell>
-                  <TableHeaderCell>Entry Type</TableHeaderCell>
-                  <TableHeaderCell>Date</TableHeaderCell>
-                  <TableHeaderCell>Status</TableHeaderCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tableData.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell
-                      style={{ wordWrap: "break-word", maxWidth: "100px" }}
-                    >
-                      {row.faculty_id}
-                    </TableCell>
-                    <TableCell>
-                      <FacultyName>
-                        {getfacultyname(row.faculty_id)}
-                      </FacultyName>
-                    </TableCell>
-                    <TableCell>
-                      <TitleCell>{row.title}</TitleCell>
-                    </TableCell>
-                    <TableCell>
-                      <EntryTypeBadge>{row.entry_type}</EntryTypeBadge>
-                    </TableCell>
-                    <TableCell>{formatDate(row.date)}</TableCell>
-
-                    <TableCell>
-                      <StatusWrapper>
-                        {getStatusIcon(row.status)}
-                        <StatusText color={getStatusColor(row.status)}>
-                          {row.status}
-                        </StatusText>
-                      </StatusWrapper>
-                    </TableCell>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableHeaderCell>Faculty ID</TableHeaderCell>
+                    <TableHeaderCell>Faculty Name</TableHeaderCell>
+                    <TableHeaderCell>Title</TableHeaderCell>
+                    <TableHeaderCell>Entry Type</TableHeaderCell>
+                    <TableHeaderCell>Date</TableHeaderCell>
+                    <TableHeaderCell>Status</TableHeaderCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableWrapper>
+                </TableHead>
+                <TableBody>
+                  {tableData.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell
+                        style={{ wordWrap: "break-word", maxWidth: "100px" }}
+                      >
+                        {row.faculty_id}
+                      </TableCell>
+                      <TableCell>
+                        <FacultyName>
+                          {getfacultyname(row.faculty_id)}
+                        </FacultyName>
+                      </TableCell>
+                      <TableCell>
+                        <TitleCell>{row.title}</TitleCell>
+                      </TableCell>
+                      <TableCell>
+                        <EntryTypeBadge>{row.entry_type}</EntryTypeBadge>
+                      </TableCell>
+                      <TableCell>{formatDate(row.date)}</TableCell>
+
+                      <TableCell>
+                        <StatusWrapper>
+                          {getStatusIcon(row.status)}
+                          <StatusText color={getStatusColor(row.status)}>
+                            {row.status}
+                          </StatusText>
+                        </StatusWrapper>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableWrapper>
           </>
         )}
       </TableCard>
@@ -171,20 +171,27 @@ export default function ReportsTable({
 const TableCard = styled.div`
   font-family: ${bodyText.style.fontFamily};
   position: relative;
-  height: 100%;
   border: 0.1px solid rgba(56, 68, 68, 0.28);
   border-radius: 1rem;
   background-color: rgba(244, 253, 252, 0.75);
+  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
+  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  @media (min-width: 1024px) {
+    height: 80vh;
+  }
+
+  @media (min-width: 1280px) {
+    height: 85vh;
+  }
 `;
 
 const TableWrapper = styled.div`
   flex: 1;
   padding: 0;
-  box-shadow: 0 4px 15px rgba(4, 103, 112, 0.15);
-  backdrop-filter: blur(10px);
   overflow: auto;
 
   /* Custom scrollbar styling */
@@ -241,7 +248,7 @@ const TableHeaderCell = styled.th`
   font-family: ${bodyText.style.fontFamily};
   font-weight: 600;
   color: rgba(4, 103, 112, 0.9);
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 0.6222rem + 0.2778vw, 0.9rem);
   text-transform: uppercase;
   letter-spacing: 0.3px;
   border-bottom: 2px solid rgba(4, 103, 112, 0.2);
@@ -253,7 +260,7 @@ const TableHeaderCell = styled.th`
 const TableCell = styled.td`
   padding: 1rem;
   font-family: ${bodyText.style.fontFamily};
-  font-size: 0.9rem;
+  font-size: clamp(0.7rem, 0.5222rem + 0.2778vw, 0.8rem);
   color: rgba(31, 41, 55, 0.9);
   vertical-align: middle; /* Changed from top to middle for better alignment */
   height: 70px; /* Fixed cell height for consistent alignment */
@@ -293,7 +300,6 @@ const EntryTypeBadge = styled.span`
   color: rgba(4, 103, 112, 0.9);
   border: 1px solid rgba(4, 103, 112, 0.2);
   border-radius: 0.5rem;
-  font-size: 0.8rem;
   font-weight: 500;
   text-transform: capitalize;
   white-space: nowrap;
@@ -376,11 +382,19 @@ const TableHeaderArea = styled.div`
     rgba(4, 103, 112, 0.05),
     rgba(6, 95, 70, 0.05)
   );
+
+  @media (min-width: 1024px) {
+    padding: 1rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 1.25rem 1.5rem;
+  }
 `;
 
 const TableTitle = styled.h3`
   font-family: ${bodyText.style.fontFamily};
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 0.6833rem + 0.4167vw, 1.1rem);
   font-weight: 600;
   color: rgba(4, 103, 112, 0.9);
   margin: 0;

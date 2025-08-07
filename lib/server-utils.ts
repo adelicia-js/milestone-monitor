@@ -6,7 +6,6 @@ import { Faculty } from "./types";
 
 /**
  * Server-side utility function to fetch faculty role by email
- * This replaces the fetchRole function from api/dbfunctions.tsx
  */
 export async function fetchFacultyRole(email: string): Promise<Faculty | null> {
   const cookieStore = await cookies();

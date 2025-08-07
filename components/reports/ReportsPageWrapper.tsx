@@ -7,6 +7,7 @@ import ReportsTable from "./ReportsTable";
 import { Faculty } from "@/lib/types";
 import { DisplayData, ReportFiltersI } from "@/lib/hooks/useReport";
 import { GenericHeader } from "@/components/ui/GenericStyles";
+import MobileAdvisory from "@/components/ui/MobileAdvisory";
 
 interface ReportsPageWrapperProps {
   facultyList: Faculty[] | null;
@@ -27,24 +28,23 @@ export default function ReportsPageWrapper({
   reportData,
   reportDataLoading,
   reportError,
-  onFiltersChange
+  onFiltersChange,
 }: ReportsPageWrapperProps) {
   return (
-    <Layout>
-      <Container>
-        <ReportsHeader>
-          <HeaderText>Your Reports</HeaderText>
-        </ReportsHeader>
-        <ContentWrapper>
-          <MainContent>
+    <>
+      <MobileAdvisory />
+      <Layout>
+        <Container>
+          <ReportsHeader>
+            <HeaderText>Your Reports</HeaderText>
+          </ReportsHeader>
+          <ContentWrapper>
             <ReportsTable
               tableData={reportData}
               staffDetails={facultyList}
               loading={reportDataLoading}
               error={reportError}
             />
-          </MainContent>
-          <Sidebar>
             <ReportFilters
               staffDetails={facultyList}
               staffDepartment={facultyDept}
@@ -52,10 +52,10 @@ export default function ReportsPageWrapper({
               loading={facultyDataLoading}
               error={facultyDataError}
             />
-          </Sidebar>
-        </ContentWrapper>
-      </Container>
-    </Layout>
+          </ContentWrapper>
+        </Container>
+      </Layout>
+    </>
   );
 }
 
@@ -73,7 +73,14 @@ const Container = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 3rem;
+
+  @media (min-width: 1024px) {
+    padding: 2rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 3rem;
+  }
 `;
 
 const ReportsHeader = styled.div`
@@ -92,23 +99,16 @@ const HeaderText = styled(GenericHeader)`
 `;
 
 const ContentWrapper = styled.div`
-  margin-top: 0.5rem;
   flex: 1;
   display: grid;
   grid-template-columns: 1fr 300px;
   gap: 1.5rem;
-  min-height: 0; /* Important for proper grid sizing */
-`;
 
-const MainContent = styled.section`
-  display: flex;
-  flex-direction: column;
-  min-height: 0; /* Allows table to be properly constrained */
-  overflow: hidden; /* Ensures content doesn't break layout */
-`;
+  @media (min-width: 1024px) {
+    margin-top: 1.5rem;
+  }
 
-const Sidebar = styled.aside`
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  @media (min-width: 1280px) {
+    margin-top: 0.5rem;
+  }
 `;
