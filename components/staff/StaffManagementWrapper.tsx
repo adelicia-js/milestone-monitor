@@ -64,7 +64,7 @@ export default function StaffManagementWrapper({
   };
 
   const handleDelete = (staffId: string) => {
-    const staff = staffList.find(s => s.faculty_id === staffId);
+    const staff = staffList.find((s) => s.faculty_id === staffId);
     if (staff) {
       setDeletingStaff(staff);
       setIsDeleteModalOpen(true);
@@ -93,45 +93,45 @@ export default function StaffManagementWrapper({
     <>
       <MobileAdvisory />
       <Layout>
-      <Container>
-        <HeaderWrapper>
-          <HeaderText>Staff Management</HeaderText>
-          <AddButton onClick={handleAddNew}>
-            <Plus size={18} />
-            Add Staff
-          </AddButton>
-        </HeaderWrapper>
+        <Container>
+          <HeaderWrapper>
+            <HeaderText>Staff Management</HeaderText>
+            <AddButton onClick={handleAddNew}>
+              <Plus size={18} />
+              Add Staff
+            </AddButton>
+          </HeaderWrapper>
 
-        <TableWrapper>
-          <StaffTable
-            staffList={staffList}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            loading={loading}
-            error={error}
-          />
-        </TableWrapper>
-      </Container>
+          <TableWrapper>
+            <StaffTable
+              staffList={staffList}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              loading={loading}
+              error={error}
+            />
+          </TableWrapper>
+        </Container>
 
-      <StaffModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onSubmit={handleModalSubmit}
-        mode={modalMode}
-        initialData={editingStaff}
-        defaultDepartment={currentUserDept}
-      />
+        <StaffModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSubmit={handleModalSubmit}
+          mode={modalMode}
+          initialData={editingStaff}
+          defaultDepartment={currentUserDept}
+        />
 
-      <DeleteModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        title="Delete Staff Member"
-        message="Are you sure you want to delete this staff member?"
-        itemName={deletingStaff?.faculty_name}
-        isLoading={loading}
-      />
-    </Layout>
+        <DeleteModal
+          isOpen={isDeleteModalOpen}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Staff Member"
+          message="Are you sure you want to delete this staff member?"
+          itemName={deletingStaff?.faculty_name}
+          isLoading={loading}
+        />
+      </Layout>
     </>
   );
 }
@@ -145,19 +145,9 @@ const Layout = styled.main`
   padding: 1rem;
   background-color: rgba(140, 242, 233, 0.35);
   box-sizing: border-box;
-  
+
   @media (max-width: 1024px) {
-    width: calc(100vw - 8vw - 2rem);
-    padding: 0.75rem;
-    top: 60px;
-    height: calc(100vh - 60px);
-  }
-  
-  @media (max-width: 768px) {
-    width: calc(100vw - 8vw - 1rem);
     padding: 0.5rem;
-    top: 50px;
-    height: calc(100vh - 50px);
   }
 `;
 
@@ -195,9 +185,9 @@ const AddButton = styled.button`
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background: linear-gradient(
-    120deg,
-    rgba(0, 131, 143, 0.65),
-    rgba(179, 217, 217, 0.7)
+    135deg,
+    rgba(0, 131, 143, 0.2),
+    rgba(0, 131, 143, 1)
   );
   border: 0.1px solid rgba(0, 131, 143, 0.27);
   color: white;
@@ -212,11 +202,6 @@ const AddButton = styled.button`
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15);
-    background: linear-gradient(
-      135deg,
-      rgba(0, 131, 143, 0.2),
-      rgba(0, 131, 143, 1)
-    );
   }
 
   &:active {

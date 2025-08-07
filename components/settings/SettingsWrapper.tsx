@@ -709,7 +709,7 @@ const ActionButton = styled.button<{ variant: "edit" | "save" | "cancel" }>`
     
     &:hover:not(:disabled) {
       transform: scale(1.05);
-      background: linear-gradient(135deg, rgba(96, 165, 250, 0.95), rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 1));
+      background: linear-gradient(135deg, rgba(96, 165, 250, 0.5), rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 1));
       box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
   `}
@@ -717,24 +717,26 @@ const ActionButton = styled.button<{ variant: "edit" | "save" | "cancel" }>`
   ${(props) =>
     props.variant === "save" &&
     `
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(22, 163, 74, 0.8));
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.4), rgba(22, 163, 74, 0.8));
     color: white;
     
     &:hover:not(:disabled) {
       transform: scale(1.05);
-      background: linear-gradient(135deg, rgba(34, 197, 94, 1), rgba(22, 163, 74, 1));
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.5), rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 1));
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
   `}
   
   ${(props) =>
     props.variant === "cancel" &&
     `
-    background: linear-gradient(135deg, rgba(107, 114, 128, 0.8), rgba(75, 85, 99, 0.8));
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.4), rgba(75, 85, 99, 0.8));
     color: white;
     
     &:hover:not(:disabled) {
       transform: scale(1.05);
-      background: linear-gradient(135deg, rgba(107, 114, 128, 1), rgba(75, 85, 99, 1));
+      background: linear-gradient(135deg, rgba(156, 163, 175, 0.95), rgba(107, 114, 128, 0.9), rgba(75, 85, 99, 1));
+      box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
   `}
   

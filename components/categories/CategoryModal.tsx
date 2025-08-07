@@ -142,9 +142,13 @@ export default function CategoryModal<T>({
                   />
                 ) : field.type === "select" ? (
                   <Select
-                    value={String(
-                      formData[field.key as keyof typeof formData] || ""
-                    )}
+                    value={(() => {
+                      const fieldValue = formData[field.key as keyof typeof formData];
+                      if (fieldValue === null || fieldValue === undefined) return "";
+                      // Handle boolean values properly for select fields
+                      if (typeof fieldValue === "boolean") return String(fieldValue);
+                      return String(fieldValue);
+                    })()}
                     onChange={(e) =>
                       handleInputChange(field.key, e.target.value)
                     }

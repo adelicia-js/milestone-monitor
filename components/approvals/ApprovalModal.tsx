@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
 import {
@@ -12,6 +12,7 @@ import {
   FileText,
   ExternalLink,
   Download,
+  Loader2,
 } from "lucide-react";
 import { ApprovalEntry } from "@/lib/types";
 
@@ -24,8 +25,11 @@ interface ApprovalModalProps {
   isOpen: boolean;
   onClose: () => void;
   entry: ApprovalEntry | null;
-  onApprove: (entry: ApprovalEntry) => void;
-  onReject: (entry: ApprovalEntry) => void;
+  onApprove: (entry: ApprovalEntry) => Promise<void>;
+  onReject: (entry: ApprovalEntry) => Promise<void>;
+  loading?: boolean;
+  processingEntry?: string | null;
+  processingAction?: 'approve' | 'reject' | null;
 }
 
 export default function ApprovalModal({
@@ -34,15 +38,23 @@ export default function ApprovalModal({
   entry,
   onApprove,
   onReject,
+  loading = false,
+  processingEntry,
+  processingAction,
 }: ApprovalModalProps) {
 
-  const handleApprove = () => {
-    if (entry) onApprove(entry);
+  const handleApprove = async () => {
+    if (entry && !loading) await onApprove(entry);
   };
 
-  const handleReject = () => {
-    if (entry) onReject(entry);
+  const handleReject = async () => {
+    if (entry && !loading) await onReject(entry);
   };
+  
+  // Check if this specific entry is being processed
+  const isProcessingThisEntry = (entry && processingEntry === `${entry.entry_type}-${entry.id}`) || false;
+  const isApprovingThisEntry = isProcessingThisEntry && processingAction === 'approve';
+  const isRejectingThisEntry = isProcessingThisEntry && processingAction === 'reject';
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "N/A";
@@ -249,13 +261,29 @@ export default function ApprovalModal({
         </ModalBody>
 
         <ModalFooter>
-          <RejectButton onClick={handleReject}>
-            <XCircle size={16} />
-            Reject
+          <RejectButton 
+            onClick={handleReject} 
+            disabled={loading}
+            isProcessing={isRejectingThisEntry}
+          >
+            {isRejectingThisEntry ? (
+              <LoaderIcon size={16} />
+            ) : (
+              <XCircle size={16} />
+            )}
+            {isRejectingThisEntry ? "Rejecting..." : "Reject"}
           </RejectButton>
-          <ApproveButton onClick={handleApprove}>
-            <Check size={16} />
-            Approve
+          <ApproveButton 
+            onClick={handleApprove} 
+            disabled={loading}
+            isProcessing={isApprovingThisEntry}
+          >
+            {isApprovingThisEntry ? (
+              <LoaderIcon size={16} />
+            ) : (
+              <Check size={16} />
+            )}
+            {isApprovingThisEntry ? "Approving..." : "Approve"}
           </ApproveButton>
         </ModalFooter>
       </ModalContent>
@@ -426,30 +454,6 @@ const FileValue = styled.span`
   font-size: 0.9rem;
 `;
 
-const TextArea = styled.textarea`
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid rgba(56, 68, 68, 0.2);
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  font-family: ${bodyText.style.fontFamily};
-  font-size: 0.9rem;
-  color: rgba(31, 41, 55, 0.9);
-  resize: vertical;
-  min-height: 100px;
-  transition: all 0.3s ease;
-
-  &:focus {
-    outline: none;
-    border-color: rgba(4, 103, 112, 0.5);
-    box-shadow: 0 0 0 3px rgba(4, 103, 112, 0.1);
-    background: rgba(255, 255, 255, 0.95);
-  }
-
-  &::placeholder {
-    color: rgba(107, 114, 128, 0.6);
-  }
-`;
 
 const ModalFooter = styled.div`
   display: flex;
@@ -459,24 +463,8 @@ const ModalFooter = styled.div`
   border-top: 1px solid rgba(56, 68, 68, 0.1);
 `;
 
-const CancelButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  border: 1px solid rgba(107, 114, 128, 0.3);
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  font-family: ${bodyText.style.fontFamily};
-  font-weight: 500;
-  color: rgba(107, 114, 128, 0.8);
-  cursor: pointer;
-  transition: all 0.3s ease;
 
-  &:hover {
-    background: rgba(107, 114, 128, 0.1);
-    border-color: rgba(107, 114, 128, 0.5);
-  }
-`;
-
-const ApproveButton = styled.button`
+const ApproveButton = styled.button<{ disabled?: boolean; isProcessing?: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -494,14 +482,29 @@ const ApproveButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
 
+  ${props => props.disabled && `
+    opacity: 0.6;
+    cursor: not-allowed;
+  `}
+  
+  ${props => props.isProcessing && `
+    background: linear-gradient(
+      135deg,
+      rgba(156, 163, 175),
+      rgba(107, 114, 128)
+    );
+  `}
+
   &:hover {
-    background: linear-gradient(135deg, rgba(74, 222, 128, 0.95), rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 1));
-    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
+    ${props => !props.disabled && !props.isProcessing && `
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.95), rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 1));
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    `}
   }
 `;
 
-const RejectButton = styled.button`
+const RejectButton = styled.button<{ disabled?: boolean; isProcessing?: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -519,13 +522,41 @@ const RejectButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
 
-  &:hover {
+  ${props => props.disabled && `
+    opacity: 0.6;
+    cursor: not-allowed;
+  `}
+  
+  ${props => props.isProcessing && `
     background: linear-gradient(
       135deg,
-      rgba(248, 113, 113, 0.95),
-      rgba(239, 68, 68, 0.9),
-      rgba(220, 38, 38, 1)
+      rgba(156, 163, 175),
+      rgba(107, 114, 128)
     );
-    transform: translateY(-1px);
+  `}
+
+  &:hover {
+    ${props => !props.disabled && !props.isProcessing && `
+      background: linear-gradient(
+        135deg,
+        rgba(248, 113, 113, 0.95),
+        rgba(239, 68, 68, 0.9),
+        rgba(220, 38, 38, 1)
+      );
+      transform: translateY(-1px);
+    `}
+  }
+`;
+
+const LoaderIcon = styled(Loader2)`
+  animation: spin 1s linear infinite;
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 `;

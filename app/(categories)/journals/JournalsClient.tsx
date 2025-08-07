@@ -111,7 +111,7 @@ export default function JournalsClient({ data, facultyData }: JournalsClientProp
         issn_number: formData.issn_number,
         indexed_in: formData.indexed_in,
         link: formData.link,
-        is_verified: 'PENDING' as 'PENDING',
+        is_verified: 'PENDING' as const,
       };
       
       if (!formData.id) {

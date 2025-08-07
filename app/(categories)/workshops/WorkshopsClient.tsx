@@ -95,7 +95,7 @@ export default function WorkshopsClient({ data, facultyData }: WorkshopsClientPr
         type: formData.type,
         number_of_days: formData.number_of_days,
         organized_by: formData.organized_by,
-        is_verified: 'PENDING' as 'PENDING'
+        is_verified: 'PENDING' as const
       };
       
       if (!formData.id) {

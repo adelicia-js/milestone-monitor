@@ -24,7 +24,7 @@ interface PasswordValidation {
 }
 
 export default function PasswordModal({ isOpen, onClose, loading: externalLoading }: PasswordModalProps) {
-  const { updatePassword, loading, error, success } = useSettings();
+  const { updatePassword, loading } = useSettings();
   
   // Use external loading if provided, otherwise use hook's loading state
   const isLoading = externalLoading !== undefined ? externalLoading : loading.password;
@@ -33,7 +33,6 @@ export default function PasswordModal({ isOpen, onClose, loading: externalLoadin
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
 
   const validation: PasswordValidation = {
     length: newPassword.length >= 6,
@@ -43,8 +42,6 @@ export default function PasswordModal({ isOpen, onClose, loading: externalLoadin
   const isFormValid = validation.length && validation.match;
 
   const handlePasswordChange = async () => {
-    setLocalError(null);
-
     if (!newPassword.trim()) {
       toast.error("Please enter a new password");
       return;
@@ -79,7 +76,6 @@ export default function PasswordModal({ isOpen, onClose, loading: externalLoadin
     setConfirmPassword("");
     setShowPassword(false);
     setShowConfirmPassword(false);
-    setLocalError(null);
     onClose();
   };
 

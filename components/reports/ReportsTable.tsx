@@ -100,7 +100,15 @@ export default function ReportsTable({
             </EmptySubtext>
           </EmptyState>
         ) : (
-          <TableWrapper>
+          <>
+            <TableHeaderArea>
+              <TableTitle>Report Data</TableTitle>
+              <ExportButton onClick={() => setIsExportModalOpen(true)}>
+                <Download size={18} />
+                Export
+              </ExportButton>
+            </TableHeaderArea>
+            <TableWrapper>
             <Table>
               <TableHead>
                 <TableRow>
@@ -146,13 +154,7 @@ export default function ReportsTable({
               </TableBody>
             </Table>
           </TableWrapper>
-        )}
-
-        {tableData.length > 0 && (
-          <FloatingExportButton onClick={() => setIsExportModalOpen(true)}>
-            <Download size={20} />
-            Export
-          </FloatingExportButton>
+          </>
         )}
       </TableCard>
 
@@ -181,7 +183,7 @@ const TableCard = styled.div`
 const TableWrapper = styled.div`
   flex: 1;
   padding: 0;
-  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
+  box-shadow: 0 4px 15px rgba(4, 103, 112, 0.15);
   backdrop-filter: blur(10px);
   overflow: auto;
 
@@ -363,37 +365,59 @@ const EmptySubtext = styled.p`
   margin: 0;
 `;
 
-const FloatingExportButton = styled.button`
-  position: absolute;
-  bottom: 1.5rem;
-  right: 1.5rem;
+const TableHeaderArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(56, 68, 68, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(4, 103, 112, 0.05),
+    rgba(6, 95, 70, 0.05)
+  );
+`;
+
+const TableTitle = styled.h3`
+  font-family: ${bodyText.style.fontFamily};
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(4, 103, 112, 0.9);
+  margin: 0;
+`;
+
+const ExportButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1.25rem;
   background: linear-gradient(
     135deg,
     rgba(0, 131, 143, 0.2),
     rgba(0, 131, 143, 1)
   );
   color: white;
-  border-radius: 1.5rem;
+  border-radius: 0.75rem;
   font-family: ${bodyText.style.fontFamily};
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
 
-  &:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.4);
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 131, 143, 0.3);
+    background: linear-gradient(
+      135deg,
+      rgba(0, 131, 143, 0.3),
+      rgba(0, 131, 143, 1)
+    );
   }
 
   &:active {
-    transform: translateY(-1px) scale(1);
+    transform: translateY(0);
   }
 
   &:focus {

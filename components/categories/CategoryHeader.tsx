@@ -39,12 +39,12 @@ const HeaderWrapper = styled.div`
   align-items: center;
   gap: 1.5rem;
   width: fit-content;
-  
+
   @media (max-width: 1024px) {
     gap: 1rem;
     top: 1rem;
   }
-  
+
   @media (max-width: 768px) {
     gap: 0.75rem;
     top: 0.75rem;
@@ -59,15 +59,15 @@ const HeaderText = styled(GenericHeader)`
   text-transform: none;
   letter-spacing: 0;
   margin: 0;
-  
+
   @media (max-width: 1024px) {
     font-size: 1rem;
   }
-  
+
   @media (max-width: 768px) {
     font-size: 0.9rem;
   }
-  
+
   @media (max-width: 480px) {
     font-size: 0.85rem;
   }
@@ -81,9 +81,9 @@ const AddButton = styled.button`
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background: linear-gradient(
-    120deg,
-    rgba(0, 131, 143, 0.65),
-    rgba(179, 217, 217, 0.7)
+    135deg,
+    rgba(0, 131, 143, 0.2),
+    rgba(0, 131, 143, 1)
   );
   border: 0.1px solid rgba(0, 131, 143, 0.27);
   color: white;
@@ -94,12 +94,12 @@ const AddButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  
+
   @media (max-width: 1024px) {
     padding: 0.6rem 1.2rem;
     gap: 0.4rem;
   }
-  
+
   @media (max-width: 768px) {
     padding: 0.5rem 1rem;
     gap: 0.3rem;
@@ -108,11 +108,6 @@ const AddButton = styled.button`
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15);
-    background: linear-gradient(
-      135deg,
-      rgba(0, 131, 143, 0.2),
-      rgba(0, 131, 143, 1)
-    );
   }
 
   &:active {
@@ -123,15 +118,15 @@ const AddButton = styled.button`
 const ButtonText = styled.span`
   font-size: 0.9rem;
   letter-spacing: 0.3px;
-  
+
   @media (max-width: 1024px) {
     font-size: 0.85rem;
   }
-  
+
   @media (max-width: 768px) {
     font-size: 0.8rem;
   }
-  
+
   @media (max-width: 480px) {
     font-size: 0.75rem;
   }

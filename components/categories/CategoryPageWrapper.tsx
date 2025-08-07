@@ -153,24 +153,18 @@ const Layout = styled.main`
   z-index: 0;
   position: absolute;
   height: 100vh;
-  width: calc(100vw - 8vw);
+  width: 92vw;
   left: 8vw;
   padding: 1rem;
   background-color: rgba(140, 242, 233, 0.35);
   box-sizing: border-box;
   
   @media (max-width: 1024px) {
-    width: calc(100vw - 8vw - 2rem);
     padding: 0.75rem;
-    top: 60px; /* Account for advisory message */
-    height: calc(100vh - 60px);
   }
   
   @media (max-width: 768px) {
-    width: calc(100vw - 8vw - 1rem);
     padding: 0.5rem;
-    top: 50px;
-    height: calc(100vh - 50px);
   }
 `;
 

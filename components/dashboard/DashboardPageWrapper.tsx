@@ -11,7 +11,7 @@ export default function DashboardPageWrapper() {
   return (
     <Layout>
       <CardContainer1>
-      <DashboardHeader />
+        <DashboardHeader />
         <CardContainer2>
           <ProfileCard />
           <StatsCard />
@@ -36,8 +36,17 @@ const CardContainer1 = styled.section`
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 3rem;
   gap: 1.5rem;
+
+  @media (min-width: 1024px) {
+    margin-top: 1rem;
+    padding: 2rem;
+  }
+
+  @media (min-width: 1280px) {
+    margin-top: 0;
+    padding: 3rem;
+  }
 `;
 
 const CardContainer2 = styled.section`

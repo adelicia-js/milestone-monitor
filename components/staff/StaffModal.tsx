@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { X, Save, User, Mail, Phone, Building, Shield, Key } from "lucide-react";
 import { Faculty } from "@/lib/types";
-import { DEPARTMENTS } from "@/lib/constants/departments";
 
 const bodyText = Inter({
   weight: "400",
@@ -32,11 +31,9 @@ export default function StaffModal({
   isLoading = false
 }: StaffModalProps) {
   const [formData, setFormData] = useState({
-    faculty_id: '',
     faculty_name: '',
     faculty_email: '',
     faculty_phone: '',
-    faculty_department: defaultDepartment,
     faculty_role: 'faculty',
     password: ''
   });
@@ -44,21 +41,17 @@ export default function StaffModal({
   useEffect(() => {
     if (mode === 'edit' && initialData) {
       setFormData({
-        faculty_id: initialData.faculty_id || '',
         faculty_name: initialData.faculty_name || '',
         faculty_email: initialData.faculty_email || '',
         faculty_phone: initialData.faculty_phone || '',
-        faculty_department: initialData.faculty_department || defaultDepartment,
         faculty_role: initialData.faculty_role || 'faculty',
         password: '' // Don't populate password for security
       });
     } else {
       setFormData({
-        faculty_id: '',
         faculty_name: '',
         faculty_email: '',
         faculty_phone: '',
-        faculty_department: defaultDepartment,
         faculty_role: 'faculty',
         password: ''
       });
@@ -71,7 +64,21 @@ export default function StaffModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    if (mode === 'edit' && initialData) {
+      // For edit mode, include the existing faculty_id and department
+      onSubmit({ 
+        ...formData, 
+        faculty_id: initialData.faculty_id,
+        faculty_department: initialData.faculty_department
+      });
+    } else {
+      // For add mode, include the default department (faculty_id will be auto-generated)
+      onSubmit({ 
+        ...formData, 
+        faculty_department: defaultDepartment 
+      } as Faculty & { password?: string });
+    }
   };
 
   if (!isOpen) return null;
@@ -90,21 +97,20 @@ export default function StaffModal({
 
         <Form onSubmit={handleSubmit}>
           <FormGrid>
-            <FormGroup>
-              <Label>
-                <User size={16} />
-                Faculty ID
-                <Required>*</Required>
-              </Label>
-              <Input
-                type="text"
-                value={formData.faculty_id}
-                onChange={(e) => handleInputChange('faculty_id', e.target.value)}
-                placeholder="Enter faculty ID"
-                required
-                disabled={mode === 'edit'} // Don't allow editing ID
-              />
-            </FormGroup>
+            {mode === 'edit' && initialData && (
+              <FormGroup>
+                <Label>
+                  <User size={16} />
+                  Faculty ID
+                </Label>
+                <Input
+                  type="text"
+                  value={initialData.faculty_id}
+                  disabled
+                  style={{ backgroundColor: '#f5f5f5', color: '#666' }}
+                />
+              </FormGroup>
+            )}
 
             <FormGroup>
               <Label>
@@ -153,19 +159,14 @@ export default function StaffModal({
               <Label>
                 <Building size={16} />
                 Department
-                <Required>*</Required>
               </Label>
-              <Select
-                value={formData.faculty_department}
-                onChange={(e) => handleInputChange('faculty_department', e.target.value)}
-                required
-              >
-                {DEPARTMENTS.map((dept) => (
-                  <option key={dept} value={dept}>
-                    {dept}
-                  </option>
-                ))}
-              </Select>
+              <Input
+                type="text"
+                value={defaultDepartment}
+                disabled
+                style={{ backgroundColor: '#f5f5f5', color: '#666' }}
+                placeholder="Auto-assigned from HOD department"
+              />
             </FormGroup>
 
             <FormGroup>

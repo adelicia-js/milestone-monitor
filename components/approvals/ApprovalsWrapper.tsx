@@ -26,11 +26,15 @@ const bodyText = Inter({
 interface ApprovalsWrapperProps {
   pendingData: PendingData;
   userData: Faculty;
-  onApprove: (data: ApprovalEntry) => void;
-  onReject: (data: ApprovalEntry) => void;
+  onApprove: (data: ApprovalEntry) => Promise<void>;
+  onReject: (data: ApprovalEntry) => Promise<void>;
   success?: string | null;
   error?: string | null;
   onClearMessages?: () => void;
+  loading?: boolean;
+  processingEntry?: string | null;
+  processingAction?: 'approve' | 'reject' | null;
+  tableLoading?: boolean;
 }
 
 type TabType = "all" | "conferences" | "journals" | "patents" | "workshops";
@@ -45,14 +49,18 @@ interface TabConfig {
 
 export default function ApprovalsWrapper({
   pendingData,
-  userData,
+  userData: _, // eslint-disable-line @typescript-eslint/no-unused-vars
   onApprove,
   onReject,
   success,
   error,
   onClearMessages,
+  loading,
+  processingEntry,
+  processingAction,
+  tableLoading,
 }: ApprovalsWrapperProps) {
-  const [activeTab, setActiveTab] = useState<TabType>("all");
+  const [activeTab, setActiveTab] = useState<TabType>("conferences");
   const [selectedEntry, setSelectedEntry] = useState<ApprovalEntry | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -112,14 +120,16 @@ export default function ApprovalsWrapper({
     setIsModalOpen(true);
   };
 
-  const handleApprove = (entry: ApprovalEntry) => {
-    onApprove(entry);
+  const handleApprove = async (entry: ApprovalEntry) => {
+    await onApprove(entry);
+    // Only close modal after operation completes
     setIsModalOpen(false);
     setSelectedEntry(null);
   };
 
-  const handleReject = (entry: ApprovalEntry) => {
-    onReject(entry);
+  const handleReject = async (entry: ApprovalEntry) => {
+    await onReject(entry);
+    // Only close modal after operation completes
     setIsModalOpen(false);
     setSelectedEntry(null);
   };
@@ -187,6 +197,7 @@ export default function ApprovalsWrapper({
                 ? "No pending entries found"
                 : `No pending ${activeTab} found`
             }
+            loading={tableLoading}
           />
         </ContentWrapper>
       </Container>
@@ -200,6 +211,9 @@ export default function ApprovalsWrapper({
         entry={selectedEntry}
         onApprove={handleApprove}
         onReject={handleReject}
+        loading={loading}
+        processingEntry={processingEntry}
+        processingAction={processingAction}
       />
     </Layout>
     </>

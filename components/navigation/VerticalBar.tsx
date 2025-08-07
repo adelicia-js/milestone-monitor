@@ -234,23 +234,21 @@ const IconWrapper = styled.div`
   justify-content: center;
 
   svg {
-    width: 2.5rem;
-    height: 2.5rem;
-
-    @media (min-width: 640px) {
-      width: 40px;
-      height: 40px;
+    @media (min-width: 1024px) {
+      width: 1.5rem;
+      height: 1.5rem;
     }
 
-    @media (min-width: 768px) {
-      width: 1.8rem;
-      height: 1.8rem;
+    @media (min-width: 1280px) {
+      width: 2rem;
+      height: 2rem;
     }
   }
 `;
 
 const NavText = styled.p`
   margin: 0;
+  font-size: clamp(0.75rem, 0.5278rem + 0.3472vw, 0.875rem);
 `;
 
 const SubMenu = styled.div`

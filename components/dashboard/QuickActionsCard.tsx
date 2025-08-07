@@ -30,15 +30,15 @@ export default function QuickActionsCard() {
   const handleAddConference = () => {
     router.push("/conferences?action=add");
   };
-  
+
   const handleAddJournal = () => {
     router.push("/journals?action=add");
   };
-  
+
   const handleAddPatent = () => {
     router.push("/patents?action=add");
   };
-  
+
   const handleAddWorkshop = () => {
     router.push("/workshops?action=add");
   };
@@ -141,8 +141,6 @@ const ActionButton = styled.button`
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 100px;
-  height: 100px;
   flex: 0 0 auto;
 
   &:hover {
@@ -154,6 +152,16 @@ const ActionButton = styled.button`
 
   &:active {
     transform: translateY(-1px);
+  }
+
+  @media (min-width: 1024px) {
+    width: 90px;
+    height: 80px;
+  }
+
+  @media (min-width: 1280px) {
+    width: 100px;
+    height: 100px;
   }
 `;
 
@@ -202,7 +210,7 @@ const PlusIcon = styled.div`
 `;
 
 const ActionLabel = styled.span`
-  font-size: 0.75rem;
+  font-size: clamp(0.6rem, 0.3333rem + 0.4167vw, 0.75rem);
   font-weight: 500;
   color: rgba(4, 103, 112, 0.99);
   letter-spacing: 0.02emI;
@@ -211,4 +219,4 @@ const ActionLabel = styled.span`
   max-width: 80px;
   letter-spacing: 0.5px;
   font-family: ${bodyText.style.fontFamily};
-  `;
+`;

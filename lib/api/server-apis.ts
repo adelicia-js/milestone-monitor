@@ -2,7 +2,7 @@
 // These use createServerComponentClient with proper cookie context
 
 import { ServerApiClient } from './server-client';
-import { Faculty, Workshop, Conference, Journal, Patent, ApprovalEntry, ApiResponse } from '../types';
+import { Faculty, Workshop, Conference, Journal, Patent, ApiResponse } from '../types';
 
 // Server-side Faculty API
 export class ServerFacultyApi extends ServerApiClient {

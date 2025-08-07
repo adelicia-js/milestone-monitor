@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     const { data: facultyRecord, error: facultyInsertError } = await supabaseAdmin
       .from('faculty')
       .insert({
-        faculty_id: authUser.user.id, // Use the new auth user's ID
+        faculty_id: staffData.faculty_id, // Use the custom faculty ID passed from the form
         faculty_name: staffData.faculty_name,
         faculty_department: staffData.faculty_department,
         faculty_role: staffData.faculty_role,

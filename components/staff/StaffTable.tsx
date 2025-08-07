@@ -26,27 +26,29 @@ export default function StaffTable({
   onEdit,
   onDelete,
   loading,
-  error
+  error,
 }: StaffTableProps) {
   const getRoleIcon = (role: string) => {
     switch (role?.toLowerCase()) {
-      case 'hod':
-        return <Crown size={16} color="#d97706" style={{ marginBottom: '1%' }}/>;
-      case 'editor':
-        return <PencilRulerIcon size={16} color="#059669" style={{ marginBottom: '1%' }}/>;
+      case "hod":
+        return <Crown color="#d97706" style={{ marginBottom: "1%" }} />;
+      case "editor":
+        return (
+          <PencilRulerIcon color="#059669" style={{ marginBottom: "1%" }} />
+        );
       default:
-        return <User size={18} color="#6b7280" style={{ marginBottom: '1%' }}/>;
+        return <User color="#6b7280" style={{ marginBottom: "1%" }} />;
     }
   };
 
   const getRoleColor = (role: string) => {
     switch (role?.toLowerCase()) {
-      case 'hod':
-        return '#d97706';
-      case 'editor':
-        return '#059669';
+      case "hod":
+        return "#d97706";
+      case "editor":
+        return "#059669";
       default:
-        return '#6b7280';
+        return "#6b7280";
     }
   };
 
@@ -54,7 +56,7 @@ export default function StaffTable({
     return (
       <TableCard>
         <LoadingContainer>
-          <Loader customHeight="h-fit"/>
+          <Loader customHeight="h-fit" />
           <LoadingText>Loading staff data...</LoadingText>
         </LoadingContainer>
       </TableCard>
@@ -78,7 +80,10 @@ export default function StaffTable({
         <EmptyState>
           <EmptyIcon>👥</EmptyIcon>
           <EmptyMessage>No staff members found</EmptyMessage>
-          <EmptySubtext>Add your first staff member using the &quot;Add Staff&quot; button above.</EmptySubtext>
+          <EmptySubtext>
+            Add your first staff member using the &quot;Add Staff&quot; button
+            above.
+          </EmptySubtext>
         </EmptyState>
       </TableCard>
     );
@@ -111,15 +116,15 @@ export default function StaffTable({
                 <TableCell>
                   <EmailText>{staff.faculty_email}</EmailText>
                 </TableCell>
-                <TableCell>
-                  {staff.faculty_phone || 'N/A'}
-                </TableCell>
+                <TableCell>{staff.faculty_phone || "N/A"}</TableCell>
                 <TableCell>
                   <DepartmentBadge>{staff.faculty_department}</DepartmentBadge>
                 </TableCell>
                 <TableCell>
                   <RoleWrapper>
-                    {getRoleIcon(staff.faculty_role)}
+                    <RoleIconWrapper>
+                      {getRoleIcon(staff.faculty_role)}
+                    </RoleIconWrapper>
                     <RoleText color={getRoleColor(staff.faculty_role)}>
                       {staff.faculty_role?.toUpperCase()}
                     </RoleText>
@@ -127,15 +132,15 @@ export default function StaffTable({
                 </TableCell>
                 <TableCell>
                   <ActionButtons>
-                    <ActionButton 
-                      onClick={() => onEdit(staff)} 
+                    <ActionButton
+                      onClick={() => onEdit(staff)}
                       variant="edit"
                       title="Edit Staff"
                     >
                       <Edit size={16} />
                     </ActionButton>
-                    <ActionButton 
-                      onClick={() => onDelete(staff.faculty_id)} 
+                    <ActionButton
+                      onClick={() => onDelete(staff.faculty_id)}
                       variant="delete"
                       title="Delete Staff"
                     >
@@ -157,8 +162,6 @@ const TableCard = styled.div`
   border: 0.1px solid rgba(56, 68, 68, 0.28);
   border-radius: 1rem;
   box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
-  background-color: rgba(244, 253, 252, 0.75);
-  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -167,6 +170,38 @@ const TableCard = styled.div`
 const TableWrapper = styled.div`
   flex: 1;
   overflow: auto;
+  background-color: rgba(244, 253, 252, 0.75);
+
+  /* Custom scrollbar styling similar to other tables */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 131, 143, 0.1);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 131, 143, 0.25);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 131, 143, 0.4);
+  }
+
+  /* Firefox scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 131, 143, 0.25) rgba(0, 131, 143, 0.1);
+  scroll-behavior: smooth;
+
+  /* Ensure smooth scrolling on smaller screens */
+  @media (max-width: 1024px) {
+    overflow-x: auto;
+  }
 `;
 
 const Table = styled.table`
@@ -178,7 +213,6 @@ const TableHead = styled.thead`
   position: sticky;
   top: 0;
   background: rgba(244, 253, 252, 0.95);
-  backdrop-filter: blur(10px);
   z-index: 1;
 `;
 
@@ -206,11 +240,18 @@ const TableHeaderCell = styled.th`
 `;
 
 const TableCell = styled.td`
-  padding: 1rem;
   font-family: ${bodyText.style.fontFamily};
-  font-size: 0.9rem;
   color: rgba(31, 41, 55, 0.9);
   vertical-align: middle;
+  font-size: clamp(0.75rem, 0.5278rem + 0.3472vw, 0.875rem);
+
+  @media (min-width: 1024px) {
+    padding: 0.75rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 1rem;
+  }
 `;
 
 const FacultyId = styled.span`
@@ -226,18 +267,27 @@ const StaffName = styled.span`
 
 const EmailText = styled.span`
   color: rgba(107, 114, 128, 0.8);
-  font-size: 0.85rem;
 `;
 
 const DepartmentBadge = styled.span`
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  background: linear-gradient(135deg, rgba(4, 103, 112, 0.1), rgba(6, 95, 70, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(4, 103, 112, 0.1),
+    rgba(6, 95, 70, 0.1)
+  );
   color: rgba(4, 103, 112, 0.9);
   border: 1px solid rgba(4, 103, 112, 0.2);
   border-radius: 0.5rem;
-  font-size: 0.8rem;
   font-weight: 500;
+
+  @media (min-width: 1024px) {
+    padding: 0.25rem 0.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0.25rem 0.75rem;
+  }
 `;
 
 const RoleWrapper = styled.div`
@@ -246,8 +296,23 @@ const RoleWrapper = styled.div`
   gap: 0.5rem;
 `;
 
+const RoleIconWrapper = styled.span`
+  & svg {
+    @media (min-width: 1024px) {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    @media (min-width: 1280px) {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+`;
+
 const RoleText = styled.span<{ color: string }>`
-  color: ${props => props.color};
+  font-size: clamp(0.75rem, 0.5278rem + 0.3472vw, 0.875rem);
+  color: ${(props) => props.color};
   font-weight: 600;
   font-size: 0.85rem;
 `;
@@ -257,7 +322,7 @@ const ActionButtons = styled.div`
   gap: 0.5rem;
 `;
 
-const ActionButton = styled.button<{ variant: 'edit' | 'delete' }>`
+const ActionButton = styled.button<{ variant: "edit" | "delete" }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -267,8 +332,10 @@ const ActionButton = styled.button<{ variant: 'edit' | 'delete' }>`
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  
-  ${props => props.variant === 'edit' && `
+
+  ${(props) =>
+    props.variant === "edit" &&
+    `
    background: linear-gradient(135deg, rgba(122, 194, 226, 0.8), rgba(37, 99, 235, 0.8));
     color: white;
     
@@ -278,8 +345,10 @@ const ActionButton = styled.button<{ variant: 'edit' | 'delete' }>`
       box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
   `}
-  
-  ${props => props.variant === 'delete' && `
+
+  ${(props) =>
+    props.variant === "delete" &&
+    `
     background: linear-gradient(135deg, rgba(228, 150, 148, 0.8), rgba(220, 38, 38, 0.8));
     color: white;
     

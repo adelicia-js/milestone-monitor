@@ -8,7 +8,7 @@ import {
   GenericHeader,
   GenericHeaderContainer,
   LoadingContainer,
-  LoadingText
+  LoadingText,
 } from "@/components/ui/GenericStyles";
 import Loader from "@/components/ui/Loader";
 import { useGetUser } from "@/lib/hooks/useGetUser";
@@ -38,12 +38,12 @@ export default function ProfileCard(props: ProfileCardProps) {
 
     const supabase = createClientComponentClient();
     const facultyId = userDetails.faculty_id;
-    
+
     // Try the most common extension first (jpg)
     const { data } = supabase.storage
-      .from('staff-media')
+      .from("staff-media")
       .getPublicUrl(`profilePictures/${facultyId}.jpg`);
-      
+
     if (data.publicUrl) {
       setProfileImageUrl(data.publicUrl);
       setHasProfileImage(true);
@@ -64,8 +64,8 @@ export default function ProfileCard(props: ProfileCardProps) {
         <GenericHeaderContainer>
           <GenericHeader>Your Profile</GenericHeader>
         </GenericHeaderContainer>
-        <LoadingContainer style={{width: "100%"}}>
-          <Loader customHeight="h-fit"/>
+        <LoadingContainer style={{ width: "100%" }}>
+          <Loader customHeight="h-fit" />
           <LoadingText>Loading profile details...</LoadingText>
         </LoadingContainer>
       </Card>
@@ -74,8 +74,14 @@ export default function ProfileCard(props: ProfileCardProps) {
 
   const profileDetails = [
     { label: "Name", value: userDetails?.faculty_name ?? "New Faculty" },
-    { label: "Department", value: userDetails?.faculty_department ?? "General" },
-    { label: "Faculty Role", value: userDetails?.faculty_role.toUpperCase() ?? "faculty" },
+    {
+      label: "Department",
+      value: userDetails?.faculty_department ?? "General",
+    },
+    {
+      label: "Faculty Role",
+      value: userDetails?.faculty_role.toUpperCase() ?? "faculty",
+    },
     { label: "Faculty ID", value: userDetails?.faculty_id ?? "TBD" },
   ];
 
@@ -86,8 +92,8 @@ export default function ProfileCard(props: ProfileCardProps) {
       </GenericHeaderContainer>
       <ProfilePictureCard>
         {hasProfileImage && profileImageUrl ? (
-          <ProfileImage 
-            src={profileImageUrl} 
+          <ProfileImage
+            src={profileImageUrl}
             alt="Profile picture"
             onError={() => {
               setHasProfileImage(false);
@@ -122,19 +128,6 @@ const Card = styled(GenericCard)`
   align-items: center;
   padding: 1.5rem;
   gap: 1rem;
-
-  /* Media Queries */
-  @media (max-width: 600px) {
-    /* Mobile styles */
-  }
-
-  @media (min-width: 601px) and (max-width: 1024px) {
-    /* Tablet styles */
-  }
-
-  @media (min-width: 1025px) {
-    /* Desktop styles */
-  }
 `;
 
 const ProfilePictureCard = styled.div`
@@ -155,16 +148,11 @@ const ProfilePictureCard = styled.div`
     0 0.1px 2px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   border: 0.1px solid rgba(0, 131, 143, 0.27);
 
-  /* Media Queries */
-  @media (max-width: 600px) {
-    /* Mobile styles */
+  @media (min-width: 1024px) {
+    height: 70%;
   }
 
-  @media (min-width: 601px) and (max-width: 1024px) {
-    height: 100%;
-  }
-
-  @media (min-width: 1025px) {
+  @media (min-width: 1280px) {
     height: 80%;
   }
 `;
@@ -174,19 +162,6 @@ const ProfileImage = styled.img`
   height: 100%;
   object-fit: cover;
   border-radius: 0.5rem;
-
-  /* Media Queries */
-  @media (max-width: 600px) {
-    /* Mobile styles */
-  }
-
-  @media (min-width: 601px) and (max-width: 1024px) {
-    /* Tablet styles */
-  }
-
-  @media (min-width: 1025px) {
-    /* Desktop styles */
-  }
 `;
 
 const PlaceholderContainer = styled.div`
@@ -197,41 +172,22 @@ const PlaceholderContainer = styled.div`
   justify-content: center;
   background: rgba(20, 154, 184, 0.1);
   border-radius: 0.5rem;
-
-  /* Media Queries */
-  @media (max-width: 600px) {
-    /* Mobile styles */
-  }
-
-  @media (min-width: 601px) and (max-width: 1024px) {
-    /* Tablet styles */
-  }
-
-  @media (min-width: 1025px) {
-    /* Desktop styles */
-  }
 `;
 
 const ProfileDetailsCard = styled.div`
   margin-top: 1.5rem;
   height: 100%;
-  width: 60%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   padding: 0 1rem;
 
-  /* Media Queries */
-  @media (max-width: 600px) {
-    /* Mobile styles */
+  @media (min-width: 1024px) {
+    width: 70%;
   }
 
-  @media (min-width: 601px) and (max-width: 1024px) {
-    /* Tablet styles */
-  }
-
-  @media (min-width: 1025px) {
-    /* Desktop styles */
+  @media (min-width: 1280px) {
+    width: 80%;
   }
 `;
 
@@ -257,36 +213,19 @@ const ProfileDetailTextBox = styled.div`
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   border: 0.1px solid rgba(0, 131, 143, 0.27);
 
-  /* Media Queries */
-  @media (max-width: 600px) {
-    /* Mobile styles */
+  @media (min-width: 1024px) {
+    grid-template-columns: 0.8fr 1fr;
   }
 
-  @media (min-width: 601px) and (max-width: 1024px) {
-    /* Tablet styles */
-  }
-
-  @media (min-width: 1025px) {
-    /* Desktop styles */
+  @media (min-width: 1280px) {
+    grid-template-columns: 0.6fr 1.2fr;
   }
 `;
 
 const ProfileDetailText = styled.span`
   font-family: ${bodyText.style.fontFamily};
   color: rgba(0, 131, 143, 0.6);
-
-  /* Media Queries */
-  @media (max-width: 600px) {
-    /* Mobile styles */
-  }
-
-  @media (min-width: 601px) and (max-width: 1024px) {
-    /* Tablet styles */
-  }
-
-  @media (min-width: 1025px) {
-    font-size: 0.85rem;
-  }
+  font-size: clamp(0.75rem, 0.3056rem + 0.6944vw, 1rem);
 `;
 
 const ProfileValueText = styled(ProfileDetailText)`

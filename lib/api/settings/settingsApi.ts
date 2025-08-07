@@ -100,7 +100,7 @@ export class SettingsApi extends ApiClient {
       const supabase = createClientComponentClient();
 
       // Update password using Supabase client
-      const { data, error } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         password: passwordData.newPassword
       });
 
@@ -145,7 +145,7 @@ export class SettingsApi extends ApiClient {
       const fileName = `profilePictures/${facultyId}.${fileExt}`;
 
       // Check for existing files and delete them (matching old behavior)
-      const { data: existingFiles, error: listError } = await supabase.storage
+      const { data: existingFiles } = await supabase.storage
         .from('staff-media')
         .list('profilePictures', {
           limit: 100,
@@ -161,7 +161,7 @@ export class SettingsApi extends ApiClient {
       }
 
       // Upload to Supabase storage
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('staff-media')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -225,8 +225,8 @@ export class SettingsApi extends ApiClient {
 
     // Validate phone
     if (updates.faculty_phone !== undefined && updates.faculty_phone.trim()) {
-      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-      if (!phoneRegex.test(updates.faculty_phone.replace(/[\s\-\(\)]/g, ''))) {
+      const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
+      if (!phoneRegex.test(updates.faculty_phone.replace(/[\s\-()]/g, ''))) {
         return { isValid: false, error: 'Please enter a valid phone number' };
       }
     }

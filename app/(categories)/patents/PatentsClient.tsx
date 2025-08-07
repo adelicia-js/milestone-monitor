@@ -113,7 +113,7 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
         application_no: formData.application_no,
         status: formData.status,
         patent_link: formData.patent_link,
-        is_verified: 'PENDING' as 'PENDING',
+        is_verified: 'PENDING' as const,
       };
       
       if (!formData.id) {

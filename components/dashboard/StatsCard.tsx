@@ -33,7 +33,7 @@ export default function StatsCard() {
           <GenericHeaderContainer>
             <GenericHeader>Recent Activity</GenericHeader>
           </GenericHeaderContainer>
-          <RecentActivityCard/>
+          <RecentActivityCard />
           <LeftButton onClick={() => setNextView(0)}>
             <ChevronLeft />
           </LeftButton>
@@ -97,11 +97,6 @@ const IconWrapper = styled.div`
 
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  & svg {
-    width: 2rem;
-    height: 2rem;
-  }
-
   &:hover {
     color: rgba(0, 131, 143, 0.99);
     background: linear-gradient(
@@ -125,6 +120,20 @@ const IconWrapper = styled.div`
 
   &:hover svg {
     animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @media (min-width: 1024px) {
+    & svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    & svg {
+      width: 2rem;
+      height: 2rem;
+    }
   }
 `;
 

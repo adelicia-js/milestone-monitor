@@ -145,18 +145,32 @@ const ActivityWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 2.5rem;
+
+  @media (min-width: 1024px) {
+    padding: 1.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 2.5rem;
+  }
 `;
 
 const ActivityList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 0.5rem;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
   scrollbar-gutter: stable;
+
+  @media (min-width: 1024px) {
+    padding: 1.2rem 0.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0.5rem;
+  }
 
   /* Hide scrollbar by default, show on hover when there's overflow */
   &::-webkit-scrollbar {
@@ -254,7 +268,7 @@ const ActivityContent = styled.div`
 `;
 
 const ActivityTitle = styled.h4`
-  font-size: 0.875rem;
+  font-size: clamp(0.8rem, 0.6667rem + 0.2083vw, 0.875rem);
   font-weight: 600;
   color: rgba(4, 103, 112, 0.99);
   margin: 0 0 0.125rem 0;
@@ -262,14 +276,14 @@ const ActivityTitle = styled.h4`
 `;
 
 const ActivityDescription = styled.p`
-  font-size: 0.8rem;
+  font-size: clamp(0.75rem, 0.6611rem + 0.1389vw, 0.8rem);
   color: rgba(4, 103, 112, 0.7);
   margin: 0 0 0.25rem 0;
   line-height: 1.3;
 `;
 
 const ActivityTimestamp = styled.span`
-  font-size: 0.7rem;
+  font-size: clamp(0.75rem, 0.6611rem + 0.1389vw, 0.8rem);
   color: rgba(0, 131, 143, 0.5);
   font-weight: 500;
   text-transform: uppercase;
@@ -284,7 +298,7 @@ const ErrorContainer = styled.div`
 `;
 
 const ErrorText = styled.p`
-  font-size: 0.875rem;
+  font-size: clamp(0.8rem, 0.6667rem + 0.2083vw, 0.875rem)
   color: rgba(244, 67, 54, 0.8);
   margin: 0;
 `;
@@ -299,14 +313,14 @@ const EmptyContainer = styled.div`
 `;
 
 const EmptyText = styled.p`
-  font-size: 0.875rem;
+  font-size: clamp(0.8rem, 0.6667rem + 0.2083vw, 0.875rem)
   color: rgba(0, 131, 143, 0.7);
   margin: 0;
   font-weight: 500;
 `;
 
 const EmptySubtext = styled.p`
-  font-size: 0.75rem;
+  font-size: clamp(0.7rem, 0.6111rem + 0.1389vw, 0.75rem);
   color: rgba(0, 131, 143, 0.5);
   margin: 0;
   text-align: center;

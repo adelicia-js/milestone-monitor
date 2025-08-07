@@ -4,6 +4,8 @@ import React from "react";
 import styled from "styled-components";
 import { Inter } from "next/font/google";
 import { Eye, Calendar } from "lucide-react";
+import Loader from "@/components/ui/Loader";
+import { LoadingContainer, LoadingText } from "@/components/ui/GenericStyles";
 import { ApprovalEntry } from "@/lib/types";
 
 const bodyText = Inter({
@@ -16,6 +18,7 @@ interface ApprovalsTableProps {
   category: string;
   onViewDetails: (entry: ApprovalEntry) => void;
   emptyMessage: string;
+  loading?: boolean;
 }
 
 export default function ApprovalsTable({
@@ -23,6 +26,7 @@ export default function ApprovalsTable({
   category,
   onViewDetails,
   emptyMessage,
+  loading = false,
 }: ApprovalsTableProps) {
   const formatDate = (dateString: string) => {
     if (!dateString) return "N/A";
@@ -136,6 +140,12 @@ export default function ApprovalsTable({
 
   return (
     <TableCard>
+      {loading && (
+        <LoadingContainer>
+          <Loader customHeight="h-fit"/>
+          <LoadingText>Updating table...</LoadingText>
+        </LoadingContainer>
+      )}
       <TableWrapper>
         <Table>
           <TableHead>
@@ -202,7 +212,7 @@ const TableCard = styled.div`
 const TableWrapper = styled.div`
   flex: 1;
   overflow: auto;
-  box-shadow: 2px 4px 6px -1px rgba(48, 55, 55, 0.35);
+  box-shadow: 0 4px 15px rgba(4, 103, 112, 0.15);
   backdrop-filter: blur(10px);
   
   /* Custom scrollbar styling similar to reports and recent activity */

@@ -6,7 +6,7 @@ import { PendingData } from "@/app/(modify)/modify/approvals/types";
 import { approvalApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { ApprovalEntry, Faculty } from "@/lib/types";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 interface ApprovalsClientProps {
   pending_data: PendingData;
@@ -15,9 +15,15 @@ interface ApprovalsClientProps {
 
 export default function ApprovalsClient({
   pending_data,
-  userData
+  userData,
 }: ApprovalsClientProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [processingEntry, setProcessingEntry] = useState<string | null>(null);
+  const [processingAction, setProcessingAction] = useState<
+    "approve" | "reject" | null
+  >(null);
+  const [tableLoading, setTableLoading] = useState(false);
 
   // Process the data to add entry_type and title fields (same as original logic)
   const processedData = { ...pending_data };
@@ -27,7 +33,7 @@ export default function ApprovalsClient({
     Object.assign(conf, {
       entry_type: "Conference" as const,
       title: conf.paper_title,
-      date: conf.conf_date
+      date: conf.conf_date,
     });
   }
 
@@ -36,7 +42,7 @@ export default function ApprovalsClient({
     Object.assign(jour, {
       entry_type: "Journal" as const,
       title: jour.paper_title,
-      date: jour.month_and_year_of_publication
+      date: jour.month_and_year_of_publication,
     });
   }
 
@@ -44,7 +50,7 @@ export default function ApprovalsClient({
   for (const workshop of processedData.pending_workshop) {
     Object.assign(workshop, {
       entry_type: "Workshop" as const,
-      date: workshop.date
+      date: workshop.date,
     });
   }
 
@@ -53,37 +59,77 @@ export default function ApprovalsClient({
     Object.assign(patent, {
       entry_type: "Patent" as const,
       title: patent.patent_name,
-      date: patent.patent_date
+      date: patent.patent_date,
     });
   }
 
   const handleApprove = async (data: ApprovalEntry) => {
+    if (loading) return; // Prevent multiple clicks
+
+    const entryKey = `${data.entry_type}-${data.id}`;
+    setLoading(true);
+    setTableLoading(true);
+    setProcessingEntry(entryKey);
+    setProcessingAction("approve");
+
     try {
       const result = await approvalApi.approveEntry(data);
       if (result.error) {
         throw new Error(result.error);
       }
+
+      setTableLoading(true);
       toast.success(`${data.entry_type} entry approved successfully!`);
       router.refresh(); // Refresh to get updated data
+      // Note: tableLoading will be reset when component re-renders with new data
     } catch (error) {
-      console.error('Error approving entry:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to approve entry. Please try again.';
+      console.error("Error approving entry:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to approve entry. Please try again.";
       toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+      setTableLoading(false);
+      setProcessingEntry(null);
+      setProcessingAction(null);
+      // tableLoading will be handled by component re-render
     }
   };
 
   const handleReject = async (data: ApprovalEntry) => {
+    if (loading) return; // Prevent multiple clicks
+
+    const entryKey = `${data.entry_type}-${data.id}`;
+    setLoading(true);
+    setTableLoading(true);
+    setProcessingEntry(entryKey);
+    setProcessingAction("reject");
+
     try {
       const result = await approvalApi.rejectEntry(data);
       if (result.error) {
         throw new Error(result.error);
       }
+
+      setTableLoading(true);
       toast.success(`${data.entry_type} entry rejected successfully.`);
       router.refresh(); // Refresh to get updated data
+      // Note: tableLoading will be reset when component re-renders with new data
     } catch (error) {
-      console.error('Error rejecting entry:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to reject entry. Please try again.';
+      console.error("Error rejecting entry:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to reject entry. Please try again.";
       toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+      setTableLoading(false);
+      setProcessingEntry(null);
+      setProcessingAction(null);
+      // tableLoading will be handled by component re-render
     }
   };
 
@@ -93,6 +139,10 @@ export default function ApprovalsClient({
       userData={userData}
       onApprove={handleApprove}
       onReject={handleReject}
+      loading={loading}
+      processingEntry={processingEntry}
+      processingAction={processingAction}
+      tableLoading={tableLoading}
     />
   );
 }

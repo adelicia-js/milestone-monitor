@@ -36,8 +36,7 @@ export default function StaffManagementClient({
     try {
       const result = await facultyApi.addStaff({
         faculty_name: staffData.faculty_name,
-        faculty_id: staffData.faculty_id,
-        faculty_department: staffData.faculty_department,
+        faculty_department: currentUserDept, // Always use HOD's department
         faculty_role: staffData.faculty_role,
         faculty_phone: staffData.faculty_phone || null,
         faculty_email: staffData.faculty_email,
@@ -88,16 +87,18 @@ export default function StaffManagementClient({
     }
   };
 
-  const handleDeleteStaff = async (staffEmail: string) => {
+  const handleDeleteStaff = async (facultyId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const result = await facultyApi.deleteStaff(staffEmail);
+      console.log('Deleting staff with ID:', facultyId); // Debug log
+      const result = await facultyApi.deleteStaff(facultyId);
       
       if (result.error) {
         throw new Error(result.error);
       }
       
+      console.log('Delete successful, refreshing list'); // Debug log
       // Refresh the staff list to remove the deleted member
       await refreshStaffList();
     } catch (err) {

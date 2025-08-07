@@ -67,7 +67,7 @@ export class ApprovalApi extends ApiClient {
   async getPendingEntriesByDepartment(department: string): Promise<ApiResponse<PendingData>> {
     try {
       // First get all faculty IDs from the specified department
-      const facultyResult = await this.query<{faculty_id: string}>('faculty_profile', {
+      const facultyResult = await this.query<{faculty_id: string}>('faculty', {
         filters: { faculty_department: department }
       });
       
@@ -167,60 +167,68 @@ export class ApprovalApi extends ApiClient {
     }
   }
 
-  // Approve an entry
+  // Approve an entry - using server-side endpoint
   async approveEntry(data: ApprovalEntry): Promise<ApiResponse<CategoryData>> {
     try {
-      let tableName: string;
+      console.log('APPROVE: Using server-side approval for', data.entry_type, 'ID:', data.id);
       
-      switch (data.entry_type) {
-        case 'Conference':
-          tableName = 'conferences';
-          break;
-        case 'Journal':
-          tableName = 'journal_publications';
-          break;
-        case 'Workshop':
-          tableName = 'fdp_workshop_refresher_course';
-          break;
-        case 'Patent':
-          tableName = 'patents';
-          break;
-        default:
-          return { data: null, error: `Unknown entry type: ${data.entry_type}` };
+      const response = await fetch('/api/admin/approve-entry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entry_type: data.entry_type,
+          id: data.id,
+          action: 'approve'
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Server approval failed:', errorData);
+        return { data: null, error: errorData.error || 'Failed to approve entry' };
       }
 
-      return this.update<CategoryData>(tableName, data.id!, { is_verified: 'APPROVED' });
+      const result = await response.json();
+      console.log('APPROVE: Server approval successful:', result);
+      return { data: result.data, error: null };
+      
     } catch (error) {
-      console.error('Error in approveEntry:', error);
+      console.error('Error in server-side approveEntry:', error);
       return { data: null, error: 'Failed to approve entry' };
     }
   }
 
-  // Reject an entry
+  // Reject an entry - using server-side endpoint
   async rejectEntry(data: ApprovalEntry): Promise<ApiResponse<CategoryData>> {
     try {
-      let tableName: string;
+      console.log('REJECT: Using server-side rejection for', data.entry_type, 'ID:', data.id);
       
-      switch (data.entry_type) {
-        case 'Conference':
-          tableName = 'conferences';
-          break;
-        case 'Journal':
-          tableName = 'journal_publications';
-          break;
-        case 'Workshop':
-          tableName = 'fdp_workshop_refresher_course';
-          break;
-        case 'Patent':
-          tableName = 'patents';
-          break;
-        default:
-          return { data: null, error: `Unknown entry type: ${data.entry_type}` };
+      const response = await fetch('/api/admin/approve-entry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entry_type: data.entry_type,
+          id: data.id,
+          action: 'reject'
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Server rejection failed:', errorData);
+        return { data: null, error: errorData.error || 'Failed to reject entry' };
       }
 
-      return this.update<CategoryData>(tableName, data.id!, { is_verified: 'REJECTED' });
+      const result = await response.json();
+      console.log('REJECT: Server rejection successful:', result);
+      return { data: result.data, error: null };
+      
     } catch (error) {
-      console.error('Error in rejectEntry:', error);
+      console.error('Error in server-side rejectEntry:', error);
       return { data: null, error: 'Failed to reject entry' };
     }
   }
