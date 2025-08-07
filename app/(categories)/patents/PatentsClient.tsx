@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
-import CategoryPageWrapper from "@/components/new/categories/CategoryPageWrapper";
+import CategoryPageWrapper from "@/components/categories/CategoryPageWrapper";
 import { patentApi } from "@/lib/api";
+import { Patent, Faculty, PatentFormData } from "@/lib/types";
+import toast from 'react-hot-toast';
 
 interface PatentsClientProps {
-  data: any[];
-  facultyData: any;
+  data: Patent[];
+  facultyData: Faculty;
 }
 
 export default function PatentsClient({ data, facultyData }: PatentsClientProps) {
@@ -68,16 +70,10 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
       label: 'Patent Link',
       type: 'text' as const,
       placeholder: 'Enter patent URL (optional)'
-    },
-    {
-      key: 'image',
-      label: 'Patent Certificate',
-      type: 'file' as const,
-      required: false
     }
   ];
 
-  const handleAddNew = async (formData: any) => {
+  const handleAddNew = async (formData: PatentFormData & { files?: { image?: File } }) => {
     try {
       const patentData = {
         faculty_id: facultyData.faculty_id,
@@ -98,11 +94,11 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
       window.location.reload();
     } catch (error) {
       console.error('Error adding patent:', error);
-      alert('Failed to add patent. Please try again.');
+      toast.error('Failed to add patent. Please try again.');
     }
   };
 
-  const handleEdit = async (formData: any) => {
+  const handleEdit = async (formData: Patent) => {
     try {
       const updates = {
         patent_name: formData.patent_name,
@@ -111,9 +107,12 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
         application_no: formData.application_no,
         status: formData.status,
         patent_link: formData.patent_link,
-        is_verified: 'PENDING' as 'PENDING',
+        is_verified: 'PENDING' as const,
       };
       
+      if (!formData.id) {
+        throw new Error('Patent ID is required for updates');
+      }
       const result = await patentApi.updatePatent(formData.id, updates);
       if (result.error) {
         throw new Error(result.error);
@@ -122,12 +121,15 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
       window.location.reload();
     } catch (error) {
       console.error('Error updating patent:', error);
-      alert('Failed to update patent. Please try again.');
+      toast.error('Failed to update patent. Please try again.');
     }
   };
 
-  const handleDelete = async (item: any) => {
+  const handleDelete = async (item: Patent) => {
     try {
+      if (!item.id) {
+        throw new Error('Patent ID is required for deletion');
+      }
       const result = await patentApi.deletePatent(item.id);
       if (result.error) {
         throw new Error(result.error);
@@ -136,13 +138,14 @@ export default function PatentsClient({ data, facultyData }: PatentsClientProps)
       window.location.reload();
     } catch (error) {
       console.error('Error deleting patent:', error);
-      alert('Failed to delete patent. Please try again.');
+      toast.error('Failed to delete patent. Please try again.');
     }
   };
 
   return (
     <CategoryPageWrapper
-      title="Your Patents"
+      title="Innovation & Intellectual Property"
+      description="Showcase your inventions, patent applications, and intellectual property contributions."
       data={data}
       fields={displayFields}
       formFields={formFields}

@@ -3,44 +3,13 @@ import { Faculty, ApiResponse } from "../../types";
 import { User } from "@supabase/supabase-js";
 
 export class AuthApi extends ApiClient {
-  async createStaff(
-    name: string,
-    staffId: string,
-    department: string,
-    role: string,
-    phone: string,
-    email: string,
-    password: string
-  ): Promise<ApiResponse<Faculty>> {
-    try {
-      const { error: authError } = await this.getSupabase().auth.admin.createUser(
-        {
-          email,
-          password,
-          email_confirm: true,
-        }
-      );
-
-      if (authError) {
-        console.error("Error creating user:", authError);
-        return { data: null, error: authError.message };
-      }
-
-      // Create faculty record
-      const facultyData = {
-        faculty_id: staffId,
-        faculty_name: name,
-        faculty_department: department,
-        faculty_role: role,
-        faculty_phone: phone,
-        faculty_email: email,
-      };
-
-      return this.insert<Faculty>("faculty", facultyData);
-    } catch (error) {
-      console.error("Error creating staff:", error);
-      return { data: null, error: "An unexpected error occurred" };
-    }
+  // SECURITY: Staff creation moved to server-side API route (/api/admin/create-user)
+  // This method is deprecated and should not be used
+  async createStaff(): Promise<ApiResponse<Faculty>> {
+    return { 
+      data: null, 
+      error: 'Staff creation must be done through server-side API. Use FacultyApi.addStaff() instead.' 
+    };
   }
 
   async updatePassword(password: string): Promise<ApiResponse<void>> {

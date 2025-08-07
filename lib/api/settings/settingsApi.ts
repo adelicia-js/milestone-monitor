@@ -1,6 +1,6 @@
 import { ApiClient } from '../client';
 import { Faculty, ApiResponse } from '../../types';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 
 export interface ProfileUpdateData {
   faculty_name?: string;
@@ -26,7 +26,10 @@ export class SettingsApi extends ApiClient {
   // Get current user's profile data
   async getCurrentUserProfile(): Promise<ApiResponse<Faculty>> {
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
       
       // Get current authenticated user
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -54,7 +57,10 @@ export class SettingsApi extends ApiClient {
   // Update current user's profile
   async updateProfile(updates: ProfileUpdateData): Promise<ApiResponse<Faculty>> {
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
       
       // Get current authenticated user
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -89,7 +95,7 @@ export class SettingsApi extends ApiClient {
   }
 
   // Update user password (client-side only)
-  async updatePassword(passwordData: PasswordUpdateData): Promise<ApiResponse<any>> {
+  async updatePassword(passwordData: PasswordUpdateData): Promise<ApiResponse<{ success: boolean }>> {
     try {
       // Validate password data
       const validation = this.validatePasswordUpdate(passwordData);
@@ -97,10 +103,13 @@ export class SettingsApi extends ApiClient {
         return { data: null, error: validation.error || null };
       }
 
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
 
       // Update password using Supabase client
-      const { data, error } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         password: passwordData.newPassword
       });
 
@@ -109,7 +118,7 @@ export class SettingsApi extends ApiClient {
         return { data: null, error: error.message };
       }
 
-      return { data: data, error: null };
+      return { data: { success: true }, error: null };
     } catch (error) {
       console.error('Error in updatePassword:', error);
       return { data: null, error: 'Failed to update password' };
@@ -119,7 +128,10 @@ export class SettingsApi extends ApiClient {
   // Upload profile picture
   async uploadProfilePicture(file: File): Promise<ApiResponse<string>> {
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
       
       // Get current authenticated user
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -145,7 +157,7 @@ export class SettingsApi extends ApiClient {
       const fileName = `profilePictures/${facultyId}.${fileExt}`;
 
       // Check for existing files and delete them (matching old behavior)
-      const { data: existingFiles, error: listError } = await supabase.storage
+      const { data: existingFiles } = await supabase.storage
         .from('staff-media')
         .list('profilePictures', {
           limit: 100,
@@ -161,7 +173,7 @@ export class SettingsApi extends ApiClient {
       }
 
       // Upload to Supabase storage
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('staff-media')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -225,8 +237,8 @@ export class SettingsApi extends ApiClient {
 
     // Validate phone
     if (updates.faculty_phone !== undefined && updates.faculty_phone.trim()) {
-      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-      if (!phoneRegex.test(updates.faculty_phone.replace(/[\s\-\(\)]/g, ''))) {
+      const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
+      if (!phoneRegex.test(updates.faculty_phone.replace(/[\s\-()]/g, ''))) {
         return { isValid: false, error: 'Please enter a valid phone number' };
       }
     }

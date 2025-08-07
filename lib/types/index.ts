@@ -18,7 +18,6 @@ export interface Conference {
   type: string;
   proceedings: boolean;
   proceeding_fp?: string;
-  certificate?: string;
   is_verified: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 
@@ -71,4 +70,65 @@ export interface QueryFilters {
   status?: 'PENDING' | 'APPROVED' | 'REJECTED';
   title?: string;
   faculty_id?: string;
+}
+
+// Form data types (without id and is_verified for new entries)
+export type ConferenceFormData = Omit<Conference, 'id' | 'is_verified'>;
+export type JournalFormData = Omit<Journal, 'id' | 'is_verified'>;
+export type WorkshopFormData = Omit<Workshop, 'id' | 'is_verified'>;
+export type PatentFormData = Omit<Patent, 'id' | 'is_verified'>;
+
+// Union types for academic entries
+export type AcademicEntry = Conference | Journal | Workshop | Patent;
+export type AcademicFormData = ConferenceFormData | JournalFormData | WorkshopFormData | PatentFormData;
+
+// Approval system types
+export type ApprovalEntry = Record<string, string | number | boolean | null | undefined> & {
+  id?: number;
+  entry_type: 'Conference' | 'Journal' | 'Workshop' | 'Patent';
+  title: string;
+  faculty_id: string;
+  faculty_name?: string;
+  date: string;
+  is_verified: 'PENDING' | 'APPROVED' | 'REJECTED';
+};
+
+// Staff management types
+export interface StaffFormData {
+  faculty_name: string;
+  faculty_id: string;
+  faculty_department: string;
+  faculty_role: 'faculty' | 'hod' | 'editor';
+  faculty_phone: string | null;
+  faculty_email: string;
+  password?: string; // Only for creation
+}
+
+// Export data types
+export type ExportData = Conference[] | Journal[] | Workshop[] | Patent[];
+export interface ExportRow {
+  [key: string]: string | number | boolean | null | undefined;
+}
+
+// Generic component props
+export interface BaseComponentProps<T> {
+  data: T[];
+  loading?: boolean;
+  error?: string | null;
+}
+
+export interface CrudOperations<T, TForm = Omit<T, 'id'>> {
+  onAddNew: (data: TForm) => Promise<void> | void;
+  onEdit?: (data: T) => Promise<void> | void;
+  onDelete?: (id: string | number) => Promise<void> | void;
+}
+
+// Report generation types
+export interface ReportEntry {
+  title: string;
+  faculty_id: string;
+  faculty_name?: string;
+  entry_type: 'conference' | 'journal' | 'workshop' | 'patent';
+  date: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
 } 

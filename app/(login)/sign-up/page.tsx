@@ -7,6 +7,9 @@ import logo from "../../../public/logo.webp";
 import { Urbanist } from "next/font/google";
 import "../../globals.css";
 import { useAuth } from '@/lib/hooks/useAuth';
+import Loader from "@/components/ui/Loader";
+import { LoadingContainer, LoadingText } from "@/components/ui/GenericStyles";
+import toast from 'react-hot-toast';
 
 const generalText = Urbanist({
   weight: "500",
@@ -24,7 +27,8 @@ export default function SignUp() {
     try {
       await signUp(email, password);
     } catch (error) {
-      alert(error instanceof Error ? error.message : "An unexpected error occurred");
+      console.error("Sign up error:", error);
+      toast.error(error instanceof Error ? error.message : "An unexpected error occurred");
     }
   };
 
@@ -42,9 +46,11 @@ export default function SignUp() {
             className="self-center"
           />
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center gap-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-r-2 border-b-2 border-teal-700">🚀</div>
-              <p className="text-teal-700 text-lg">Signing you up . . .</p>
+            <div className="flex flex-col items-center justify-center gap-4 p-8">
+              <LoadingContainer>
+                <Loader customHeight="h-fit" />
+                <LoadingText>Signing you up...</LoadingText>
+              </LoadingContainer>
             </div>
           ) : (
             <form

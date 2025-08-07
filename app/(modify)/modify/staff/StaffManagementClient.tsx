@@ -1,26 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import StaffManagementWrapper from "@/components/new/staff/StaffManagementWrapper";
+import StaffManagementWrapper from "@/components/staff/StaffManagementWrapper";
 import { Faculty } from "@/lib/types";
 import { facultyApi } from "@/lib/api";
-import { useRouter } from "next/navigation";
 
 interface StaffManagementClientProps {
   initialStaffList: Faculty[];
   currentUserDept: string;
-  userData: any;
+  userData: Faculty;
 }
 
 export default function StaffManagementClient({
   initialStaffList,
   currentUserDept,
-  userData
+  userData,
 }: StaffManagementClientProps) {
   const [staffList, setStaffList] = useState<Faculty[]>(initialStaffList);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const refreshStaffList = async () => {
     try {
@@ -33,18 +31,17 @@ export default function StaffManagementClient({
     }
   };
 
-  const handleAddStaff = async (staffData: any) => {
+  const handleAddStaff = async (staffData: Faculty & { password?: string }) => {
     setLoading(true);
     setError(null);
     try {
       const result = await facultyApi.addStaff({
         faculty_name: staffData.faculty_name,
-        faculty_id: staffData.faculty_id,
-        faculty_department: staffData.faculty_department,
+        faculty_department: currentUserDept, // Always use HOD's department
         faculty_role: staffData.faculty_role,
         faculty_phone: staffData.faculty_phone || null,
         faculty_email: staffData.faculty_email,
-        password: staffData.password
+        password: staffData.password || ''
       });
       
       if (result.error) {
@@ -62,7 +59,7 @@ export default function StaffManagementClient({
     }
   };
 
-  const handleEditStaff = async (staffData: any) => {
+  const handleEditStaff = async (staffData: Faculty & { password?: string }) => {
     setLoading(true);
     setError(null);
     try {
@@ -91,16 +88,18 @@ export default function StaffManagementClient({
     }
   };
 
-  const handleDeleteStaff = async (staffEmail: string) => {
+  const handleDeleteStaff = async (facultyId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const result = await facultyApi.deleteStaff(staffEmail);
+      console.log('Deleting staff with ID:', facultyId); // Debug log
+      const result = await facultyApi.deleteStaff(facultyId);
       
       if (result.error) {
         throw new Error(result.error);
       }
       
+      console.log('Delete successful, refreshing list'); // Debug log
       // Refresh the staff list to remove the deleted member
       await refreshStaffList();
     } catch (err) {
@@ -121,6 +120,7 @@ export default function StaffManagementClient({
       onDeleteStaff={handleDeleteStaff}
       loading={loading}
       error={error}
+      currentUser={userData}
     />
   );
 }

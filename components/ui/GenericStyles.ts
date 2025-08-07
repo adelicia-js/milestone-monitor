@@ -16,7 +16,7 @@ export const GenericCard = styled.div`
   background-color: rgba(244, 253, 252, 0.75);
   display: flex;
   flex-direction: row;
-`
+`;
 
 export const GenericHeaderContainer = styled.div`
   position: absolute;
@@ -47,19 +47,7 @@ export const GenericHeader = styled.p`
   letter-spacing: 0.5px;
   text-transform: uppercase;
   text-shadow: 0.1px 0.1px 2px rgba(47, 227, 227, 0.45);
-
-  /* Media Queries */
-  @media (max-width: 600px) {
-    /* Mobile styles */
-  }
-
-  @media (min-width: 601px) and (max-width: 1024px) {
-    /* Tablet styles */
-  }
-
-  @media (min-width: 1025px) {
-    font-size: 1rem;
-  }
+  font-size: clamp(0.8rem, 0.4444rem + 0.5556vw, 1rem);
 `;
 
 export const LoadingContainer = styled.div`

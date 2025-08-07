@@ -1,9 +1,12 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { ApiResponse } from '../types';
 
 // Base API client class that handles database operations
 export class ApiClient {
-  private supabase = createClientComponentClient();
+  private supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   protected getSupabase() {
     return this.supabase;
@@ -31,6 +34,7 @@ export class ApiClient {
           if (typeof value === 'object' && value !== null) {
             if ('gte' in value) query = query.gte(key, value.gte);
             if ('lte' in value) query = query.lte(key, value.lte);
+            if ('in' in value && Array.isArray(value.in)) query = query.in(key, value.in);
           } else {
             query = query.eq(key, value);
           }

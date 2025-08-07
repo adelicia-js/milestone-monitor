@@ -1,15 +1,31 @@
 "use server";
 
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from "next/headers";
 import { Faculty } from "./types";
 
 /**
  * Server-side utility function to fetch faculty role by email
- * This replaces the fetchRole function from api/dbfunctions.tsx
  */
 export async function fetchFacultyRole(email: string): Promise<Faculty | null> {
-  const supabase = createServerComponentClient({ cookies });
+  const cookieStore = await cookies();
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
+          })
+        },
+      },
+    }
+  );
   
   try {
     const { data: userData, error } = await supabase
@@ -35,7 +51,24 @@ export async function fetchFacultyRole(email: string): Promise<Faculty | null> {
  * This is an alternative version that gets the user from the session
  */
 export async function getCurrentFacultyData(): Promise<Faculty | null> {
-  const supabase = createServerComponentClient({ cookies });
+  const cookieStore = await cookies();
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
+          })
+        },
+      },
+    }
+  );
   
   try {
     const {
