@@ -176,10 +176,10 @@ export async function POST(request: NextRequest) {
       }));
     };
 
-    const enrichedConferences = addMetadata(conferences.data, 'conference');
-    const enrichedJournals = addMetadata(journals.data, 'journal');
-    const enrichedWorkshops = addMetadata(workshops.data, 'workshop');
-    const enrichedPatents = addMetadata(patents.data, 'patent');
+    const enrichedConferences = addMetadata(conferences.data || [], 'conference');
+    const enrichedJournals = addMetadata(journals.data || [], 'journal');
+    const enrichedWorkshops = addMetadata(workshops.data || [], 'workshop');
+    const enrichedPatents = addMetadata(patents.data || [], 'patent');
 
     // Filter by title, status, and specific faculty
     const filterData = (data: EntryData[]) => {
