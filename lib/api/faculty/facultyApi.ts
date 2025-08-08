@@ -1,41 +1,34 @@
-import { ApiClient } from "../client";
-import { Faculty, ApiResponse } from "../../types";
+import { ApiClient } from '../client';
+import { Faculty, ApiResponse } from '../../types';
 
 export class FacultyApi extends ApiClient {
   async getFacultyByEmail(email: string): Promise<ApiResponse<Faculty>> {
     try {
       // SECURITY: Verify user can only access their own data
-      const {
-        data: { user },
-        error: authError,
-      } = await this.getSupabase().auth.getUser();
+      const { data: { user }, error: authError } = await this.getSupabase().auth.getUser();
       if (authError || !user) {
-        return { data: null, error: "Authentication required" };
+        return { data: null, error: 'Authentication required' };
       }
 
       // Only allow users to get their own faculty record, unless they're HOD/Editor
-      const currentUserResult = await this.query<Faculty>("faculty", {
+      const currentUserResult = await this.query<Faculty>('faculty', {
         filters: { faculty_email: user.email },
       });
 
       if (currentUserResult.error || !currentUserResult.data?.[0]) {
-        return { data: null, error: "User profile not found" };
+        return { data: null, error: 'User profile not found' };
       }
 
       const currentUser = currentUserResult.data[0];
-      const isAuthorized =
-        user.email === email ||
-        currentUser.faculty_role === "hod" ||
-        currentUser.faculty_role === "editor";
+      const isAuthorized = user.email === email || 
+                          currentUser.faculty_role === 'hod' || 
+                          currentUser.faculty_role === 'editor';
 
       if (!isAuthorized) {
-        return {
-          data: null,
-          error: "Unauthorized: Cannot access other users data",
-        };
+        return { data: null, error: 'Unauthorized: Cannot access other users data' };
       }
 
-      const response = await this.query<Faculty>("faculty", {
+      const response = await this.query<Faculty>('faculty', {
         filters: { faculty_email: email },
       });
       return {
@@ -43,77 +36,59 @@ export class FacultyApi extends ApiClient {
         error: response.error,
       };
     } catch (error) {
-      console.error("Error in getFacultyByEmail:", error);
-      return { data: null, error: "An unexpected error occurred" };
+      console.error('Error in getFacultyByEmail:', error);
+      return { data: null, error: 'An unexpected error occurred' };
     }
   }
 
-  async getFacultyByDepartment(
-    department: string
-  ): Promise<ApiResponse<Faculty[]>> {
+  async getFacultyByDepartment(department: string): Promise<ApiResponse<Faculty[]>> {
     try {
       // SECURITY: Verify user is HOD or Editor to access department data
-      const {
-        data: { user },
-        error: authError,
-      } = await this.getSupabase().auth.getUser();
+      const { data: { user }, error: authError } = await this.getSupabase().auth.getUser();
       if (authError || !user) {
-        return { data: null, error: "Authentication required" };
+        return { data: null, error: 'Authentication required' };
       }
 
-      const currentUserResult = await this.query<Faculty>("faculty", {
+      const currentUserResult = await this.query<Faculty>('faculty', {
         filters: { faculty_email: user.email },
       });
 
       if (currentUserResult.error || !currentUserResult.data?.[0]) {
-        return { data: null, error: "User profile not found" };
+        return { data: null, error: 'User profile not found' };
       }
 
       const currentUser = currentUserResult.data[0];
-      const isAuthorized =
-        currentUser.faculty_role === "hod" ||
-        currentUser.faculty_role === "editor";
+      const isAuthorized = currentUser.faculty_role === 'hod' || currentUser.faculty_role === 'editor';
 
       if (!isAuthorized) {
-        return {
-          data: null,
-          error:
-            "Unauthorized: Only HOD and Editors can access department data",
-        };
+        return { data: null, error: 'Unauthorized: Only HOD and Editors can access department data' };
       }
 
-      return this.query<Faculty>("faculty", {
+      return this.query<Faculty>('faculty', {
         filters: { faculty_department: department },
       });
     } catch (error) {
-      console.error("Error in getFacultyByDepartment:", error);
-      return { data: null, error: "An unexpected error occurred" };
+      console.error('Error in getFacultyByDepartment:', error);
+      return { data: null, error: 'An unexpected error occurred' };
     }
   }
 
-  async createFaculty(
-    faculty: Omit<Faculty, "id">
-  ): Promise<ApiResponse<Faculty>> {
-    return this.insert<Faculty>("faculty", faculty);
+  async createFaculty(faculty: Omit<Faculty, 'id'>): Promise<ApiResponse<Faculty>> {
+    return this.insert<Faculty>('faculty', faculty);
   }
 
   async updateFaculty(
     email: string,
     updates: Partial<Faculty>
   ): Promise<ApiResponse<Faculty>> {
-    return this.updateByField<Faculty>(
-      "faculty",
-      "faculty_email",
-      email,
-      updates
-    );
+    return this.updateByField<Faculty>('faculty', 'faculty_email', email, updates);
   }
 
   async deleteFaculty(email: string): Promise<ApiResponse<Faculty>> {
     try {
       // First check if the faculty exists
-      const existsResult = await this.query<Faculty>("faculty", {
-        filters: { faculty_email: email },
+      const existsResult = await this.query<Faculty>('faculty', {
+        filters: { faculty_email: email }
       });
 
       if (existsResult.error) {
@@ -121,30 +96,29 @@ export class FacultyApi extends ApiClient {
       }
 
       if (!existsResult.data || existsResult.data.length === 0) {
-        return { data: null, error: "Faculty member not found" };
+        return { data: null, error: 'Faculty member not found' };
       }
 
       const { data, error } = await this.getSupabase()
-        .from("faculty")
+        .from('faculty')
         .delete()
-        .eq("faculty_email", email)
+        .eq('faculty_email', email)
         .select();
 
       if (error) {
-        console.error("Error deleting faculty:", error);
+        console.error('Error deleting faculty:', error);
         return { data: null, error: error.message };
       }
 
       // Return the first deleted record or null if none were deleted
-      const deletedFaculty =
-        data && data.length > 0 ? (data[0] as Faculty) : null;
-      return {
-        data: deletedFaculty,
-        error: deletedFaculty ? null : "No faculty record was deleted",
+      const deletedFaculty = data && data.length > 0 ? data[0] as Faculty : null;
+      return { 
+        data: deletedFaculty, 
+        error: deletedFaculty ? null : 'No faculty record was deleted' 
       };
     } catch (error) {
-      console.error("Error in deleteFaculty:", error);
-      return { data: null, error: "Failed to delete faculty" };
+      console.error('Error in deleteFaculty:', error);
+      return { data: null, error: 'Failed to delete faculty' };
     }
   }
 
@@ -162,7 +136,10 @@ export class FacultyApi extends ApiClient {
     return this.updateFaculty(email, { faculty_phone: phone });
   }
 
-  async updateName(email: string, name: string): Promise<ApiResponse<Faculty>> {
+  async updateName(
+    email: string,
+    name: string
+  ): Promise<ApiResponse<Faculty>> {
     return this.updateFaculty(email, { faculty_name: name });
   }
 
@@ -177,32 +154,28 @@ export class FacultyApi extends ApiClient {
     const facultyUpdates: Partial<Faculty> = {};
     if (updates.name) facultyUpdates.faculty_name = updates.name;
     if (updates.phone) facultyUpdates.faculty_phone = updates.phone;
-    if (updates.googleScholar)
-      facultyUpdates.faculty_google_scholar = updates.googleScholar;
+    if (updates.googleScholar) facultyUpdates.faculty_google_scholar = updates.googleScholar;
 
     return this.updateFaculty(email, facultyUpdates);
   }
 
   async createDefaultFacultyData(email: string): Promise<ApiResponse<Faculty>> {
-    const defaultFaculty: Omit<Faculty, "id"> = {
+    const defaultFaculty: Omit<Faculty, 'id'> = {
       faculty_id: this.generateFacultyId(),
-      faculty_name: "New Faculty",
-      faculty_department: "General",
-      faculty_role: "faculty",
+      faculty_name: 'New Faculty',
+      faculty_department: 'General',
+      faculty_role: 'faculty',
       faculty_phone: null,
       faculty_email: email,
-      faculty_google_scholar: null,
+      faculty_google_scholar: null
     };
 
-    return this.insert<Faculty>("faculty", defaultFaculty);
+    return this.insert<Faculty>('faculty', defaultFaculty);
   }
 
   // Helper method to generate unique faculty ID
   private generateFacultyId(): string {
-    return `FAC${Date.now().toString().slice(-4)}-${Math.random()
-      .toString(36)
-      .substring(2, 5)
-      .toUpperCase()}`;
+    return `FAC${Date.now().toString().slice(-4)}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
   }
 
   // Staff Management Operations
@@ -218,34 +191,31 @@ export class FacultyApi extends ApiClient {
     try {
       // Auto-generate faculty ID
       const faculty_id = this.generateFacultyId();
-
+      
       const staffDataWithId = {
         ...staffData,
-        faculty_id,
+        faculty_id
       };
 
       // Use secure server-side API endpoint for user creation
-      const response = await fetch("/api/admin/create-user", {
-        method: "POST",
+      const response = await fetch('/api/admin/create-user', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(staffDataWithId),
+        body: JSON.stringify(staffDataWithId)
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        return {
-          data: null,
-          error: errorData.error || "Failed to create staff member",
-        };
+        return { data: null, error: errorData.error || 'Failed to create staff member' };
       }
 
       const result = await response.json();
       return { data: result.data, error: null };
     } catch (error) {
-      console.error("Error in addStaff:", error);
-      return { data: null, error: "Failed to add staff member" };
+      console.error('Error in addStaff:', error);
+      return { data: null, error: 'Failed to add staff member' };
     }
   }
 
@@ -254,135 +224,114 @@ export class FacultyApi extends ApiClient {
     updates: Partial<Faculty>
   ): Promise<ApiResponse<Faculty>> {
     try {
-      console.log("CLIENT updateStaff: Calling server route with:", {
-        email,
-        updates,
-      });
-
-      const response = await fetch("/api/admin/update-staff", {
-        method: "PUT",
+      console.log('CLIENT updateStaff: Calling server route with:', { email, updates });
+      
+      const response = await fetch('/api/admin/update-staff', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, updates }),
       });
 
       const result = await response.json();
-
+      
       if (!response.ok) {
-        console.error("SERVER updateStaff response not ok:", result);
-        return {
-          data: null,
-          error: result.error || "Failed to update staff member",
-        };
+        console.error('SERVER updateStaff response not ok:', result);
+        return { data: null, error: result.error || 'Failed to update staff member' };
       }
 
-      console.log("SERVER updateStaff success:", result);
+      console.log('SERVER updateStaff success:', result);
       return { data: result.data, error: null };
     } catch (error) {
-      console.error("Error in updateStaff:", error);
-      return { data: null, error: "Failed to update staff member" };
+      console.error('Error in updateStaff:', error);
+      return { data: null, error: 'Failed to update staff member' };
     }
   }
 
   // Debug method to check what's actually in the database
   async debugFacultyRecord(identifier: string): Promise<ApiResponse<unknown>> {
     try {
-      console.log("DEBUG: Looking for faculty with identifier:", identifier);
-
+      console.log('DEBUG: Looking for faculty with identifier:', identifier);
+      
       // First, let's see ALL faculty records to understand the structure
       const allFaculty = await this.getSupabase()
-        .from("faculty")
-        .select("*")
+        .from('faculty')
+        .select('*')
         .limit(3);
-
-      console.log("DEBUG: Sample faculty records:", allFaculty.data);
-
+      
+      console.log('DEBUG: Sample faculty records:', allFaculty.data);
+      
       // Try finding by faculty_id
       const byFacultyId = await this.getSupabase()
-        .from("faculty")
-        .select("*")
-        .eq("faculty_id", identifier);
-
-      console.log("DEBUG: Search by faculty_id result:", byFacultyId);
-
-      return {
-        data: { allFaculty: allFaculty.data, byFacultyId: byFacultyId.data },
-        error: null,
-      };
+        .from('faculty')
+        .select('*')
+        .eq('faculty_id', identifier);
+      
+      console.log('DEBUG: Search by faculty_id result:', byFacultyId);
+      
+      return { data: { allFaculty: allFaculty.data, byFacultyId: byFacultyId.data }, error: null };
     } catch (error) {
-      console.error("DEBUG Error:", error);
-      return { data: null, error: "Debug failed" };
+      console.error('DEBUG Error:', error);
+      return { data: null, error: 'Debug failed' };
     }
   }
 
   // Server-side delete method to bypass RLS issues
   async deleteStaff(facultyId: string): Promise<ApiResponse<Faculty>> {
     try {
-      console.log(
-        "DELETE: Using server-side delete for faculty_id:",
-        facultyId
-      );
-
+      console.log('DELETE: Using server-side delete for faculty_id:', facultyId);
+      
       // Use secure server-side API endpoint for deletion
-      const response = await fetch(
-        `/api/admin/delete-staff?faculty_id=${encodeURIComponent(facultyId)}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(`/api/admin/delete-staff?faculty_id=${encodeURIComponent(facultyId)}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
         }
-      );
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Server delete failed:", errorData);
-        return {
-          data: null,
-          error: errorData.error || "Failed to delete staff member",
-        };
+        console.error('Server delete failed:', errorData);
+        return { data: null, error: errorData.error || 'Failed to delete staff member' };
       }
 
       const result = await response.json();
-      console.log("DELETE: Server delete successful:", result);
+      console.log('DELETE: Server delete successful:', result);
       return { data: result.data, error: null };
+      
     } catch (error) {
-      console.error("Error in server-side deleteStaff:", error);
-      return { data: null, error: "Failed to delete staff member" };
+      console.error('Error in server-side deleteStaff:', error);
+      return { data: null, error: 'Failed to delete staff member' };
     }
   }
 
-  async getStaffByDepartment(
-    department: string
-  ): Promise<ApiResponse<Faculty[]>> {
+  async getStaffByDepartment(department: string): Promise<ApiResponse<Faculty[]>> {
     try {
       // Simple query to get all faculty from the department
-      return this.query<Faculty>("faculty", {
-        filters: { faculty_department: department },
+      return this.query<Faculty>('faculty', {
+        filters: { faculty_department: department }
       });
     } catch (error) {
-      console.error("Error in getStaffByDepartment:", error);
-      return { data: null, error: "An unexpected error occurred" };
+      console.error('Error in getStaffByDepartment:', error);
+      return { data: null, error: 'An unexpected error occurred' };
     }
   }
 
   async getAllStaff(): Promise<ApiResponse<Faculty[]>> {
-    return this.query<Faculty>("faculty", {});
+    return this.query<Faculty>('faculty', {});
   }
 
   async getStaffByRole(role: string): Promise<ApiResponse<Faculty[]>> {
-    return this.query<Faculty>("faculty", {
-      filters: { faculty_role: role },
+    return this.query<Faculty>('faculty', {
+      filters: { faculty_role: role }
     });
   }
 
-  async bulkUpdateStaff(
-    updates: Array<{
-      email: string;
-      data: Partial<Faculty>;
-    }>
-  ): Promise<ApiResponse<{ success: number; failed: number }>> {
+  async bulkUpdateStaff(updates: Array<{
+    email: string;
+    data: Partial<Faculty>;
+  }>): Promise<ApiResponse<{ success: number; failed: number }>> {
     let success = 0;
     let failed = 0;
 
@@ -397,25 +346,19 @@ export class FacultyApi extends ApiClient {
 
     return {
       data: { success, failed },
-      error: failed > 0 ? `${failed} staff updates failed` : null,
+      error: failed > 0 ? `${failed} staff updates failed` : null
     };
   }
 
   // Password management
-  async updateStaffPassword(
-    _: string
-  ): Promise<ApiResponse<{ success: boolean }>> {
-    // eslint-disable-line @typescript-eslint/no-unused-vars
+  async updateStaffPassword(_: string): Promise<ApiResponse<{ success: boolean }>> { // eslint-disable-line @typescript-eslint/no-unused-vars
     try {
       // This needs to be called from the client-side with the current user's session
       // Since it updates the current user's password: _password
-      return {
-        data: null,
-        error: "Password updates must be handled on the client side",
-      };
+      return { data: null, error: 'Password updates must be handled on the client side' };
     } catch (error) {
-      console.error("Error in updateStaffPassword:", error);
-      return { data: null, error: "Failed to update password: _password" };
+      console.error('Error in updateStaffPassword:', error);
+      return { data: null, error: 'Failed to update password: _password' };
     }
   }
 
@@ -423,38 +366,30 @@ export class FacultyApi extends ApiClient {
   async resetStaffPassword(
     email: string,
     newPassword: string
-  ): Promise<
-    ApiResponse<{ success: boolean; faculty_name: string; email: string }>
-  > {
+  ): Promise<ApiResponse<{ success: boolean; faculty_name: string; email: string }>> {
     try {
-      console.log(
-        "CLIENT resetStaffPassword: Calling server route for:",
-        email
-      );
-
-      const response = await fetch("/api/admin/reset-password", {
-        method: "POST",
+      console.log('CLIENT resetStaffPassword: Calling server route for:', email);
+      
+      const response = await fetch('/api/admin/reset-password', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, newPassword }),
       });
 
       const result = await response.json();
-
+      
       if (!response.ok) {
-        console.error("SERVER resetStaffPassword response not ok:", result);
-        return {
-          data: null,
-          error: result.error || "Failed to reset password",
-        };
+        console.error('SERVER resetStaffPassword response not ok:', result);
+        return { data: null, error: result.error || 'Failed to reset password' };
       }
 
-      console.log("SERVER resetStaffPassword success:", result);
+      console.log('SERVER resetStaffPassword success:', result);
       return { data: result.data, error: null };
     } catch (error) {
-      console.error("Error in resetStaffPassword:", error);
-      return { data: null, error: "Failed to reset password" };
+      console.error('Error in resetStaffPassword:', error);
+      return { data: null, error: 'Failed to reset password' };
     }
   }
 
@@ -464,52 +399,38 @@ export class FacultyApi extends ApiClient {
       // First get the faculty data to get faculty_id
       const facultyResponse = await this.getFacultyByEmail(email);
       if (facultyResponse.error || !facultyResponse.data) {
-        return {
-          data: null,
-          error: facultyResponse.error || "Faculty not found",
-        };
+        return { data: null, error: facultyResponse.error || 'Faculty not found' };
       }
 
       const facultyId = facultyResponse.data.faculty_id;
       const supabase = this.getSupabase();
 
       // Get counts for each table
-      const [confResult, workshopResult, journalResult, patentResult] =
-        await Promise.all([
-          supabase
-            .from("conferences")
-            .select("*", { count: "exact", head: true })
-            .eq("faculty_id", facultyId),
-          supabase
-            .from("fdp_workshop_refresher_course")
-            .select("*", { count: "exact", head: true })
-            .eq("faculty_id", facultyId),
-          supabase
-            .from("journal_publications")
-            .select("*", { count: "exact", head: true })
-            .eq("faculty_id", facultyId),
-          supabase
-            .from("patents")
-            .select("*", { count: "exact", head: true })
-            .eq("faculty_id", facultyId),
-        ]);
+      const [confResult, workshopResult, journalResult, patentResult] = await Promise.all([
+        supabase
+          .from('conferences')
+          .select('*', { count: 'exact', head: true })
+          .eq('faculty_id', facultyId),
+        supabase
+          .from('fdp_workshop_refresher_course')
+          .select('*', { count: 'exact', head: true })
+          .eq('faculty_id', facultyId),
+        supabase
+          .from('journal_publications')
+          .select('*', { count: 'exact', head: true })
+          .eq('faculty_id', facultyId),
+        supabase
+          .from('patents')
+          .select('*', { count: 'exact', head: true })
+          .eq('faculty_id', facultyId)
+      ]);
 
       // Check for errors
-      if (
-        confResult.error ||
-        workshopResult.error ||
-        journalResult.error ||
-        patentResult.error
-      ) {
-        const errors = [
-          confResult.error,
-          workshopResult.error,
-          journalResult.error,
-          patentResult.error,
-        ]
+      if (confResult.error || workshopResult.error || journalResult.error || patentResult.error) {
+        const errors = [confResult.error, workshopResult.error, journalResult.error, patentResult.error]
           .filter(Boolean)
-          .map((e) => e?.message)
-          .join(", ");
+          .map(e => e?.message)
+          .join(', ');
         return { data: null, error: `Database error: ${errors}` };
       }
 
@@ -518,13 +439,13 @@ export class FacultyApi extends ApiClient {
         confResult.count || 0,
         workshopResult.count || 0,
         journalResult.count || 0,
-        patentResult.count || 0,
+        patentResult.count || 0
       ];
 
       return { data: statistics, error: null };
     } catch (error) {
-      console.error("Error in getMilestoneStatistics:", error);
-      return { data: null, error: "Failed to fetch milestone statistics" };
+      console.error('Error in getMilestoneStatistics:', error);
+      return { data: null, error: 'Failed to fetch milestone statistics' };
     }
   }
-}
+} 
