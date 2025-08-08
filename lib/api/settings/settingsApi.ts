@@ -137,18 +137,21 @@ export class SettingsApi extends ApiClient {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
       if (authError || !user) {
+        console.error('Authentication error:', authError);
         return { data: null, error: 'User not authenticated' };
       }
 
       // Validate file
       const fileValidation = this.validateProfilePicture(file);
       if (!fileValidation.isValid) {
+        console.error('File validation failed:', fileValidation.error);
         return { data: null, error: fileValidation.error || null };
       }
 
       // Get faculty ID for file naming
       const profileResult = await this.getCurrentUserProfile();
       if (profileResult.error || !profileResult.data) {
+        console.error('Profile fetch error:', profileResult.error);
         return { data: null, error: 'Could not get user profile for upload' };
       }
 
@@ -156,8 +159,10 @@ export class SettingsApi extends ApiClient {
       const fileExt = file.name.split('.').pop();
       const fileName = `profilePictures/${facultyId}.${fileExt}`;
 
+      console.log('Uploading file:', fileName, 'Size:', file.size, 'Type:', file.type);
+
       // Check for existing files and delete them (matching old behavior)
-      const { data: existingFiles } = await supabase.storage
+      const { data: existingFiles, error: listError } = await supabase.storage
         .from('staff-media')
         .list('profilePictures', {
           limit: 100,
@@ -165,29 +170,59 @@ export class SettingsApi extends ApiClient {
           search: facultyId
         });
 
+      if (listError) {
+        console.error('Error listing existing files:', listError);
+        // Continue with upload even if listing fails
+      }
+
       if (existingFiles && existingFiles.length > 0) {
+        console.log('Found existing files to delete:', existingFiles.length);
         const filesToDelete = existingFiles.map(file => `profilePictures/${file.name}`);
-        await supabase.storage
+        const { error: deleteError } = await supabase.storage
           .from('staff-media')
           .remove(filesToDelete);
+        
+        if (deleteError) {
+          console.error('Error deleting existing files:', deleteError);
+          // Continue with upload even if deletion fails
+        }
       }
 
       // Upload to Supabase storage
-      const { error } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('staff-media')
         .upload(fileName, file, {
           cacheControl: '3600',
           upsert: true
         });
 
-      if (error) {
-        return { data: null, error: error.message };
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        return { data: null, error: `Upload failed: ${uploadError.message}` };
       }
 
-      // Get public URL
+      console.log('Upload successful:', uploadData);
+
+      // Verify the file was actually uploaded by trying to access it
       const { data: { publicUrl } } = supabase.storage
         .from('staff-media')
         .getPublicUrl(fileName);
+
+      console.log('Generated public URL:', publicUrl);
+
+      // Test if the file is accessible
+      const { data: verifyData, error: verifyError } = await supabase.storage
+        .from('staff-media')
+        .list('profilePictures', {
+          search: facultyId
+        });
+
+      if (verifyError || !verifyData || verifyData.length === 0) {
+        console.error('File verification failed:', verifyError);
+        return { data: null, error: 'Upload failed - file not found after upload' };
+      }
+
+      console.log('File verified successfully:', verifyData);
 
       // Update faculty record with profile picture URL (if you have this field)
       // await this.updateProfile({ profile_picture: publicUrl });

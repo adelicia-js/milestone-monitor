@@ -34,23 +34,69 @@ export default function ProfileCard(props: ProfileCardProps) {
 
   // Generate profile image URL based on faculty_id
   useEffect(() => {
-    if (!userDetails?.faculty_id) return;
+    const loadProfileImage = async () => {
+      if (!userDetails?.faculty_id) return;
 
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
-    const facultyId = userDetails.faculty_id;
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      const facultyId = userDetails.faculty_id;
 
-    // Try the most common extension first (jpg)
-    const { data } = supabase.storage
-      .from("staff-media")
-      .getPublicUrl(`profilePictures/${facultyId}.jpg`);
+      try {
+        // First, try to list files with the faculty ID to get the actual filename
+        const { data: files, error } = await supabase.storage
+          .from('staff-media')
+          .list('profilePictures', {
+            search: facultyId
+          });
 
-    if (data.publicUrl) {
-      setProfileImageUrl(data.publicUrl);
-      setHasProfileImage(true);
-    }
+        if (error) {
+          console.error('Error listing profile pictures:', error);
+          return;
+        }
+
+        if (files && files.length > 0) {
+          // Use the first matching file
+          const fileName = files[0].name;
+          const { data } = supabase.storage
+            .from("staff-media")
+            .getPublicUrl(`profilePictures/${fileName}`);
+
+          console.log('Found profile image:', fileName, 'URL:', data.publicUrl);
+          setProfileImageUrl(data.publicUrl);
+          setHasProfileImage(true);
+        } else {
+          // Fallback: try common extensions if no files found
+          const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+          
+          for (const ext of extensions) {
+            const { data } = supabase.storage
+              .from("staff-media")
+              .getPublicUrl(`profilePictures/${facultyId}.${ext}`);
+
+            // Test if the image exists by trying to fetch it
+            try {
+              const response = await fetch(data.publicUrl, { method: 'HEAD' });
+              if (response.ok) {
+                console.log('Found profile image with extension:', ext, 'URL:', data.publicUrl);
+                setProfileImageUrl(data.publicUrl);
+                setHasProfileImage(true);
+                break;
+              }
+            } catch (fetchError) {
+              console.log(`No image found with extension .${ext}`);
+              console.error('Error loading image:', fetchError)
+              continue;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading profile image:', error);
+      }
+    };
+
+    loadProfileImage();
   }, [userDetails?.faculty_id]);
 
   // Also check for provided imageURL prop

@@ -98,6 +98,11 @@ export default function StaffManagementWrapper({
 
           <StaffTable
             staffList={staffList}
+            onAddNew={() => {
+              setModalMode("add");
+              setEditingStaff(null);
+              setIsModalOpen(true);
+            }}
             onEdit={handleEdit}
             onDelete={handleDelete}
             loading={loading}

@@ -138,6 +138,7 @@ const LoginContainer = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   gap: 0.5rem;
   background: #3b9b9b;
@@ -167,15 +168,27 @@ const LoginContainer = styled.div`
 `;
 
 const BackgroundContainer = styled.div`
-  background: url("/login-bg.svg") center/150% no-repeat;
+  background-image: url("/login-bg.svg");
+  background-position: center;
+  background-repeat: no-repeat;
   height: 100%;
+  width: 100vw;
   display: flex;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
+
+  @media (min-width: 1024px) {
+    background-size: 80%;
+  }
+
+  @media (min-width: 1280px) {
+    background-size: 70%;
+  }
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
+  margin-top: -1rem;
   flex-direction: column;
 `;
 
@@ -200,8 +213,15 @@ const LoginForm = styled.form`
   max-width: 24rem;
   margin: 0 auto;
   justify-content: center;
-  gap: 0.5rem;
   color: inherit;
+
+  @media (min-width: 1024px) {
+    margin-top: -2rem;
+    gap: 0;
+  }
+
+  @media (min-width: 1280px) {
+  }
 `;
 
 const InputLabel = styled.label`
@@ -251,6 +271,10 @@ const ButtonContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  @media (min-width: 1024px) {
+    margin-top: -1rem;
+  }
 `;
 
 const SignInButton = styled.button`

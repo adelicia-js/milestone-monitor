@@ -530,7 +530,7 @@ const RightColumn = styled.div`
   gap: 1.5rem;
 
   @media (min-width: 1024px) {
-    height: 70vh;
+    height: 80vh;
   }
 
   @media (min-width: 1280px) {
@@ -545,7 +545,7 @@ const SettingsCard = styled.div`
   border-radius: 1rem;
 
   @media (min-width: 1024px) {
-    height: 70vh;
+    height: 80vh;
   }
 
   @media (min-width: 1280px) {
@@ -560,7 +560,7 @@ const SettingsCard2 = styled.div`
   border-radius: 1rem;
 
   @media (min-width: 1024px) {
-    height: 33vh;
+    height: 38vh;
   }
 
   @media (min-width: 1280px) {
