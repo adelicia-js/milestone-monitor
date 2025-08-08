@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     // Create Supabase admin client (server-side only) to bypass RLS
     const supabaseAdmin = createClient(
-      process.env.SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       {
         auth: {
@@ -168,12 +168,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Add faculty names and entry types
-    const addMetadata = (data: any[], entryType: string) => {
+    const addMetadata = (data: Record<string, unknown>[], entryType: string): EntryData[] => {
       return (data || []).map(item => ({
         ...item,
-        faculty_name: facultyNameMap[item.faculty_id] || 'Unknown',
+        faculty_name: facultyNameMap[item.faculty_id as string] || 'Unknown',
         entry_type: entryType
-      }));
+      } as EntryData));
     };
 
     const enrichedConferences = addMetadata(conferences.data || [], 'conference');

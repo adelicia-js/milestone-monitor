@@ -34,9 +34,9 @@ export default function Login() {
 
   return (
     <div
-      className={`${generalText.className} flex-1 flex flex-col justify-center gap-2 bg-cover h-screen w-screen py-16 px-96 bg-[#3b9b9b]`}
+      className={`${generalText.className} flex-1 flex flex-col justify-center items-center gap-2 bg-cover h-screen w-screen py-16 px-96 bg-[#3b9b9b]`}
     >
-      <div className="bg-150%  bg-center bg-[url('../public/login-bg.svg')] h-full flex justify-center items-center">
+      <div className="min-[1024px]:bg-[length:90%] min-[1280px]:bg-[length:75%] bg-no-repeat bg-center bg-[url('/login-bg.svg')] w-[100vw] h-full flex justify-center items-center">
         <div className="flex flex-col">
           <Image
             src={logo}
@@ -55,7 +55,7 @@ export default function Login() {
             </div>
           ) : (
             <form
-              className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
+              className="flex-1 flex flex-col w-full justify-center text-foreground min-[1024px]:gap-0 min-[1024px]:-mt-[1rem] "
               onSubmit={handleSignIn}
             >
               <label
