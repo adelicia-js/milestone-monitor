@@ -2,6 +2,8 @@
 
 A web application for faculty members to track and manage their academic achievements including conferences, journals, patents, and workshops.
 
+[This app was initially created in collaboration with [Shashank](https://github.com/Shanki200801), [Mohit](https://github.com/programmingMohit) & [Siddharth](https://github.com/SiddharthSai4701) as part of our university course completion project in 2023 & then was essentially put away. In 2025, I decided to revamp the UI, separate API concerns better, address security gaps & improve the functionality as much as possible in an effort to hone my skills & also craft it into the designs in my head :)]
+
 ## 🌐 Accessing the Application
 
 *Live at: [milestone-monitor.vercel.app](https://milestone-monitor.vercel.app)*
