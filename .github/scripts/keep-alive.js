@@ -14,7 +14,8 @@ const supabase = createClient(supabaseUrl, process.env.SUPABASE_KEY);
 
 async function keepAlive() {
   console.log('Attempting to sign in...');
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+  const { data: authData, error: authError } = 
+  await supabase.auth.signInWithPassword({
     email: email,
     password: password,
   });
