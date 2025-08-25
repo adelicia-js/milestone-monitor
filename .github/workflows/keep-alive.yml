@@ -1,0 +1,23 @@
+name: Keep Supabase Active
+
+on:
+  schedule:
+    - cron: '0 5 * * 0' # Runs every Sunday at 5:00 AM UTC
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install
+      - name: Run Supabase query
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }} # The anon key is still needed for client initialization
+          SUPABASE_DUMMY_EMAIL: ${{ secrets.SUPABASE_DUMMY_EMAIL }}
+          SUPABASE_DUMMY_PASSWORD: ${{ secrets.SUPABASE_DUMMY_PASSWORD }}
+        run: node .github/scripts/keep-alive.js
