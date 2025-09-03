@@ -2,8 +2,10 @@
 
 A web application for faculty members to track and manage their academic achievements including conferences, journals, patents, and workshops.
 
+<image src="public/app_screenshot.png" width="85%" height="85%">
+
 > [!NOTE] 
-> This project was initially created in 2023, in collaboration with [Shashank](https://github.com/Shanki200801), [Mohit](https://github.com/programmingMohit) and [Siddharth](https://github.com/SiddharthSai4701) as part of our course completion project for uni, and was then put away. In 2025, I picked it up again in an effort to hone my skills (especially backend), but to also craft it like the designs I had in mind, hence not only revamping the UI entirely, but also improving the functionality overall, addressing security gaps & also adding some new features. :)  
+> This project was initially created in 2023, in collaboration with [Shashank](https://github.com/Shanki200801), [Mohit](https://github.com/programmingMohit) and [Siddharth](https://github.com/SiddharthSai4701) as part of our course completion project for uni, and was then put away. In 2025, I picked it up again in an effort to hone my skills (especially backend), but to also craft it like the designs I had in mind, hence not only revamping the UI entirely, but also improving the functionality overall, addressing security gaps & also adding some new features.
 
 ## 🌐 Accessing the Application
 
